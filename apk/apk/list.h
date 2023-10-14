@@ -1,0 +1,365 @@
+/* Amiga Port Kit (APK)
+ *
+ * (c) Robin Southern - github.com/betajaen
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#pragma once
+
+namespace apk {
+
+#define MAKE_LIST_NODE(T) \
+    T* next;\
+    T* prev;\
+    typedef T ListNodeType; \
+    T* getListNodeDataPtr() {\
+        return this;\
+    }\
+    T& getListNodeDataRef() {\
+        return *this;\
+    }
+
+    template<typename Node>
+    struct ListIterator {
+        Node node;
+
+        ListIterator() : node(nullptr) {}
+        explicit ListIterator(Node node_) : node(node_) {}
+
+        ListIterator& operator++() {
+            if (node) {
+                node = node->next;
+            }
+            return *this;
+        }
+
+        ListIterator& operator--() {
+            if (node) {
+                node = node->prev;
+            }
+            return *this;
+        }
+
+        ListIterator operator++(int) {
+            ListIterator<Node> t(node);
+            ++(*this);
+            return t;
+        }
+
+        ListIterator operator--(int) {
+            ListIterator<Node> t(node);
+            --(*this);
+            return t;
+        }
+
+        bool isEnd() {
+            return node == nullptr;
+        }
+
+        auto& operator*() const {
+            return node->getListNodeDataRef();
+        }
+
+        auto* operator->() const {
+            return node->getListNodeDataPtr();
+        }
+
+		bool operator==(const ListIterator<Node>& other) const {
+			return node == other.node;
+		}
+
+		bool operator!=(const ListIterator<Node>& other) const {
+			return node != other.node;
+		}
+
+    };
+
+    template<typename T>
+    struct WrappedListNode {
+        WrappedListNode<T>* prev;
+        WrappedListNode<T>* next;
+        T data;
+        typedef T ListNodeType;
+
+        WrappedListNode() = default;
+        WrappedListNode(const T& v)
+            : data(v), prev(nullptr), next(nullptr) {
+        }
+
+        ListNodeType* getListNodeDataPtr() {
+            return &data;
+        }
+
+        ListNodeType& getListNodeDataRef() {
+            return data;
+        }
+
+    };
+
+    template<typename T>
+    class List {
+    public:
+
+        typedef T* Node;
+        typedef ListIterator<Node> iterator;
+
+        Node head;
+        Node tail;
+
+        List() : head(NULL), tail(NULL) {
+        }
+        ~List() {
+            clear();
+        }
+
+        iterator begin() {
+            return iterator(head);
+        }
+
+        iterator end() {
+            return iterator(tail);
+        }
+
+        bool empty() const {
+            return head == nullptr && tail == nullptr;
+        }
+
+        Node _createNode(T* value) {
+            return value;
+        }
+
+        void _destroyNode(Node node) {
+        }
+
+        void clear() {
+            head = NULL;
+            tail = NULL;
+        }
+
+        Node findNode(const T& value) {
+            Node n = head;
+            while(n) {
+                if (n->data == value) {
+                    return n;
+                }
+                n = n->next;
+            }
+            return nullptr;
+        }
+
+        void erase(const T& value) {
+            Node n = findNode(value);
+            assert(n);
+            remove(n);
+        }
+
+        void remove(Node node) {
+            if (head == node && tail == node)
+            {
+              head = nullptr;
+              tail = nullptr;
+            }
+            else if (head == node)
+            {
+              head = node->next;
+              head->prev = nullptr;
+            }
+            else if (tail == node)
+            {
+              tail = node->prev;
+              tail->next = nullptr;
+            }
+            else
+            {
+              auto after = node->next;
+              auto before = node->prev;
+              after->prev = before;
+              before->next = after;
+            }
+            node->next = nullptr;
+            node->prev = nullptr;
+        }
+
+        void push_back(Node node) {
+            if (head == nullptr && tail == nullptr) {
+                head = tail = node;
+            }
+            else {
+                tail->next = node;
+                node->prev = tail;
+                tail = node;
+            }
+        }
+
+        void push_front(Node node) {
+            if (head == nullptr && tail == nullptr) {
+                head = tail = node;
+            }
+            else {
+                head->prev = node;
+                node->next = head;
+                head = node;
+            }
+        }
+
+        void pop_back() {
+            if (tail) {
+                remove(tail);
+            }
+        }
+
+        void pop_front() {
+            if (head) {
+                remove(head);
+            }
+        }
+
+    };
+
+
+
+
+    template<typename T>
+    class WrappedList {
+    public:
+
+        typedef WrappedListNode<T>* Node;
+        typedef ListIterator<Node> iterator;
+
+        Node head;
+        Node tail;
+
+        WrappedList() = default;
+        ~WrappedList() {
+            clear();
+        }
+
+        iterator begin() {
+            return iterator(head);
+        }
+
+        iterator end() {
+            return iterator(tail);
+        }
+
+        bool empty() const {
+            return head == nullptr && tail == nullptr;
+        }
+
+        Node _createNode(const T& value) {
+            return new WrappedListNode<T>(value);
+        }
+
+        void _destroyNode(Node node) {
+            if (node) {
+                delete node;
+            }
+        }
+
+        Node findNode(const T& value) {
+            Node n = head;
+            while(n) {
+                if (n->data == value) {
+                    return n;
+                }
+                n = n->next;
+            }
+            return nullptr;
+        }
+
+        void erase(const iterator& it) {
+            //assert(it.node);
+            remove(it.node);
+        }
+
+        void clear() {
+            Node n = head;
+            while(n) {
+                Node t = n;
+                n = n->next;
+                delete n;
+            }
+        }
+
+
+        void remove(Node node) {
+            if (head == node && tail == node)
+            {
+              head = nullptr;
+              tail = nullptr;
+            }
+            else if (head == node)
+            {
+              head = node->next;
+              head->prev = nullptr;
+            }
+            else if (tail == node)
+            {
+              tail = node->prev;
+              tail->next = nullptr;
+            }
+            else
+            {
+              auto after = node->next;
+              auto before = node->prev;
+              after->prev = before;
+              before->next = after;
+            }
+            node->next = nullptr;
+            node->prev = nullptr;
+            _destroyNode(node);
+        }
+
+        void push_back(const T& value) {
+            auto node = _createNode(value);
+            if (head == nullptr && tail == nullptr) {
+                head = tail = node;
+            }
+            else {
+                tail->next = node;
+                node->prev = tail;
+                tail = node;
+            }
+        }
+
+        void push_front(const T& value) {
+            auto node = _createNode(value);
+            if (head == nullptr && tail == nullptr) {
+                head = tail = node;
+            }
+            else {
+                head->prev = node;
+                node->next = head;
+                head = node;
+            }
+        }
+
+        void pop_back() {
+            if (tail) {
+                remove(tail);
+            }
+        }
+
+        void pop_front() {
+            if (head) {
+                remove(head);
+            }
+        }
+
+    };
+
+
+}
