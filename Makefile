@@ -10,10 +10,11 @@ ifeq ($(PLATFORM), sdl2)
 	OBJ		:= apk/sdl2.cpp
 	CC		= gcc
 	DELETE	= rm
-	CFLAGS	+= -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++14
+	CFLAGS	+= -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++14 -lc++
 endif
 
 OBJ += \
+	alt/alt.cpp \
 	cruise/actor.cpp \
 	cruise/background.cpp \
 	cruise/backgroundIncrust.cpp \

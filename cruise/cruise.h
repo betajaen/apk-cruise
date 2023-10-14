@@ -84,8 +84,8 @@ public:
 	int getGameType() const;
 	const char *getGameId() const;
 	uint32 getFeatures() const;
-	Common::Language getLanguage() const;
-	Common::Platform getPlatform() const;
+	// MOD: Common::Language getLanguage() const;
+	// MOD: Common::Platform getPlatform() const;
 	PCSound &sound() { return *_sound; }
 	virtual void pauseEngine(bool pause);
 	const char *langString(LangStringId langId) { return _langStrings[(int)langId].c_str(); }

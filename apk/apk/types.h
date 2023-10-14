@@ -76,9 +76,9 @@ namespace apk {
     };
 
 
-    constexpr int32 SEEK_SET = 0;
-    constexpr int32 SEEK_CUR = 1;
-    constexpr int32 SEEK_END = 1;
+    constexpr int32 kSEEK_SET = 0;
+    constexpr int32 kSEEK_CUR = 1;
+    constexpr int32 kSEEK_END = 2;
 
     class File {
     public:
@@ -98,7 +98,7 @@ namespace apk {
             return 0;
         }
         void seek(int32 where) {
-            seek(where, SEEK_CUR);
+            seek(where, kSEEK_CUR);
         }
 
         void seek(int32 where, int32 mode) {
@@ -186,18 +186,39 @@ namespace apk {
 
     int strcmp(const char* lhs, const char* rhs);
     void memcpy(void* dst, const void* src, size_t length);
-    int32 strlen(const char* str);
-    int32 strlcpy(const char* dst, const char* src, size_t dst_capacity);
-    int32 strcpy(const char* dst, const char* src);
-    int32 strcpy_s(const char* dst, const char* src);
-    int32 strncpy(const char* dst, const char* src, size_t dst_capacity);
-    int32 strcpy_s(const char* dst, size_t dst_capacity, const char* src);
+    uint32 strlen(const char* str);
+    void strcpy( char* dst, const char* src);
+    void strlcpy(char* dst, const char* src, uint32 length);
+
+    inline void strcpy_s(char* dst, uint32 length, const char* src) {
+        strlcpy(dst, src, length);
+    }
+
+    template<uint32 N>
+    inline void strcpy_s(char (&dst)[N], const char *src) {
+        strlcpy(dst, src, N);
+    }
+
+    inline void strncpy(char* dst, const char* src, uint32 length) {
+        strlcpy(dst, src, length);
+    }
+
     const char* strchr(const char* str, char search);
+    const char* strrchr(const char* str, char search);
+
     char* strchr(char* str, char search);
     char* strrchr(char* str, char search);
-    const char* strcat(char* str, const char* str2);
-    const char* strcat_s(char* str, const char* str2);
+
     const char* strlcat(char* str, const char* str2, size_t size);
+
+    inline const char* strcat(char* str, const char* str2) {
+        return strlcat(str, str2, 0xFFFFffff);
+    }
+
+    inline const char* strcat_s(char* str, const char* str2) {
+        return strlcat(str, str2, 0xFFFFffff);
+    }
+
     char toupper(char);
 
     void memset(void* dst, int val, size_t length);

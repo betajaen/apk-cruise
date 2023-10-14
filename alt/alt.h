@@ -284,6 +284,14 @@ namespace apk {
         void loadGameDialog() {
         }
 
+        inline Common::Language getLanguage() const {
+            return EN_ANY;
+        }
+
+        inline Common::Platform getPlatform() const {
+            return 0;
+        }
+
     };
 
     class RandomSource {
@@ -366,7 +374,7 @@ namespace apk {
         r = t;
     }
 
-    void fill(uint8* start, uint8* end, uint8 col) {
+    inline void fill(uint8* start, uint8* end, uint8 col) {
         memset(start, col, start - end);
     }
 
