@@ -21,16 +21,37 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include "apk/types.h"
+#include "apk/gfx.h"
+
+namespace apk {
+
+    constexpr int32 kScreenScale = 3;
+
+    namespace gfx {
+        SDL_Window* s_screen = NULL;
+        SDL_Surface* s_virtualSurface = NULL;
+        SDL_Color s_virtualPalette[256] = { 0 };
+        bool s_virtualPaletteDirty = false;
+        uint32 s_width = 0, s_height = 0, s_widthHeight = 0;
+    }
+
+    bool s_quitRequested = false;
+
+    void gameMain();
+
+    bool isQuitRequested() {
+        return s_quitRequested;
+    }
+
+}
 
 int main(void)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
-        printf("error initializing SDL: %s\n", SDL_GetError());
-        return 1;
-    }
+    SDL_assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 
-    printf("initialization successful!\n");
+    apk::s_quitRequested = false;
+    apk::gameMain();
+    apk::gfx::destroyScreen();
 
     SDL_Quit();
 }
@@ -99,6 +120,220 @@ namespace apk {
 
     char toupper(char c) {
         return SDL_toupper(c);
+    }
+
+}
+
+namespace apk { namespace gfx {
+
+    void createScreen(uint16 width, uint16 height, uint8 depth) {
+        SDL_assert(s_screen == NULL);
+
+        s_screen = SDL_CreateWindow("APK",
+            SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_CENTERED,
+            width * kScreenScale,
+            height * kScreenScale,
+            SDL_WINDOW_SHOWN);
+
+        SDL_assert(s_screen);
+
+        s_width = width;
+        s_height = height;
+        s_widthHeight = width * height;
+
+        s_virtualSurface =
+            SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 8, 0, 0, 0, 0);
+        SDL_SetPaletteColors(s_virtualSurface->format->palette,
+            s_virtualPalette,
+            0,
+            256);
+    }
+
+    void destroyScreen() {
+        SDL_assert(s_virtualSurface);
+        SDL_FreeSurface(s_virtualSurface);
+        s_virtualSurface = NULL;
+
+        SDL_assert(s_screen);
+        SDL_DestroyWindow(s_screen);
+        s_screen = NULL;
+        s_width = 0;
+        s_height = 0;
+    }
+
+
+    void flipScreen() {
+        if (s_virtualPaletteDirty) {
+            SDL_SetPaletteColors(s_virtualSurface->format->palette,
+                s_virtualPalette,
+                0,
+                256);
+            s_virtualPaletteDirty = false;
+        }
+        SDL_BlitSurface(s_virtualSurface, NULL, SDL_GetWindowSurface(s_screen), NULL);
+        SDL_UpdateWindowSurface(s_screen);
+
+        SDL_Event evt;
+        while(SDL_PollEvent(&evt)) {
+            if (evt.type == SDL_QUIT) {
+                s_quitRequested = true;
+            }
+        }
+    }
+
+    void blit(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h) {
+        SDL_LockSurface(s_virtualSurface);
+        uint8* pixels = (uint8*)s_virtualSurface->pixels;
+        *pixels = 1;
+        SDL_UnlockSurface(s_virtualSurface);
+    }
+
+    void cls(uint8 index) {
+        SDL_LockSurface(s_virtualSurface);
+        uint8* pixels = (uint8*)s_virtualSurface->pixels;
+        for (uint32 i = 0; i < s_widthHeight; i++) {
+            *pixels++ = index;
+        }
+        SDL_UnlockSurface(s_virtualSurface);
+    }
+
+    void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
+        s_virtualPalette[index] = { r, g, b, 255 };
+        s_virtualPaletteDirty = true;
+    }
+
+}}
+
+namespace apk {
+
+    class FileImpl {
+    public:
+        FILE* fh;
+        uint32 size;
+    };
+
+    File::File() {
+        m_impl = NULL;
+    }
+
+    File::~File() {
+        close();
+    }
+
+    bool File::close() {
+        if (m_impl) {
+            fclose(m_impl->fh);
+            delete m_impl;
+            m_impl = NULL;
+
+            printf("Closed file\n");
+
+            return true;
+        }
+        return false;
+    }
+
+    bool File::isOpen() const {
+        return m_impl;
+    }
+
+    bool File::open(const char* path) {
+        char diskPath[256] = { 0 };
+
+        close();
+
+        sprintf_s(diskPath, sizeof(diskPath), "data/%s", path);
+
+        FILE* fh = fopen(diskPath, "r");
+
+        if (fh == NULL) {
+            printf("Could not open %s\n", diskPath);
+            return false;
+        }
+
+        m_impl = new FileImpl();
+        m_impl->fh = fh;
+
+        fseek(m_impl->fh, 0, SEEK_END);
+        m_impl->size = ftell(m_impl->fh);
+        fseek(m_impl->fh, 0, SEEK_SET);
+
+        printf("Opened %s\n", diskPath);
+
+        return true;
+    }
+
+    uint32 File::size() const {
+        if (m_impl) {
+            return m_impl->size;
+        }
+        return 0;
+    }
+
+    bool File::exists(const char* path) {
+        char diskPath[256] = { 0 };
+
+        sprintf_s(diskPath, sizeof(diskPath), "data/%s", path);
+        FILE* fh = fopen(diskPath, "r");
+
+        if (fh == NULL) {
+            printf("DID NOT OPEN %s\n", diskPath);
+            return false;
+        }
+
+        printf("Opened %s\n", diskPath);
+
+        fclose(fh);
+        return true;
+    }
+
+
+    bool File::seek(int32 where, int32 mode) {
+        assert(m_impl);
+
+        printf("Seek %ld %ld\n", where, mode);
+        switch(mode) {
+            default:
+                return false;
+            case kSEEK_SET:
+                return fseek(m_impl->fh, where, SEEK_SET) == 0;
+            case kSEEK_CUR:
+                return fseek(m_impl->fh, where, SEEK_CUR) == 0;
+            case kSEEK_END:
+                return fseek(m_impl->fh, where, SEEK_END) == 0;
+        }
+    }
+
+    uint32 File::read(void* data, uint32 size) {
+        assert(m_impl);
+        uint32 rv = fread(data, size, 1, m_impl->fh);
+        printf("Read %ld bytes %ld\n", size, rv);
+        return rv;
+    }
+
+    int16 File::readSint16BE() {
+        int16 value;
+        read(&value, sizeof(value));
+        return endian::from_be_int16(value);
+    }
+
+    int32 File::readSint32BE() {
+        int32 value;
+        read(&value, sizeof(value));
+        return endian::from_be_int32(value);
+    }
+
+    uint16 File::readUint16BE() {
+        uint16 value;
+        read(&value, sizeof(value));
+        return endian::from_be_uint16(value);
+    }
+
+    uint32 File::readUint32BE() {
+        uint32 value;
+        read(&value, sizeof(value));
+        return endian::from_be_uint32(value);
     }
 
 }

@@ -19,115 +19,15 @@
 
 #pragma once
 
-
-#if defined (__AMIGA__)
-
-#else
-
-#include <stdint.h>
-#include <stddef.h>
-
-namespace apk {
-    typedef uint8_t uint8;
-    typedef uint16_t uint16;
-    typedef uint32_t uint32;
-    typedef int8_t int8;
-    typedef int16_t int16;
-    typedef int32_t int32;
-    typedef uint8_t byte;
-    typedef size_t size_t;
-
-    typedef uint32 uint;
-
-}
-
-#endif
-
+#include "pod.h"
+#include "array.h"
 #include "list.h"
+#include "assert.h"
+#include "file.h"
+#include "endian.h"
 
 namespace apk {
 
-
-    template<typename T>
-    class Array {
-        T* m_data;
-        uint32 m_size, m_capacity;
-    public:
-        Array() {}
-        ~Array() {}
-
-        void push_back(const T&) {
-        }
-
-        T& operator[](size_t index) {
-            return m_data[index];
-        }
-
-        const T& operator[](size_t index) const {
-            return m_data[index];
-        }
-
-        void clear() {
-        }
-
-        size_t size() const {
-            return m_size;
-        }
-    };
-
-
-    constexpr int32 kSEEK_SET = 0;
-    constexpr int32 kSEEK_CUR = 1;
-    constexpr int32 kSEEK_END = 2;
-
-    class File {
-    public:
-        bool open(const char*) {
-            return false;
-        }
-
-        bool close() {
-            return false;
-        }
-
-        bool isOpen() const {
-            return false;
-        }
-
-        size_t size() const {
-            return 0;
-        }
-        void seek(int32 where) {
-            seek(where, kSEEK_CUR);
-        }
-
-        void seek(int32 where, int32 mode) {
-        }
-
-        size_t read(void* data, size_t size) {
-            return 0;
-        }
-
-        int16 readSint16BE() {
-            return 0;
-        }
-
-        int32 readSint32BE() {
-            return 0;
-        }
-        uint16 readUint16BE() {
-            return 0;
-        }
-
-        uint32 readUint32BE() {
-            return 0;
-        }
-
-        bool exists(const char*) {
-            return false;
-        }
-
-    };
 
     class String {
         char* mem;
@@ -230,28 +130,14 @@ namespace apk {
     void* malloc(size_t length);
     void free(void* mem);
 
+    bool isQuitRequested();
+
 }
+
 
 #define debug(F, ...)
 #define warning(F, ...)
 #define error(F, ...)
-#define assert(C)
-#define READ_BE_UINT32(X) (0)
-#define READ_BE_UINT16(X) (0)
-#define READ_BE_INT32(X) (0)
-#define READ_BE_INT16(X) (0)
-#define READ_LE_UINT32(X) (0)
-#define READ_LE_UINT16(X) (0)
-#define READ_LE_INT32(X) (0)
-#define READ_LE_INT16(X) (0)
-#define READ_UINT16(X) (0)
-#define READ_UINT32(X) (0)
-#define READ_INT16(X) (0)
-#define READ_INT32(X) (0)
 
-#define WRITE_UINT16(INTO, VAL)
-#define WRITE_UINT32(INTO, VAL)
-#define WRITE_BE_UINT16(INTO, VAL)
-#define WRITE_BE_UINT32(INTO, VAL)
 
 #define ARRAYSIZE(X) ((sizeof(X)) / (sizeof(X[0])))

@@ -50,7 +50,7 @@ namespace Cruise {
 enum LangStringId { ID_PAUSED = 0, ID_INVENTORY = 5, ID_SPEAK_ABOUT = 6, ID_PLAYER_MENU = 7,
 	ID_SAVE = 9, ID_LOAD = 10, ID_RESTART = 11, ID_QUIT = 12};
 
-struct CRUISEGameDescription;
+typedef void* CRUISEGameDescription; // MOD: struct CRUISEGameDescription;
 
 class CruiseEngine : public Engine {
 private:
@@ -68,7 +68,7 @@ private:
 	bool loadLanguageStrings();
 	void mainLoop();
 	int processInput();
-protected:
+public: // MOD: protected:
 	// Engine APIs
 	Common::Error run() override;
 

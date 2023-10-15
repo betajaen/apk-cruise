@@ -2,15 +2,15 @@ CC=gcc
 OPTIONS=
 
 PLATFORM = sdl2
-PROGRAM = cruiseforacorpse
+PROGRAM = ./install/cruise
 
 CFLAGS = -I. -Iapk -Ialt -D__AMIGADATE__="\"$(DATESTR)\""
 
 ifeq ($(PLATFORM), sdl2)
 	OBJ		:= apk/sdl2.cpp
 	CC		= gcc
-	DELETE	= rm
-	CFLAGS	+= -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++14 -lc++
+	DELETE	= rm -f
+	CFLAGS	+= -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++14 -lc++
 endif
 
 OBJ += \
@@ -48,6 +48,7 @@ OBJ += \
 	cruise/volume.cpp
 
 all: $(OBJ)
+	$(DELETE) $(PROGRAM)
 	$(CC) -o $(PROGRAM) $(OBJ) $(CFLAGS) || exit 1
 
 %.o: %.cpp

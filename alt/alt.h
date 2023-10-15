@@ -229,11 +229,10 @@ namespace apk {
             return 0;
         }
 
-        void updateScreen() {
-        }
+        void updateScreen();
 
-        void copyRectToScreen(uint8* data, uint32, uint32, uint32, uint32, uint32) {
-        }
+        void copyRectToScreen(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h);
+
         static OSystem s_instance;
     };
 
@@ -271,11 +270,10 @@ namespace apk {
         virtual void syncSoundSettings() {
         }
 
-        void initGraphics(int32 w, int32 h) {
-        }
+        void initGraphics(int32 w, int32 h);
 
         bool shouldQuit() {
-            return false;
+            return apk::isQuitRequested();
         }
 
         void saveGameDialog() {

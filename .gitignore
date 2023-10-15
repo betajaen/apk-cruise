@@ -2,6 +2,8 @@
 .idea
 *.o
 *.out
-cruiseforacorpse
+*.dSYM
 
-install
+
+install/cruise
+install/data

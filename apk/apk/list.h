@@ -242,7 +242,11 @@ namespace apk {
         Node head;
         Node tail;
 
-        WrappedList() = default;
+        WrappedList() {
+            head = NULL;
+            tail = NULL;
+        }
+
         ~WrappedList() {
             clear();
         }
@@ -290,8 +294,10 @@ namespace apk {
             while(n) {
                 Node t = n;
                 n = n->next;
-                delete n;
+                delete t;
             }
+            head = NULL;
+            tail = NULL;
         }
 
 
