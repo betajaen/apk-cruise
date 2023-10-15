@@ -206,8 +206,8 @@ void askDisk(int16 discNumber) {
 		currentDiskNumber = discNumber;
 	}
 
-	Common::sprintf_s(fileName, "VOL.%d", currentDiskNumber);
-	Common::sprintf_s(string, "INSERER LE DISQUE %d EN ", currentDiskNumber);
+	Common::sprintf_s(fileName, sizeof(fileName), "VOL.%d", currentDiskNumber); // MOD: Common::sprintf_s(fileName, "VOL.%d", currentDiskNumber);
+	Common::sprintf_s(string, sizeof(string), "INSERER LE DISQUE %d EN ", currentDiskNumber);// MOD: Common::sprintf_s(string, "INSERER LE DISQUE %d EN ", currentDiskNumber);
 
 #if 0 // skip drive selection stuff
 	bool messageDrawn = false;

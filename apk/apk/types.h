@@ -123,21 +123,20 @@ namespace apk {
 
     void memset(void* dst, int val, size_t length);
     void sprintf_s(char* dst, size_t dst_length, const char* fmt, ...);
-    template<size_t N>
-    void sprintf_s(char (&dst)[N], const char* fmt, ...) {
-    }
+    void printf(const char* fmt, ...);
 
     void* malloc(size_t length);
     void free(void* mem);
 
     bool isQuitRequested();
 
+
+    void debug(int, const char* fmt, ...);
+    void debug(const char* str, ...);
+    void warning(const char* fmt, ...);
+    void error(const char* fmt, ...);
 }
 
-
-#define debug(F, ...)
-#define warning(F, ...)
-#define error(F, ...)
 
 
 #define ARRAYSIZE(X) ((sizeof(X)) / (sizeof(X[0])))

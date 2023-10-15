@@ -46,6 +46,7 @@ void MemoryList() {
 		debug("Current list of un-freed memory blocks:");
 
 		for (auto i = _vm->_memList.begin(); i != _vm->_memList.end(); i++) { // MOD:
+			MemInfo* v = i->getListNodeDataPtr(); // MOD: MemInfo const *const v = *i;
 			debug("%s - %d", v->fname, v->lineNum);
 		}
 	}

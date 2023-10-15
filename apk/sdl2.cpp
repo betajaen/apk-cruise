@@ -118,6 +118,45 @@ namespace apk {
         va_end(args);
     }
 
+    void printf(const char* fmt, ...) {
+        va_list args;
+        va_start(args, fmt);
+        vprintf(fmt, args);
+        va_end(args);
+    }
+
+    void debug(int l, const char* fmt, ...) {
+        va_list args;
+        va_start(args, fmt);
+        printf("[DBG %ld] ", l);
+        vprintf(fmt, args);
+        va_end(args);
+    }
+
+    void debug(const char* fmt, ...) {
+        va_list args;
+        va_start(args, fmt);
+        printf("[DBG] ");
+        vprintf(fmt, args);
+        va_end(args);
+    }
+
+    void warning(const char* fmt, ...) {
+        va_list args;
+        va_start(args, fmt);
+        printf("[WRN] ");
+        vprintf(fmt, args);
+        va_end(args);
+    }
+
+    void error(const char* fmt, ...) {
+        va_list args;
+        va_start(args, fmt);
+        printf("[ERR] ");
+        vprintf(fmt, args);
+        va_end(args);
+    }
+
     char toupper(char c) {
         return SDL_toupper(c);
     }
@@ -148,6 +187,18 @@ namespace apk { namespace gfx {
             s_virtualPalette,
             0,
             256);
+
+        for(int32 i=0;i < 256;i++) {
+            s_virtualPalette[i] = { (uint8) (i & 0xFF), (uint8) (i*4 & 0xFF), (uint8) (i*8 & 0xFF), 255 };
+        }
+        s_virtualPaletteDirty = true;
+
+        SDL_LockSurface(s_virtualSurface);
+        uint8* pixels = (uint8*)s_virtualSurface->pixels;
+        for (uint32 i = 0; i < s_widthHeight; i++) {
+            *pixels++ = (uint8) (i & 0xFF);
+        }
+        SDL_UnlockSurface(s_virtualSurface);
     }
 
     void destroyScreen() {
@@ -171,7 +222,14 @@ namespace apk { namespace gfx {
                 256);
             s_virtualPaletteDirty = false;
         }
-        SDL_BlitSurface(s_virtualSurface, NULL, SDL_GetWindowSurface(s_screen), NULL);
+
+        SDL_Rect dstRect;
+        dstRect.x = 0;
+        dstRect.y = 0;
+        dstRect.w = s_width * kScreenScale;
+        dstRect.h = s_height * kScreenScale;
+
+        SDL_BlitSurface(s_virtualSurface, NULL, SDL_GetWindowSurface(s_screen), &dstRect);
         SDL_UpdateWindowSurface(s_screen);
 
         SDL_Event evt;
@@ -307,6 +365,9 @@ namespace apk {
 
     uint32 File::read(void* data, uint32 size) {
         assert(m_impl);
+        if (size == 2436) {
+            printf("break");
+        }
         uint32 rv = fread(data, size, 1, m_impl->fh);
         printf("Read %ld bytes %ld\n", size, rv);
         return rv;
