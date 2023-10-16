@@ -20,7 +20,7 @@
 #pragma once
 
 namespace apk {
-
+    void doAssert(const char* file, int line);
 }
 
-#define assert(COND)
+#define assert(COND) if (!(COND)) { apk::doAssert(__FILE__, __LINE__); }

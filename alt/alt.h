@@ -306,37 +306,66 @@ namespace apk {
     };
 
     class MemoryReadStream {
+        MemoryBuffer m_buf;
+        bool m_dispose;
     public:
 
         MemoryReadStream(uint8* buffer, uint32 size, DisposeAfterUse dispose = DisposeAfterUse::NO) {
+            m_buf = MemoryBuffer(buffer, size);
+            m_dispose = (dispose == DisposeAfterUse::YES);
         }
 
         ~MemoryReadStream() {
+            if (m_dispose) {
+                byte* data = m_buf.getData();
+                if (data) {
+                    free(data);
+                }
+            }
         }
 
-        uint8 readByte() {
-            return 0;
+        void skip(uint32 len) {
+            m_buf.seek(len, kSEEK_CUR);
         }
 
-        void read(void* data, uint32 len) {
+        uint32 read(void* data, uint32 len) {
+            assert(m_buf.isEnd() == false);
+            return m_buf.read(data, len);
         }
 
-        void skip(uint32) {
+        byte readByte() {
+            assert(m_buf.isEnd() == false);
+            byte data = 0;
+            assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
+            return data;
         }
 
         int16 readSint16BE() {
-            return 0;
+            assert(m_buf.isEnd() == false);
+            int16 data = 0;
+            assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
+            return endian::from_be_int16(data);
         }
 
         int32 readSint32BE() {
-            return 0;
+            assert(m_buf.isEnd() == false);
+            int32 data = 0;
+            assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
+            return endian::from_be_int32(data);
         }
+
         uint16 readUint16BE() {
-            return 0;
+            assert(m_buf.isEnd() == false);
+            uint16 data = 0;
+            assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
+            return endian::from_be_uint16(data);
         }
 
         uint32 readUint32BE() {
-            return 0;
+            assert(m_buf.isEnd() == false);
+            uint32 data = 0;
+            assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
+            return endian::from_be_uint32(data);
         }
     };
 
