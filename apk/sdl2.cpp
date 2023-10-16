@@ -122,43 +122,53 @@ namespace apk {
         va_list args;
         va_start(args, fmt);
         vprintf(fmt, args);
+        ::printf("\n");
         va_end(args);
     }
 
     void debug(int l, const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);
-        printf("[DBG %ld] ", l);
+        ::printf("[DBG %ld] ", l);
         vprintf(fmt, args);
+        ::printf("\n");
         va_end(args);
     }
 
     void debug(const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);
-        printf("[DBG] ");
+        ::printf("[DBG] ");
         vprintf(fmt, args);
+        ::printf("\n");
         va_end(args);
     }
 
     void warning(const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);
-        printf("[WRN] ");
+        ::printf("[WRN] ");
         vprintf(fmt, args);
+        ::printf("\n");
         va_end(args);
     }
 
     void error(const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);
-        printf("[ERR] ");
+        ::printf("[ERR] ");
         vprintf(fmt, args);
+        ::printf("\n");
         va_end(args);
     }
 
     char toupper(char c) {
         return SDL_toupper(c);
+    }
+
+    void apk::doAssert(const char* file, int line) {
+        ::printf("\n[ASSERT!] %s:%ld\n", file, line);
+        SDL_assert(false);
     }
 
 }
@@ -301,7 +311,7 @@ namespace apk {
 
         close();
 
-        sprintf_s(diskPath, sizeof(diskPath), "data/%s", path);
+        sprintf_s(diskPath, sizeof(diskPath), "data/dos/%s", path);
 
         FILE* fh = fopen(diskPath, "r");
 
@@ -332,7 +342,7 @@ namespace apk {
     bool File::exists(const char* path) {
         char diskPath[256] = { 0 };
 
-        sprintf_s(diskPath, sizeof(diskPath), "data/%s", path);
+        sprintf_s(diskPath, sizeof(diskPath), "data/dos/%s", path);
         FILE* fh = fopen(diskPath, "r");
 
         if (fh == NULL) {
@@ -350,7 +360,6 @@ namespace apk {
     bool File::seek(int32 where, int32 mode) {
         assert(m_impl);
 
-        printf("Seek %ld %ld\n", where, mode);
         switch(mode) {
             default:
                 return false;
@@ -365,11 +374,7 @@ namespace apk {
 
     uint32 File::read(void* data, uint32 size) {
         assert(m_impl);
-        if (size == 2436) {
-            printf("break");
-        }
         uint32 rv = fread(data, size, 1, m_impl->fh);
-        printf("Read %ld bytes %ld\n", size, rv);
         return rv;
     }
 
