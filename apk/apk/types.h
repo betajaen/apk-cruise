@@ -20,11 +20,13 @@
 #pragma once
 
 #include "pod.h"
+#include "consts.h"
 #include "array.h"
 #include "list.h"
 #include "assert.h"
 #include "file.h"
 #include "endian.h"
+#include "memory.h"
 
 namespace apk {
 

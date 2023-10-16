@@ -20,13 +20,9 @@
 #pragma once
 
 #include "pod.h"
-#include "file.h"
+#include "consts.h"
 
 namespace apk {
-
-    constexpr int32 kSEEK_SET = 0;
-    constexpr int32 kSEEK_CUR = 1;
-    constexpr int32 kSEEK_END = 2;
 
     class FileImpl;
 
