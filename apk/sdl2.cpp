@@ -198,6 +198,8 @@ namespace apk { namespace gfx {
 
         s_screenSurface =SDL_GetWindowSurface(s_screen);
 
+        const char* n = SDL_GetPixelFormatName(s_screenSurface->format->format);
+
         s_width = width;
         s_height = height;
         s_widthHeight = width * height;
@@ -244,9 +246,9 @@ namespace apk { namespace gfx {
                     SDL_Color col = s_virtualPalette[idx];
 
                     for (uint32 j=0;j < scale;j++) {
-                        *d++ = col.r;
-                        *d++ = col.g;
                         *d++ = col.b;
+                        *d++ = col.g;
+                        *d++ = col.r;
                         *d++ = 0xFF;
                     }
 
@@ -262,16 +264,6 @@ namespace apk { namespace gfx {
 
 
     void flipScreen() {
-        /*
-        if (s_virtualPaletteDirty) {
-            SDL_SetPaletteColors(s_virtualSurface->format->palette,
-                s_virtualPalette,
-                0,
-                256);
-            s_virtualPaletteDirty = false;
-        }
-        */
-
         scaleCopy(s_screenSurface, s_virtualSurface, kScreenScale, s_width, s_height);
         SDL_UpdateWindowSurface(s_screen);
 
@@ -344,6 +336,14 @@ namespace apk { namespace gfx {
         s_virtualPaletteDirty = true;
     }
 
+    void setRGB(uint8* pal, uint32 begin, uint32 end) {
+        for(int i=begin;i < end;i++) {
+            uint8 r = *pal++;
+            uint8 g = *pal++;
+            uint8 b = *pal++;
+            setRGB(i, r, g, b);
+        }
+    }
 }}
 
 namespace apk {

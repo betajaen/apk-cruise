@@ -53,6 +53,8 @@ int32 getLineHeight(int16 charCount, const FontEntry *fontPtr) {
  */
 int32 getTextLineCount(int32 rightBorder_X, int16 wordSpacingWidth,
 					   const FontEntry *fontData, const char *textString) {
+    return 100; // MOD:
+
 	const char *localString = textString;
 	const char *tempPtr = textString;
 	uint8 ch;

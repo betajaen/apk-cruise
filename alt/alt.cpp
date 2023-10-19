@@ -35,3 +35,11 @@ namespace apk {
     }
 
 }
+
+namespace Cruise {
+
+    void PaletteManager::setPalette(uint8* pal, uint32 start, uint32 end) {
+        apk::gfx::setRGB(pal, start, end);
+    }
+
+}

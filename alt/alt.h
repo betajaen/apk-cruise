@@ -120,8 +120,7 @@ namespace apk {
 
     class PaletteManager {
     public:
-        void setPalette(uint8* pal, uint32 start, uint32 end) {
-        }
+        void setPalette(uint8* pal, uint32 start, uint32 end);
     };
 
     class ConfigManager {
