@@ -251,6 +251,29 @@ namespace apk {
             clear();
         }
 
+        WrappedList(const WrappedList<T>&) = delete;
+        WrappedList(WrappedList<T>&) = delete;
+
+        WrappedList<T>& operator=(const WrappedList<T>& other) = delete;
+        WrappedList<T>& operator=(WrappedList<T>&& other) = delete;
+
+        void CopyInto(WrappedList<T>& other) const {
+            other.clear();
+            Node node = head;
+            while(node) {
+                other.push_back(node->data);
+                node = node->next;
+            }
+        }
+
+        void MoveInto(WrappedList<T>& other) {
+            other.clear();
+            other.head = head;
+            other.tail = tail;
+            head = NULL;
+            tail = NULL;
+        }
+
         iterator begin() {
             return iterator(head);
         }
