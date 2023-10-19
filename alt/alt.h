@@ -207,6 +207,7 @@ namespace apk {
         SaveFileManager m_saveFileMgr;
 
         void delayMillis(uint32 ms) {
+            apk::delayMs(ms);
         }
 
         EventManager* getEventManager() {
@@ -226,13 +227,14 @@ namespace apk {
         }
 
         int32 getMillis() {
-            return 0;
+            return apk::getMs();
         }
 
         void updateScreen();
 
         void copyRectToScreen(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h);
-
+        void copyToScreen(uint8* data, uint32 size);
+        void box(uint32 left, uint32 top, uint32 right, uint32 bottom);
         static OSystem s_instance;
     };
 
@@ -294,9 +296,13 @@ namespace apk {
 
     class RandomSource {
     public:
+        int seed = 3458345;
         RandomSource(const char*) {}
         int32 getRandomNumber(int i) {
-            return 0;
+            seed ^= seed >> 13;
+            seed ^= seed << 21;
+            seed ^= seed >> 11;
+            return seed % (i+1);
         }
     };
 

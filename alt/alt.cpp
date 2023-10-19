@@ -13,6 +13,13 @@ namespace Cruise {
         apk::gfx::blit(data, pitch, x, y, w, h);
     }
 
+    void OSystem::copyToScreen(uint8* data, uint32 size) {
+        apk::gfx::blit(data, size);
+    }
+
+    void OSystem::box(uint32 left, uint32 top, uint32 right, uint32 bottom) {
+        apk::gfx::box(left, top, right, bottom);
+    }
 }
 
 namespace apk {
