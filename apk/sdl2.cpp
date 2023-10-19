@@ -29,7 +29,8 @@ namespace apk {
 
     namespace gfx {
         SDL_Window* s_screen = NULL;
-        SDL_Surface* s_virtualSurface = NULL;
+        SDL_Surface* s_screenSurface = NULL;
+        byte* s_virtualSurface = NULL;
         SDL_Color s_virtualPalette[256] = { 0 };
         bool s_virtualPaletteDirty = false;
         uint32 s_width = 0, s_height = 0, s_widthHeight = 0;
@@ -194,16 +195,14 @@ namespace apk { namespace gfx {
 
         SDL_assert(s_screen);
 
+
+        s_screenSurface =SDL_GetWindowSurface(s_screen);
+
         s_width = width;
         s_height = height;
         s_widthHeight = width * height;
 
-        s_virtualSurface =
-            SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 8, 0, 0, 0, 0);
-        SDL_SetPaletteColors(s_virtualSurface->format->palette,
-            s_virtualPalette,
-            0,
-            256);
+        s_virtualSurface = (byte*) malloc(s_widthHeight);
 
         for(int32 i=1;i < 256;i++) {
             s_virtualPalette[i].r = 255 - i;
@@ -212,22 +211,12 @@ namespace apk { namespace gfx {
             s_virtualPalette[i].a = 255 - i;
         }
 
-        SDL_SetPaletteColors(s_virtualSurface->format->palette,
-            s_virtualPalette,
-            0,
-            256);
-
-        SDL_LockSurface(s_virtualSurface);
-        uint8* pixels = (uint8*)s_virtualSurface->pixels;
-        for (uint32 i = 0; i < s_widthHeight; i++) {
-            *pixels++ = (uint8) (i & 0xFF);
-        }
-        SDL_UnlockSurface(s_virtualSurface);
+        memset(s_virtualSurface, 0, s_widthHeight);
     }
 
     void destroyScreen() {
         SDL_assert(s_virtualSurface);
-        SDL_FreeSurface(s_virtualSurface);
+        free(s_virtualSurface);
         s_virtualSurface = NULL;
 
         SDL_assert(s_screen);
@@ -235,6 +224,40 @@ namespace apk { namespace gfx {
         s_screen = NULL;
         s_width = 0;
         s_height = 0;
+    }
+
+    static void scaleCopy(SDL_Surface* dst, byte* src, uint32 scale, uint32 w, uint32 h) {
+;
+        SDL_LockSurface(dst);
+
+        uint8* s = src;
+        uint8* d = (uint8*)dst->pixels;
+
+        for(uint32 y=0;y < h;y++) {
+
+            for(uint32 k=0;k < scale;k++) {
+
+                uint8* l = s;
+
+                for (uint32 x=0;x < w;x++) {
+                    uint8 idx = *l;
+                    SDL_Color col = s_virtualPalette[idx];
+
+                    for (uint32 j=0;j < scale;j++) {
+                        *d++ = col.r;
+                        *d++ = col.g;
+                        *d++ = col.b;
+                        *d++ = 0xFF;
+                    }
+
+                    l++;
+                }
+            }
+
+            s += w;
+        }
+
+        SDL_UnlockSurface(dst);
     }
 
 
@@ -248,13 +271,8 @@ namespace apk { namespace gfx {
             s_virtualPaletteDirty = false;
         }
         */
-        SDL_Rect dstRect;
-        dstRect.x = 0;
-        dstRect.y = 0;
-        dstRect.w = s_width * kScreenScale;
-        dstRect.h = s_height * kScreenScale;
 
-        SDL_BlitSurface(s_virtualSurface, NULL, SDL_GetWindowSurface(s_screen), &dstRect);
+        scaleCopy(s_screenSurface, s_virtualSurface, kScreenScale, s_width, s_height);
         SDL_UpdateWindowSurface(s_screen);
 
         SDL_Event evt;
@@ -268,8 +286,8 @@ namespace apk { namespace gfx {
     void blit(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h) {
 
         //debug(1, "blit %p %lu %lu %lu %lu %lu", data, pitch, x, y, w, h);
-        SDL_LockSurface(s_virtualSurface);
-        uint8* pixels = (uint8*)s_virtualSurface->pixels;
+
+        uint8* pixels = s_virtualSurface;
         uint8* dst = pixels + (320 * y + x);
         uint8* src = data;
 
@@ -280,14 +298,13 @@ namespace apk { namespace gfx {
         }
 
 
-
-        SDL_UnlockSurface(s_virtualSurface);
     }
 
-        static int counter = 0;
+    static int counter = 0;
+
     void blit(uint8* data, uint32 size) {
-        SDL_LockSurface(s_virtualSurface);
-        uint8* pixels = (uint8*)s_virtualSurface->pixels;
+
+        uint8* pixels = (uint8*)s_virtualSurface;
         if (size > s_widthHeight) {
             size = s_widthHeight;
             warning("blit overflow");
@@ -295,35 +312,31 @@ namespace apk { namespace gfx {
 
         // Debug
         memcpy(pixels, data, size);
+
         for(int i=0;i < 640;i++) {
             *pixels++ = counter++ & 0xFF;
         }
-        SDL_UnlockSurface(s_virtualSurface);
+
     }
 
 
     void box(uint32 left, uint32 top, uint32 right, uint32 bottom) {
 
         static int counter = 0;
-        SDL_LockSurface(s_virtualSurface);
-        uint8* pixels = (uint8*)s_virtualSurface->pixels;
+
+        uint8* pixels = (uint8*)s_virtualSurface;
         uint8* dst = pixels + left + top * 320;
 
         for(int i=top;i < bottom;i++) {
             memset(dst, 0xFF, (right - left));
             dst += 320;
         }
-        SDL_UnlockSurface(s_virtualSurface);
+
 
     }
 
     void cls(uint8 index) {
-        SDL_LockSurface(s_virtualSurface);
-        uint8* pixels = (uint8*)s_virtualSurface->pixels;
-        for (uint32 i = 0; i < s_widthHeight; i++) {
-            *pixels++ = index;
-        }
-        SDL_UnlockSurface(s_virtualSurface);
+        memset(s_virtualSurface, index, s_widthHeight);
     }
 
     void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
