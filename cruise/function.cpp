@@ -197,6 +197,9 @@ int16 Op_Random() {
 }
 
 int16 Op_PlayFX() {
+
+    return 0; // MOD:
+
 	int volume = popVar();
 
 #if 0
@@ -223,6 +226,7 @@ int16 Op_PlayFX() {
 }
 
 int16 Op_LoopFX() {
+
 	int volume = popVar();
 
 #if 0
@@ -242,6 +246,7 @@ int16 Op_LoopFX() {
 			speed = filesDatabase[sampleNum].subData.transparency;
 #endif
 
+    return 0; // MOD:
 		_vm->sound().playSound(filesDatabase[sampleNum].subData.ptr,
 			filesDatabase[sampleNum].width, volume);
 	}
@@ -253,11 +258,13 @@ int16 Op_StopFX() {
 	int channelNum = popVar();
 
 	if (channelNum == -1) {
+        return 0; // MOD:
 		_vm->sound().stopChannel(0);
 		_vm->sound().stopChannel(1);
 		_vm->sound().stopChannel(2);
 		_vm->sound().stopChannel(3);
 	} else {
+        return 0; // MOD:
 		_vm->sound().stopChannel(channelNum);
 	}
 
@@ -273,6 +280,7 @@ int16 Op_FreqFX() {
 	if ((sampleNum >= 0) && (sampleNum < NUM_FILE_ENTRIES) && (filesDatabase[sampleNum].subData.ptr)) {
 		int freq = Period(freq2 * 1000);
 
+        return 0; // MOD:
 		_vm->sound().startNote(channelNum, volume, freq);
 	}
 

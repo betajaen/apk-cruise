@@ -803,8 +803,9 @@ void PCSound::fadeOutMusic() {
 }
 
 void PCSound::playSound(const uint8 *data, int size, int volume) {
+    debug("PCSound::playSound() channel %d size %d", 4, size); // MOD:
 	// MOD: debugC(5, kCruiseDebugSound, "PCSound::playSound() channel %d size %d", 4, size);
-	_soundDriver->playSample(data, size, 4, volume);
+	// _soundDriver->playSample(data, size, 4, volume); // MOD:
 }
 
 void PCSound::stopSound(int channel) {

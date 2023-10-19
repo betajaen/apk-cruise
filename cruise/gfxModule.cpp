@@ -229,8 +229,9 @@ void gfxModuleData_flipScreen() {
 }
 
 void gfxModuleData_addDirtyRect(const Common::Rect &r) {
-	_vm->_dirtyRects.push_back(Common::Rect(	MAX(r.left, (int16)0), MAX(r.top, (int16)0),
-		MIN(r.right, (int16)320), MIN(r.bottom, (int16)200)));
+    // debug(1, "Dirty Rect %ld %ld %ld %ld", r.left, r.top, r.right, r.bottom); // MOD:
+	//_vm->_dirtyRects.push_back(Common::Rect(	MAX(r.left, (int16)0), MAX(r.top, (int16)0), // MOD:
+	//	MIN(r.right, (int16)320), MIN(r.bottom, (int16)200))); // MOD:
 }
 
 /**
@@ -246,6 +247,7 @@ static bool unionRectangle(Common::Rect &pDest, const Common::Rect &pSrc1, const
 }
 
 static void mergeClipRects() {
+    return; // MOD:
 	CruiseEngine::RectList::iterator rOuter, rInner;
 
 	for (rOuter = _vm->_dirtyRects.begin(); !rOuter.isEnd(); ++rOuter) {
@@ -288,14 +290,18 @@ void gfxModuleData_updateScreen() {
 }
 
 void flip() {
+#if 0 // MOD:
 	CruiseEngine::RectList::iterator dr;
 
 	// Update the palette
 	gfxModuleData_updatePalette();
 
 	// Make a copy of the prior frame's dirty rects, and then backup the current frame's rects
-	CruiseEngine::RectList tempList = _vm->_priorFrameRects;
-	_vm->_priorFrameRects = _vm->_dirtyRects;
+	// MOD: CruiseEngine::RectList tempList = _vm->_priorFrameRects;
+	// MOD: _vm->_priorFrameRects = _vm->_dirtyRects;
+    CruiseEngine::RectList tempList; // MOD:
+    _vm->_priorFrameRects.MoveInto(tempList); // MOD:
+    _vm->_dirtyRects.CopyInto(_vm->_priorFrameRects); // MOD:
 
 	// Merge the prior frame's dirty rects into the current frame's list
 	for (dr = tempList.begin(); dr != tempList.end(); ++dr) {
@@ -312,8 +318,14 @@ void flip() {
 		g_system->copyRectToScreen(globalScreen + 320 * r.top + r.left, 320,
 			r.left, r.top, r.width(), r.height());
 	}
+#endif
 
+	CruiseEngine::RectList::iterator dr;
+	for (dr = _vm->_dirtyRects.begin(); dr != _vm->_dirtyRects.end(); ++dr) {
+        g_system->box(dr->left, dr->top, dr->right, dr->bottom);
+    }
 	_vm->_dirtyRects.clear();
+    g_system->copyToScreen(globalScreen, sizeof(globalScreen)); // MOD:
 
 	// Allow the screen to update
 	g_system->updateScreen();

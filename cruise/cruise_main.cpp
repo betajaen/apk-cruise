@@ -567,7 +567,7 @@ void CruiseEngine::initAllData() {
 
 	_gameSpeed = GAME_FRAME_DELAY_1;
 	_speedFlag = false;
-
+    debug(1, "initAllData - Done"); // MOD:
 	return;
 }
 
