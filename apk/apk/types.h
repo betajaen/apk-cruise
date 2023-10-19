@@ -132,6 +132,9 @@ namespace apk {
 
     bool isQuitRequested();
 
+    void delayMs(uint32 ms);
+    uint32 getMs();
+
 
     void debug(int, const char* fmt, ...);
     void debug(const char* str, ...);
