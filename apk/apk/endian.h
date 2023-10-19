@@ -68,7 +68,7 @@ namespace apk { namespace endian {
 
     inline int32 swap_4(int32 v) {
         bytes_4 a, b;
-        a._unsigned = v;
+        a._signed = v;
         b._bytes[3] = a._bytes[0];
         b._bytes[2] = a._bytes[1];
         b._bytes[1] = a._bytes[2];
