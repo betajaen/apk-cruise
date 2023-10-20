@@ -42,6 +42,7 @@ int palDirtyMin = 256;
 int palDirtyMax = -1;
 
 bool _dirtyRectScreen = false;
+bool s_screenIsDirty = false; // MOD:
 
 gfxModuleDataStruct gfxModuleData = {
 	0,			// use Tandy
@@ -229,9 +230,14 @@ void gfxModuleData_flipScreen() {
 }
 
 void gfxModuleData_addDirtyRect(const Common::Rect &r) {
-    // debug(1, "Dirty Rect %ld %ld %ld %ld", r.left, r.top, r.right, r.bottom); // MOD:
-	//_vm->_dirtyRects.push_back(Common::Rect(	MAX(r.left, (int16)0), MAX(r.top, (int16)0), // MOD:
-	//	MIN(r.right, (int16)320), MIN(r.bottom, (int16)200))); // MOD:
+
+#if 0 // MOD:
+    _vm->_dirtyRects.push_back(Common::Rect(	MAX(r.left, (int16)0), MAX(r.top, (int16)0),
+		MIN(r.right, (int16)320), MIN(r.bottom, (int16)200)));
+#else
+    s_screenIsDirty = true; // MOD:
+#endif
+
 }
 
 /**
@@ -318,17 +324,21 @@ void flip() {
 		g_system->copyRectToScreen(globalScreen + 320 * r.top + r.left, 320,
 			r.left, r.top, r.width(), r.height());
 	}
-#endif
 
-	CruiseEngine::RectList::iterator dr;
-	for (dr = _vm->_dirtyRects.begin(); dr != _vm->_dirtyRects.end(); ++dr) {
-        g_system->box(dr->left, dr->top, dr->right, dr->bottom);
-    }
 	_vm->_dirtyRects.clear();
     g_system->copyToScreen(globalScreen, sizeof(globalScreen)); // MOD:
 
 	// Allow the screen to update
-	g_system->updateScreen();
+#else
+
+    if (s_screenIsDirty) {
+        g_system->copyToScreen(globalScreen, sizeof(globalScreen)); // MOD:
+	    g_system->updateScreen();
+        s_screenIsDirty = false;
+    }
+
+#endif
+
 }
 
 void drawSolidBox(int32 x1, int32 y1, int32 x2, int32 y2, uint8 color) {
