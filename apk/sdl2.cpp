@@ -26,6 +26,8 @@
 namespace apk {
 
     constexpr int32 kScreenScale = 3;
+    static bool s_FastMode = true;
+    static uint32 s_FastModeTime = 0;
 
     namespace gfx {
         SDL_Window* s_screen = NULL;
@@ -45,11 +47,21 @@ namespace apk {
     }
 
     void delayMs(uint32 ms) {
-        SDL_Delay(ms);
+        if (s_FastMode) {
+            s_FastModeTime += ms;
+        }
+        else {
+            SDL_Delay(ms);
+        }
     }
 
     uint32 getMs() {
-        return SDL_GetTicks();
+        if (s_FastMode) {
+            return s_FastModeTime;
+        }
+        else {
+            return SDL_GetTicks();
+        }
     }
 }
 
@@ -273,6 +285,10 @@ namespace apk { namespace gfx {
                 s_quitRequested = true;
             }
         }
+
+        if (s_FastMode) {
+            s_FastModeTime++;
+        }
     }
 
     void blit(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h) {
@@ -297,18 +313,13 @@ namespace apk { namespace gfx {
     void blit(uint8* data, uint32 size) {
 
         uint8* pixels = (uint8*)s_virtualSurface;
+        
         if (size > s_widthHeight) {
             size = s_widthHeight;
             warning("blit overflow");
         }
 
-        // Debug
         memcpy(pixels, data, size);
-
-        for(int i=0;i < 640;i++) {
-            *pixels++ = counter++ & 0xFF;
-        }
-
     }
 
 
