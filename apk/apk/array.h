@@ -42,6 +42,43 @@ namespace apk {
             release();
         }
 
+        Array(const Array& ary) {
+            copyFrom(ary);
+        }
+
+        Array(Array&& ary) {
+            moveFrom(ary);
+        }
+
+        Array& operator=(const Array& ary) {
+            copyFrom(ary);
+            return *this;
+        }
+
+        Array& operator=(Array&& ary) {
+            moveFrom(ary);
+            return *this;
+        }
+
+        void copyFrom(const Array& other) {
+            release();
+            capacity(other.m_size);
+            m_size = other.m_size;
+            for(size_t i=0;i < other.m_size;i++) {
+                m_data[i] = other[i];
+            }
+        }
+
+        void moveFrom(Array& other) {
+            release();
+            m_capacity = other.m_capacity;
+            m_size = other.m_size;
+            m_data = other.m_data;
+            other.m_capacity = 0;
+            other.m_size = 0;
+            other.m_data = NULL;
+        }
+
         void release() {
             if (m_data) {
                 free(m_data);
