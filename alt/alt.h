@@ -41,7 +41,7 @@ namespace OPL {
 
 namespace apk {
 
-    constexpr int32 gDebugLevel = 0;
+    constexpr int32 gDebugLevel = 10;
     constexpr int32 kSupportsReturnToLauncher = 0;
     constexpr int32 kSupportsLoadingDuringRuntime = 1;
     constexpr int32 kSupportsSavingDuringRuntime = 2;
@@ -80,33 +80,11 @@ namespace apk {
     typedef void* NotHandled;
     typedef int32 Error;
 
-    constexpr int32 EVENT_LBUTTONDOWN = 1;
-    constexpr int32 EVENT_LBUTTONUP = 2;
-    constexpr int32 EVENT_RBUTTONDOWN = 3;
-    constexpr int32 EVENT_RBUTTONUP = 4;
-    constexpr int32 EVENT_MOUSEMOVE = 5;
-    constexpr int32 EVENT_KEYDOWN = 6;
-    constexpr int32 EVENT_KEYUP = 7;
-    constexpr int32 EVENT_QUIT = 8;
-    constexpr int32 EVENT_RETURN_TO_LAUNCHER = 9;
-
-    struct Event {
-        int32 type;
-        struct M {
-            int16 x, y;
-        } mouse;
-        struct K {
-            int32 keycode;
-            bool hasFlags(int32) {
-                return false;
-            }
-        } kbd;
-    };
 
     class EventManager {
     public:
         bool pollEvent(Event& evt) {
-            return false;
+            return ::apk::pollEvents(evt);
         }
     };
 

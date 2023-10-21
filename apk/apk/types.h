@@ -27,6 +27,7 @@
 #include "file.h"
 #include "endian.h"
 #include "memory.h"
+#include "input.h"
 
 namespace apk {
 

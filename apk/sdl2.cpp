@@ -28,6 +28,7 @@ namespace apk {
     constexpr int32 kScreenScale = 3;
     static bool s_FastMode = true;
     static uint32 s_FastModeTime = 0;
+    static Array<Event> s_Event;
 
     namespace gfx {
         SDL_Window* s_screen = NULL;
@@ -191,6 +192,14 @@ namespace apk {
         SDL_assert(false);
     }
 
+    bool pollEvents(Event& evt) {
+        if (s_Event.size() == 0) {
+            return false;
+        }
+        evt = s_Event[s_Event.size()-1];
+        s_Event.pop_back();
+        return true;
+    }
 }
 
 namespace apk { namespace gfx {
@@ -285,8 +294,53 @@ namespace apk { namespace gfx {
 
         SDL_Event evt;
         while(SDL_PollEvent(&evt)) {
-            if (evt.type == SDL_QUIT) {
-                s_quitRequested = true;
+            switch(evt.type) {
+                case SDL_QUIT: {
+                    s_quitRequested = true;
+                }
+                break;
+                case SDL_MOUSEMOTION:
+                {
+                    int32 mouseX, mouseY;
+                    SDL_GetMouseState(&mouseX, &mouseY);
+                    mouseX /= kScreenScale;
+                    mouseY /= kScreenScale;
+                    Event evt;
+                    evt.type = EVENT_MOUSEMOVE;
+                    evt.mouse.x = mouseX;
+                    evt.mouse.y = mouseY;
+                    s_Event.push_back(evt);
+                }
+                break;
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP: {
+                    if (evt.type == SDL_MOUSEBUTTONDOWN) {
+                        if (evt.button.button == SDL_BUTTON_LEFT) {
+                            Event evt;
+                            evt.type = EVENT_LBUTTONDOWN;
+                            s_Event.push_back(evt);
+                        }
+                        if (evt.button.button == SDL_BUTTON_RIGHT) {
+                            Event evt;
+                            evt.type = EVENT_RBUTTONDOWN;
+                            s_Event.push_back(evt);
+                        }
+                    }
+                    else if (evt.type == SDL_MOUSEBUTTONUP) {
+                        if (evt.button.button == SDL_BUTTON_LEFT) {
+                            Event evt;
+                            evt.type = EVENT_LBUTTONUP;
+                            s_Event.push_back(evt);
+                        }
+                        if (evt.button.button == SDL_BUTTON_RIGHT) {
+                            Event evt;
+                            evt.type = EVENT_RBUTTONUP;
+                            s_Event.push_back(evt);
+                        }
+                    }
+                    // printf("Mouse=%d,%d LMB=%d RMB=%d\n", s_ScreenMouseX, s_ScreenMouseY, s_LMBMouse, s_RMBMouse);
+                }
+                break;
             }
         }
 
@@ -294,6 +348,7 @@ namespace apk { namespace gfx {
             s_FastModeTime++;
         }
     }
+
 
     void blit(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h) {
 

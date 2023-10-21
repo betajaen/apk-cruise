@@ -100,6 +100,13 @@ namespace apk {
             m_size++;
         }
 
+        void pop_back() {
+            if (m_size) {
+                m_data[m_size].~T();
+                m_size--;
+            }
+        }
+
         T& operator[](size_t index) {
             assert(index < m_size);
             return m_data[index];
