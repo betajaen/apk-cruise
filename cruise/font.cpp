@@ -104,8 +104,9 @@ void loadFNT(const char *fileName) {
 
 	Common::File fontFileHandle;
 
-	if (!fontFileHandle.exists(fileName))
-		return;
+	// MOD: if (!fontFileHandle.exists(fileName))
+	// MOD:	return;
+    assert(fontFileHandle.exists(fileName));
 
 	fontFileHandle.open((const char *)fileName);
 
