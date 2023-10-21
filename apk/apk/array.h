@@ -101,11 +101,12 @@ namespace apk {
         }
 
         T& operator[](size_t index) {
-            assert(index > m_size);
+            assert(index < m_size);
             return m_data[index];
         }
 
         const T& operator[](size_t index) const {
+            assert(index < m_size);
             return m_data[index];
         }
 
