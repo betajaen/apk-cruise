@@ -97,6 +97,7 @@ namespace apk {
                 capacity(m_capacity == 0 ? 8 : m_capacity * 2);
             }
             m_data[m_size] = v;
+            m_size++;
         }
 
         T& operator[](size_t index) {
