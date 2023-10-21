@@ -10,7 +10,6 @@ namespace Cruise {
     }
 
     void OSystem::copyRectToScreen(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h) {
-        apk::gfx::blit(data, pitch, x, y, w, h);
     }
 
     void OSystem::copyToScreen(uint8* data, uint32 size) {
@@ -18,8 +17,8 @@ namespace Cruise {
     }
 
     void OSystem::box(uint32 left, uint32 top, uint32 right, uint32 bottom) {
-        apk::gfx::box(left, top, right, bottom);
     }
+
 }
 
 namespace apk {

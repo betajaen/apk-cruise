@@ -26,9 +26,7 @@ namespace apk {
         void createScreen(uint16 width, uint16 height, uint8 depth);
         void destroyScreen();
         void flipScreen();
-        void blit(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h);
         void blit(uint8* data, uint32 size);
-        void box(uint32 left, uint32 top, uint32 right, uint32 bottom);
         void cls(uint8 index);
         void setRGB(uint8 index, uint8 r, uint8 g, uint8 b);
         void setRGB(uint8* pal, uint32 begin, uint32 end);

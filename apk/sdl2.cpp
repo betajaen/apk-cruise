@@ -219,8 +219,6 @@ namespace apk { namespace gfx {
 
         s_screenSurface =SDL_GetWindowSurface(s_screen);
 
-        const char* n = SDL_GetPixelFormatName(s_screenSurface->format->format);
-
         s_width = width;
         s_height = height;
         s_widthHeight = width * height;
@@ -297,6 +295,9 @@ namespace apk { namespace gfx {
             switch(evt.type) {
                 case SDL_QUIT: {
                     s_quitRequested = true;
+                    Event evt;
+                    evt.type = EVENT_QUIT;
+                    s_Event.push_back(evt);
                 }
                 break;
                 case SDL_MOUSEMOTION:
@@ -349,52 +350,12 @@ namespace apk { namespace gfx {
         }
     }
 
-
-    void blit(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h) {
-
-        //debug(1, "blit %p %lu %lu %lu %lu %lu", data, pitch, x, y, w, h);
-
-        uint8* pixels = s_virtualSurface;
-        uint8* dst = pixels + (320 * y + x);
-        uint8* src = data;
-
-        for(uint32 i=0;i < h;i++) {
-            memcpy(dst, src, w);
-            dst += 320;
-            src += pitch;
-        }
-
-
-    }
-
-    static int counter = 0;
-
     void blit(uint8* data, uint32 size) {
 
-        uint8* pixels = (uint8*)s_virtualSurface;
-        
-        if (size > s_widthHeight) {
-            size = s_widthHeight;
-            warning("blit overflow");
-        }
+        assert(size <= s_widthHeight);
 
+        uint8* pixels = (uint8*)s_virtualSurface;
         memcpy(pixels, data, size);
-    }
-
-
-    void box(uint32 left, uint32 top, uint32 right, uint32 bottom) {
-
-        static int counter = 0;
-
-        uint8* pixels = (uint8*)s_virtualSurface;
-        uint8* dst = pixels + left + top * 320;
-
-        for(int i=top;i < bottom;i++) {
-            memset(dst, 0xFF, (right - left));
-            dst += 320;
-        }
-
-
     }
 
     void cls(uint8 index) {
