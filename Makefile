@@ -10,7 +10,7 @@ ifeq ($(PLATFORM), sdl2)
 	OBJ		:= apk/sdl2.cpp
 	CC		= gcc
 	DELETE	= rm -f
-	CFLAGS	+= -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++14 -lc++
+	CFLAGS	+= -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -lc++
 endif
 
 OBJ += \

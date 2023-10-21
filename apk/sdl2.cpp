@@ -149,7 +149,7 @@ namespace apk {
     void debug(int l, const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);
-        ::printf("[DBG %ld] ", l);
+        ::printf("[DBG %d] ", l);
         vprintf(fmt, args);
         ::printf("\n");
         va_end(args);
@@ -186,8 +186,8 @@ namespace apk {
         return SDL_toupper(c);
     }
 
-    void apk::doAssert(const char* file, int line) {
-        ::printf("\n[ASSERT!] %s:%ld\n", file, line);
+    void doAssert(const char* file, int line) {
+        ::printf("\n[ASSERT!] %s:%d\n", file, line);
         SDL_assert(false);
     }
 
@@ -465,25 +465,25 @@ namespace apk {
     int16 File::readSint16BE() {
         int16 value;
         read(&value, sizeof(value));
-        return endian::from_be_int16(value);
+        return endian::pod<int16, endian::Big>(value);
     }
 
     int32 File::readSint32BE() {
         int32 value;
         read(&value, sizeof(value));
-        return endian::from_be_int32(value);
+        return endian::pod<int32, endian::Big>(value);
     }
 
     uint16 File::readUint16BE() {
         uint16 value;
         read(&value, sizeof(value));
-        return endian::from_be_uint16(value);
+        return endian::pod<uint16, endian::Big>(value);
     }
 
     uint32 File::readUint32BE() {
         uint32 value;
         read(&value, sizeof(value));
-        return endian::from_be_uint32(value);
+        return endian::pod<uint32, endian::Big>(value);
     }
 
 }

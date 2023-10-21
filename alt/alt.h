@@ -349,28 +349,28 @@ namespace apk {
             assert(m_buf.isEnd() == false);
             int16 data = 0;
             assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
-            return endian::from_be_int16(data);
+            return endian::pod<int16, endian::Big>(data);
         }
 
         int32 readSint32BE() {
             assert(m_buf.isEnd() == false);
             int32 data = 0;
             assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
-            return endian::from_be_int32(data);
+            return endian::pod<int32, endian::Big>(data);
         }
 
         uint16 readUint16BE() {
             assert(m_buf.isEnd() == false);
             uint16 data = 0;
             assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
-            return endian::from_be_uint16(data);
+            return endian::pod<uint16, endian::Big>(data);
         }
 
         uint32 readUint32BE() {
             assert(m_buf.isEnd() == false);
             uint32 data = 0;
             assert(m_buf.read(&data, sizeof(data)) == sizeof(data));
-            return endian::from_be_uint32(data);
+            return endian::pod<uint32, endian::Big>(data);
         }
     };
 
@@ -421,3 +421,27 @@ namespace GUI {
 #define ConfMan (OSystem::s_instance.m_configMgr)
 #define CursorMan (OSystem::s_instance.m_cursorMgr)
 
+#define READ_UINT32(X)       apk::endian::peek<uint32, endian::Native>(X)
+#define READ_UINT16(X)       apk::endian::peek<uint16, endian::Native>(X)
+#define READ_INT32(X)        apk::endian::peek<int32,  endian::Native>(X)
+#define READ_INT16(X)        apk::endian::peek<int16,  endian::Native>(X)
+#define READ_BE_UINT32(X)    apk::endian::peek<uint32, endian::Big>(X)
+#define READ_BE_UINT16(X)    apk::endian::peek<uint16, endian::Big>(X)
+#define READ_BE_INT32(X)     apk::endian::peek<int32,  endian::Big>(X)
+#define READ_BE_INT16(X)     apk::endian::peek<int16,  endian::Big>(X)
+#define READ_LE_UINT32(X)    apk::endian::peek<uint32, endian::Little>(X)
+#define READ_LE_UINT16(X)    apk::endian::peek<uint16, endian::Little>(X)
+#define READ_LE_INT32(X)     apk::endian::peek<int32,  endian::Little>(X)
+#define READ_LE_INT16(X)     apk::endian::peek<int16,  endian::Little>(X)
+#define WRITE_UINT32(MEM, X)      apk::endian::poke<uint32, endian::Native>(MEM, X)
+#define WRITE_UINT16(MEM, X)      apk::endian::poke<uint16, endian::Native>(MEM, X)
+#define WRITE_INT32(MEM, X)       apk::endian::poke<int32, endian::Native>(MEM, X)
+#define WRITE_INT16(MEM, X)       apk::endian::poke<int16, endian::Native>(MEM, X)
+#define WRITE_BE_UINT32(MEM, X)      apk::endian::poke<uint32, endian::Native, endian::Big>(MEM, X)
+#define WRITE_BE_UINT16(MEM, X)      apk::endian::poke<uint16, endian::Native, endian::Big>(MEM, X)
+#define WRITE_BE_INT32(MEM, X)       apk::endian::poke<int32, endian::Native, endian::Big>(MEM, X)
+#define WRITE_BE_INT16(MEM, X)       apk::endian::poke<int16, endian::Native, endian::Big>(MEM, X)
+#define WRITE_LE_UINT32(MEM, X)      apk::endian::poke<uint32, endian::Native, endian::Little>(MEM, X)
+#define WRITE_LE_UINT16(MEM, X)      apk::endian::poke<uint16, endian::Native, endian::Little>(MEM, X)
+#define WRITE_LE_INT32(MEM, X)       apk::endian::poke<int32, endian::Native, endian::Little>(MEM, X)
+#define WRITE_LE_INT16(MEM, X)       apk::endian::poke<int16, endian::Native, endian::Little>(MEM, X)
