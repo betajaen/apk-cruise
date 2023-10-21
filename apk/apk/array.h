@@ -47,6 +47,7 @@ namespace apk {
                 free(m_data);
                 m_capacity = 0;
                 m_size = 0;
+                m_data = NULL;
             }
         }
 
