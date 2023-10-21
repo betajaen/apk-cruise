@@ -594,6 +594,8 @@ PCSoundFxPlayer::~PCSoundFxPlayer() {
 bool PCSoundFxPlayer::load(const char *song) {
 	debug(9, "PCSoundFxPlayer::load('%s')", song);
 
+    return 1; // mod:
+
 	/* stop (w/ fade out) the previous song */
 	while (_fadeOutCounter != 0 && _fadeOutCounter < 100) {
 		g_system->delayMillis(50);
