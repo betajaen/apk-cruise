@@ -21,6 +21,7 @@
 
 #include "pod.h"
 #include "assert.h"
+#include <new>
 
 namespace apk {
 
@@ -51,11 +52,17 @@ namespace apk {
         }
 
         Array& operator=(const Array& ary) {
+            if (&ary == this) {
+                return *this;
+            }
             copyFrom(ary);
             return *this;
         }
 
         Array& operator=(Array&& ary) {
+            if (&ary == this) {
+                return *this;
+            }
             moveFrom(ary);
             return *this;
         }
@@ -64,8 +71,8 @@ namespace apk {
             release();
             capacity(other.m_size);
             m_size = other.m_size;
-            for(size_t i=0;i < other.m_size;i++) {
-                m_data[i] = other[i];
+            for(uint32_t i=0;i < m_size;i++) {
+                new ((void*) &m_data[i]) T(other[i]);
             }
         }
 
@@ -81,7 +88,7 @@ namespace apk {
 
         void release() {
             if (m_data) {
-                for(size_t i=0; i < m_size;i++) {
+                for(uint32_t i=0; i < m_size;i++) {
                     m_data[i].~T();
                 }
                 free(m_data);
@@ -92,7 +99,7 @@ namespace apk {
         }
 
         void clear() {
-            for(size_t i=0; i < m_size;i++) {
+            for(uint32 i=0; i < m_size;i++) {
                 m_data[i].~T();
             }
             m_size = 0;
@@ -102,7 +109,7 @@ namespace apk {
             if (m_size == m_capacity) {
                 capacity(m_capacity == 0 ? 8 : m_capacity * 2);
             }
-            m_data[m_size] = v;
+            new ((void*) &m_data[m_size]) T(v);
             m_size++;
         }
 
@@ -142,10 +149,17 @@ namespace apk {
                 else {
                     amountToCopy = m_size;
                 }
-                memcpy(tmp, m_data, amountToCopy * sizeof(T));
+
+                for(uint32_t i=0;i < m_size;i++) {
+                    new ((void*) &tmp[i]) T(m_data[i]);
+                }
+
             }
 
             if (m_data) {
+                for(uint32_t i=0; i < m_size;i++) {
+                    m_data[i].~T();
+                }
                 free(m_data);
             }
 
