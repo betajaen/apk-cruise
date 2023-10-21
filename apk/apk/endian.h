@@ -69,6 +69,12 @@ namespace apk::endian {
     }
 
     template<typename T, size_t ESourceEndian, size_t EDestEndian = Native>
+    inline static void poke_inplace(void* mem) {
+        endian::unaligned_pod<T>* v = (endian::unaligned_pod<T>*) mem;
+        v->val = endian_swap<T, ESourceEndian, EDestEndian>(v->val);
+    }
+
+    template<typename T, size_t ESourceEndian, size_t EDestEndian = Native>
     inline static T pod(const T& value) {
         return endian_swap<T, ESourceEndian, EDestEndian>(value);
     }

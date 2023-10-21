@@ -246,26 +246,30 @@ namespace apk { namespace gfx {
 
         uint8* s = src;
         uint8* d = (uint8*)dst->pixels;
+        const size_t stride =  w * 4 * scale;
+        uint8 line[stride];
 
         for(uint32 y=0;y < h;y++) {
 
-            for(uint32 k=0;k < scale;k++) {
+            uint8* l = s;
+            uint8* t = line;
 
-                uint8* l = s;
+            for (uint32 x=0;x < w;x++) {
+                uint8 idx = *l;
+                SDL_Color col = s_virtualPalette[idx];
 
-                for (uint32 x=0;x < w;x++) {
-                    uint8 idx = *l;
-                    SDL_Color col = s_virtualPalette[idx];
-
-                    for (uint32 j=0;j < scale;j++) {
-                        *d++ = col.b;
-                        *d++ = col.g;
-                        *d++ = col.r;
-                        *d++ = 0xFF;
-                    }
-
-                    l++;
+                for (uint32 j=0;j < scale;j++) {
+                    *t++ = col.b;
+                    *t++ = col.g;
+                    *t++ = col.r;
+                    *t++ = 0xFF;
                 }
+                l++;
+            }
+
+            for (uint32 j=0;j < scale;j++) {
+                memcpy(d, line, sizeof(line));
+                d += sizeof(line);
             }
 
             s += w;

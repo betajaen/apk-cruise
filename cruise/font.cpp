@@ -173,19 +173,27 @@ void freeSystem() {
 }
 
 void bigEndianShortToNative(void *var) {
-	WRITE_UINT16(var, READ_BE_UINT16(var));
+	endian::poke_inplace<uint16, endian::Big, endian::Native>(var); // MOD: WRITE_UINT16(var, READ_BE_UINT16(var));
 }
 
 void bigEndianLongToNative(void *var) {
-	WRITE_UINT32(var, READ_BE_UINT32(var));
+	endian::poke_inplace<uint32, endian::Big, endian::Native>(var); // MOD: WRITE_UINT32(var, READ_BE_UINT32(var));
 }
 
 void flipGen(void *var, int32 length) {
+#if 0 // MOD:
 	short int *varPtr = (int16 *) var;
 
 	for (int i = 0; i < (length / 2); i++) {
 		bigEndianShortToNative(&varPtr[i]);
 	}
+#else
+    int16* varPtr = (int16*) var;
+
+	for (int i = 0; i < (length / sizeof(int16)); i++) {
+        varPtr[i] = endian::pod<int16, endian::Big>(varPtr[i]);
+	}
+#endif
 }
 
 void renderWord(const uint8 *fontPtr_Data, uint8 *outBufferPtr, int xOffset, int yOffset,
