@@ -54,6 +54,8 @@ static const byte cursorPalette[] = {
 
 void changeCursor(CursorType eType) {
 	assert(eType >= 0 && eType < CURSOR_MAX);
+    currentCursor = eType; // MOD:
+    return; // MOD:
 	if (currentCursor != eType) {
 		byte mouseCursor[16 * 16];
 		const MouseCursor *mc = &mouseCursors[eType];
@@ -83,11 +85,13 @@ bool isMouseOn() {
 }
 
 void mouseOff() {
+    return; // MOD;
 	CursorMan.showMouse(false);
 	g_system->updateScreen();
 }
 
 void mouseOn() {
+    return; // MOD;
 	CursorMan.showMouse(true);
 	g_system->updateScreen();
 }

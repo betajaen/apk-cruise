@@ -294,6 +294,8 @@ void drawString(int32 x, int32 y, const char *string, uint8 *buffer, uint8 fontC
 
 // calculates all necessary datas and renders text
 gfxEntryStruct *renderText(int inRightBorder_X, const char *string) {
+        printf("render text %s", string); // MOD:
+
 	const FontInfo *fontPtr;
 	const FontEntry *fontPtr_Desc;
 	const uint8 *fontPtr_Data;

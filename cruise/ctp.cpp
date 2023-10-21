@@ -229,10 +229,12 @@ int initCt(const char *ctpName) {
 	memcpy(fileType, dataPointer, 4);	// get the file type, first 4 bytes of the CTP file
 	dataPointer += 4;
 
-	if (strcmp(fileType, "CTP ")) {
-		MemFree(ptr);
-		return (0);
-	}
+    assert(strcmp(fileType, "CTP ") == 0);
+
+	// MOD: if (strcmp(fileType, "CTP ")) {
+	// MOD: 	MemFree(ptr);
+	// MOD: 	return (0);
+	// MOD: }
 
 	ctp_routeCoordCount = (int16)READ_BE_UINT16(dataPointer); // get the number of nods
 	dataPointer += 2;

@@ -81,6 +81,9 @@ namespace apk {
 
         void release() {
             if (m_data) {
+                for(size_t i=0; i < m_size;i++) {
+                    m_data[i].~T();
+                }
                 free(m_data);
                 m_capacity = 0;
                 m_size = 0;
@@ -89,6 +92,9 @@ namespace apk {
         }
 
         void clear() {
+            for(size_t i=0; i < m_size;i++) {
+                m_data[i].~T();
+            }
             m_size = 0;
         }
 
@@ -101,10 +107,9 @@ namespace apk {
         }
 
         void pop_back() {
-            if (m_size) {
-                m_data[m_size].~T();
-                m_size--;
-            }
+            assert(m_size > 0);
+            m_size--;
+            m_data[m_size].~T();
         }
 
         T& operator[](size_t index) {
