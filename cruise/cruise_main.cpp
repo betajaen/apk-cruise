@@ -1680,6 +1680,7 @@ int currentMouseY = 0;
 int currentMouseButton = 0;
 
 bool bFastMode = false;
+bool bSkipProtection = false;
 
 bool manageEvents() {
 	Common::Event event;
@@ -1710,6 +1711,19 @@ bool manageEvents() {
 		case Common::EVENT_RETURN_TO_LAUNCHER:
 			_playerDontAskQuit = true;
 			break;
+            // MOD:
+        case Common::EVENT_FAST_MODE:
+        {
+            bFastMode = !bFastMode;
+            debug("Fast Mode %d", bFastMode);
+        }
+        break;
+        case Common::EVENT_SKIP_PROTECTION:
+        {
+            bSkipProtection = !bSkipProtection;
+            debug("Skip Protection %d", bSkipProtection);
+        }
+        break;
 		case Common::EVENT_KEYUP:
 			switch (event.kbd.keycode) {
 			case Common::KEYCODE_ESCAPE:

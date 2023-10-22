@@ -79,6 +79,7 @@ extern gfxEntryStruct* linkedMsgList;
 extern int buttonDown;
 extern int selectDown;
 extern int menuDown;
+extern bool bSkipProtection;
 
 bool delphineUnpack(byte *dst, const byte *src, int len);
 int findHighColor();

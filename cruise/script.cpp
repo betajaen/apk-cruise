@@ -462,9 +462,15 @@ int32 opcodeType9() {		// stop script
 	return (1);
 }
 
+// MOD:
+static int32 opcodeTypeNoop() {
+    error("Unhandled op-code!!");
+    assert(0);
+}
+
 void setupFuncArray() {
 	for (int i = 0; i < 64; i++)
-		opcodeTypeTable[i] = nullptr;
+		opcodeTypeTable[i] = opcodeTypeNoop; // MOD: opcodeTypeTable[i] = nullptr;
 
 	opcodeTypeTable[1] = opcodeType0;
 	opcodeTypeTable[2] = opcodeType1;
@@ -590,12 +596,16 @@ int executeScripts(scriptInstanceStruct *ptr) {
 	positionInStack = 0;
 
 	do {
-#ifdef SKIP_INTRO
-		if (currentScriptPtr->scriptOffset == 290
-		        && currentScriptPtr->overlayNumber == 4
-		        && currentScriptPtr->scriptNumber == 0) {
-			currentScriptPtr->scriptOffset = 923;
-		}
+#ifdef SKIP_PROTECTION
+        if (bSkipProtection) { // MOD:
+            if (currentScriptPtr->scriptOffset == 290
+                && currentScriptPtr->overlayNumber == 4
+                && currentScriptPtr->scriptNumber == 0) {
+                debug("Skipped Protection");
+                currentScriptPtr->scriptOffset = 923;
+                bSkipProtection = false;
+            }
+        } // MOD:
 #endif
 		// FIXME: Delay for starting end credits is too long.
 		// Fix it for now, but game rates really need looking into

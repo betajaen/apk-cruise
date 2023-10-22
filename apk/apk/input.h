@@ -32,6 +32,8 @@ namespace apk {
     constexpr int32 EVENT_KEYUP = 7;
     constexpr int32 EVENT_QUIT = 8;
     constexpr int32 EVENT_RETURN_TO_LAUNCHER = 9;
+    constexpr int32 EVENT_FAST_MODE = 10;
+    constexpr int32 EVENT_SKIP_PROTECTION = 11;
 
     struct Event {
         int32 type;

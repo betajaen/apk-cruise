@@ -313,6 +313,20 @@ namespace apk { namespace gfx {
                     s_Event.push_back(evt);
                 }
                 break;
+                case SDL_KEYUP:
+                {
+                    if (evt.key.keysym.scancode == SDL_SCANCODE_1) {
+                        Event evt;
+                        evt.type = EVENT_FAST_MODE;
+                        s_Event.push_back(evt);
+                    }
+                    else if (evt.key.keysym.scancode == SDL_SCANCODE_2) {
+                        Event evt;
+                        evt.type = EVENT_SKIP_PROTECTION;
+                        s_Event.push_back(evt);
+                    }
+                }
+                break;
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP: {
                     if (evt.type == SDL_MOUSEBUTTONDOWN) {
@@ -415,7 +429,7 @@ namespace apk {
 
         close();
 
-        sprintf_s(diskPath, sizeof(diskPath), "data/dos/%s", path);
+        sprintf_s(diskPath, sizeof(diskPath), "data/amiga/%s", path);
 
         FILE* fh = fopen(diskPath, "r");
 
@@ -446,7 +460,7 @@ namespace apk {
     bool File::exists(const char* path) {
         char diskPath[256] = { 0 };
 
-        sprintf_s(diskPath, sizeof(diskPath), "data/dos/%s", path);
+        sprintf_s(diskPath, sizeof(diskPath), "data/amiga/%s", path);
         FILE* fh = fopen(diskPath, "r");
 
         if (fh == NULL) {
