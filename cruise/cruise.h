@@ -89,6 +89,7 @@ public:
 	// MOD: Common::Platform getPlatform() const;
 	PCSound &sound() { return *_sound; }
 	virtual void pauseEngine(bool pause);
+	bool isPaused() const override  { return _gamePauseToken.isPaused; }
     const char *langString(LangStringId langId) { return _langStrings[langId]; } // MOD: const char *langString(LangStringId langId) { return _langStrings[(int)langId].c_str(); }
 	static const char *getSavegameFile(int saveGameIdx);
 	Common::Error loadGameState(int slot) override;

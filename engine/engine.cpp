@@ -30,7 +30,7 @@ namespace apk {
     }
 
     void Engine::initGraphics(apk::int32 w, apk::int32 h) {
-        apk::gfx::createScreen(w, h, 8);
+        apk::gfx::createScreen("Cruise for a Corpse", w, h, 8);
     }
 
 }

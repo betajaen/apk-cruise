@@ -34,6 +34,7 @@ namespace apk {
     constexpr int32 EVENT_RETURN_TO_LAUNCHER = 9;
     constexpr int32 EVENT_FAST_MODE = 10;
     constexpr int32 EVENT_SKIP_PROTECTION = 11;
+    constexpr int32 EVENT_PAUSE = 12;
 
     struct Event {
         int32 type;
@@ -48,6 +49,7 @@ namespace apk {
         } kbd;
     };
 
+    void fetchEvents();
     bool pollEvents(Event& evt);
 
 }

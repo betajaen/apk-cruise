@@ -23,7 +23,7 @@ namespace apk {
 
     namespace gfx {
 
-        void createScreen(uint16 width, uint16 height, uint8 depth);
+        void createScreen(const char* title, uint16 width, uint16 height, uint8 depth);
         void destroyScreen();
         void flipScreen();
         void blit(uint8* data, uint32 size);

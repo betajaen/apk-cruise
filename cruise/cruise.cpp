@@ -50,10 +50,11 @@ CruiseEngine::CruiseEngine(OSystem * syst, const CRUISEGameDescription *gameDesc
 	_preLoad = false;
 	_savedCursor = CURSOR_NOMOUSE;
 	_lastTick = 0;
-	_gameSpeed = GAME_FRAME_DELAY_1;
+	_gameSpeed = 1;// GAME_FRAME_DELAY_1;
 	_speedFlag = false;
 	_polyStructs = nullptr;
 	_polyStruct = nullptr;
+	_gamePauseToken.clear(); // MOD:
 
 	// Setup mixer
 	syncSoundSettings();
@@ -205,15 +206,17 @@ bool CruiseEngine::loadLanguageStrings() {
 
 void CruiseEngine::pauseEngine(bool pause) {
 	if (pause) {
+		debug("Paused"); // MOD:
 		_gamePauseToken = Engine::pauseEngine();
 		// Draw the 'Paused' message
 		drawSolidBox(64, 100, 256, 117, 0);
-		drawString(10, 100, langString(ID_PAUSED), gfxModuleData.pPage00, itemColor, 300);
+		drawString(10, 100, langString(ID_PAUSED), gfxModuleData.pPage00, itemColor, 300); // MOD:
 		gfxModuleData_flipScreen();
 
 		_savedCursor = currentCursor;
 		changeCursor(CURSOR_NOMOUSE);
 	} else {
+		debug("Unpaused"); // MOD:
 		_gamePauseToken.clear();
 		processAnimation();
 		flipScreen();

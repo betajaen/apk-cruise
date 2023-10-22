@@ -83,6 +83,9 @@ namespace apk {
 
     class EventManager {
     public:
+        void fetchEvents() {
+            ::apk::fetchEvents();
+        }
         bool pollEvent(Event& evt) {
             return ::apk::pollEvents(evt);
         }
@@ -90,7 +93,9 @@ namespace apk {
 
     class PauseToken {
     public:
+        bool isPaused = true;
         void clear() {
+            isPaused = false;
         }
     };
 
@@ -221,7 +226,7 @@ namespace apk {
         virtual ~Engine() { delete _mixer; }
         virtual Error run() { return 0; }
         void setDebugger(void*) {}
-        PauseToken pauseEngine() { return PauseToken(); }
+        virtual PauseToken pauseEngine() { return PauseToken(); }
         virtual bool hasFeature(EngineFeature f) const {
             return false;
         }
@@ -267,6 +272,9 @@ namespace apk {
             return 0;
         }
 
+        virtual bool isPaused() const {
+            return false;
+        }
     };
 
     class RandomSource {

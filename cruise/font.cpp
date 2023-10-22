@@ -288,8 +288,8 @@ void drawString(int32 x, int32 y, const char *string, uint8 *buffer, uint8 fontC
 	drawMessage(s, x, y, rightBorder_X - x, fontColor, buffer);
 
 	// Free the data
-	delete s->imagePtr;
-	free(s);
+	// delete s->imagePtr; // MOD:
+	// free(s); // MOD:
 }
 
 // calculates all necessary datas and renders text

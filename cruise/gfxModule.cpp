@@ -43,6 +43,7 @@ int palDirtyMax = -1;
 
 bool _dirtyRectScreen = false;
 bool s_screenIsDirty = false; // MOD:
+bool s_paletteIsDirty = false; // MOD:
 
 gfxModuleDataStruct gfxModuleData = {
 	0,			// use Tandy
@@ -284,6 +285,7 @@ void gfxModuleData_updatePalette() {
 			paletteRGB[i * 3 + 1] = lpalette[i].G;
 			paletteRGB[i * 3 + 2] = lpalette[i].B;
 		}
+		s_paletteIsDirty = true; // MOD:
 		g_system->getPaletteManager()->setPalette(paletteRGB + palDirtyMin*3, palDirtyMin, palDirtyMax - palDirtyMin + 1);
 		palDirtyMin = 256;
 		palDirtyMax = -1;
@@ -331,10 +333,11 @@ void flip() {
 	// Allow the screen to update
 #else
 
-    if (s_screenIsDirty) {
+    if (s_screenIsDirty || s_paletteIsDirty) {
         g_system->copyToScreen(globalScreen, sizeof(globalScreen)); // MOD:
 	    g_system->updateScreen();
         s_screenIsDirty = false;
+		s_paletteIsDirty = false;
     }
 
 #endif
@@ -342,6 +345,7 @@ void flip() {
 }
 
 void drawSolidBox(int32 x1, int32 y1, int32 x2, int32 y2, uint8 color) {
+	s_screenIsDirty = true; // MOD:
 	for (int y = y1; y < y2; ++y) {
 		byte *p = &gfxModuleData.pPage00[y * 320 + x1];
 		Common::fill(p, p + (x2 - x1), color);
@@ -349,6 +353,7 @@ void drawSolidBox(int32 x1, int32 y1, int32 x2, int32 y2, uint8 color) {
 }
 
 void resetBitmap(uint8 *dataPtr, int32 dataSize) {
+	s_screenIsDirty = true; // MOD:
 	memset(dataPtr, 0, dataSize);
 }
 
@@ -357,6 +362,7 @@ void resetBitmap(uint8 *dataPtr, int32 dataSize) {
  * to figure out rectangles of changed areas for dirty rectangles
  */
 void switchBackground(const byte *newBg) {
+	s_screenIsDirty = true; // MOD:
 	const byte *bg = gfxModuleData.pPage00;
 
 	// If both the upper corners are different, presume it's a full screen change

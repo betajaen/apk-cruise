@@ -26,21 +26,21 @@ namespace apk {
     extern uint32 s_FastModeTime;
     extern Array<Event> s_Event;
     extern bool s_quitRequested;
+    SDL_Window* s_screen = NULL;
+    constexpr int32 kScreenScale = 3;
+    SDL_Surface* s_screenSurface = NULL;
+    byte* s_virtualSurface = NULL;
+    SDL_Color s_virtualPalette[256] = { 0 };
+    bool s_virtualPaletteDirty = false;
+    uint32 s_width = 0, s_height = 0, s_widthHeight = 0;
 
     namespace gfx {
-        constexpr int32 kScreenScale = 3;
-        SDL_Window* s_screen = NULL;
-        SDL_Surface* s_screenSurface = NULL;
-        byte* s_virtualSurface = NULL;
-        SDL_Color s_virtualPalette[256] = { 0 };
-        bool s_virtualPaletteDirty = false;
-        uint32 s_width = 0, s_height = 0, s_widthHeight = 0;
 
 
-    void createScreen(uint16 width, uint16 height, uint8 depth) {
+    void createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
         SDL_assert(s_screen == NULL);
 
-        s_screen = SDL_CreateWindow("APK",
+        s_screen = SDL_CreateWindow(title,
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
             width * kScreenScale,
@@ -123,6 +123,43 @@ namespace apk {
         scaleCopy(s_screenSurface, s_virtualSurface, kScreenScale, s_width, s_height);
         SDL_UpdateWindowSurface(s_screen);
 
+        fetchEvents();
+
+        if (s_FastMode) {
+            s_FastModeTime++;
+        }
+    }
+
+    void blit(uint8* data, uint32 size) {
+
+        assert(size <= s_widthHeight);
+
+        uint8* pixels = (uint8*)s_virtualSurface;
+        memcpy(pixels, data, size);
+    }
+
+    void cls(uint8 index) {
+        memset(s_virtualSurface, index, s_widthHeight);
+    }
+
+    void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
+        s_virtualPalette[index] = { r, g, b, 255 };
+        s_virtualPaletteDirty = true;
+    }
+
+    void setRGB(uint8* pal, uint32 begin, uint32 end) {
+        for(int i=begin;i < end;i++) {
+            uint8 r = *pal++;
+            uint8 g = *pal++;
+            uint8 b = *pal++;
+            setRGB(i, r, g, b);
+        }
+    }
+
+}
+
+
+    void fetchEvents() {
         SDL_Event evt;
         while(SDL_PollEvent(&evt)) {
             switch(evt.type) {
@@ -158,6 +195,11 @@ namespace apk {
                         evt.type = EVENT_SKIP_PROTECTION;
                         s_Event.push_back(evt);
                     }
+                    else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+                        Event evt;
+                        evt.type = EVENT_PAUSE;
+                        s_Event.push_back(evt);
+                    }
                 }
                 break;
                 case SDL_MOUSEBUTTONDOWN:
@@ -191,37 +233,7 @@ namespace apk {
                 break;
             }
         }
-
-        if (s_FastMode) {
-            s_FastModeTime++;
-        }
     }
 
-    void blit(uint8* data, uint32 size) {
-
-        assert(size <= s_widthHeight);
-
-        uint8* pixels = (uint8*)s_virtualSurface;
-        memcpy(pixels, data, size);
-    }
-
-    void cls(uint8 index) {
-        memset(s_virtualSurface, index, s_widthHeight);
-    }
-
-    void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
-        s_virtualPalette[index] = { r, g, b, 255 };
-        s_virtualPaletteDirty = true;
-    }
-
-    void setRGB(uint8* pal, uint32 begin, uint32 end) {
-        for(int i=begin;i < end;i++) {
-            uint8 r = *pal++;
-            uint8 g = *pal++;
-            uint8 b = *pal++;
-            setRGB(i, r, g, b);
-        }
-    }
-
-}}
+}
 

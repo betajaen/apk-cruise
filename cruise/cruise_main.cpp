@@ -1711,19 +1711,45 @@ bool manageEvents() {
 		case Common::EVENT_RETURN_TO_LAUNCHER:
 			_playerDontAskQuit = true;
 			break;
-            // MOD:
-        case Common::EVENT_FAST_MODE:
+        case Common::EVENT_FAST_MODE:  // MOD:
         {
             bFastMode = !bFastMode;
             debug("Fast Mode %d", bFastMode);
         }
         break;
-        case Common::EVENT_SKIP_PROTECTION:
+        case Common::EVENT_SKIP_PROTECTION: // MOD:
         {
             bSkipProtection = !bSkipProtection;
             debug("Skip Protection %d", bSkipProtection);
         }
         break;
+		case Common::EVENT_PAUSE: // MOD:
+		{
+			keyboardCode = Common::KEYCODE_INVALID;
+			_vm->pauseEngine(true);
+			mouseOff();
+
+			bool pausedButtonDown = false;
+			bool endPause = false;
+			while (!_vm->shouldQuit() && endPause == false) {
+				eventMan->fetchEvents();
+				while(eventMan->pollEvent(event)) {
+					if (event.type == EVENT_PAUSE) {
+						endPause = true;
+						break;
+					}
+					else if (event.type == EVENT_QUIT) {
+						_playerDontAskQuit = true;
+						endPause = true;
+						break;
+					}
+				}
+				delayMs(10);
+			}
+			_vm->pauseEngine(false);
+			mouseOn();
+		}
+		break;
 		case Common::EVENT_KEYUP:
 			switch (event.kbd.keycode) {
 			case Common::KEYCODE_ESCAPE:
