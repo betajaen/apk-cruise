@@ -23,7 +23,7 @@
 #define CRUISE_FONT_H
 
 // MOD: #include "common/scummsys.h"
-#include "alt.h"
+#include "engine/engine.h"
 
 namespace Cruise {
 

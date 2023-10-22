@@ -23,7 +23,7 @@
 #define CRUISE_STATICRES_H
 
 // MOD: #include "common/scummsys.h"
-#include "alt.h"
+#include "engine/engine.h"
 #include "cruise/cruise.h"
 
 namespace Cruise {

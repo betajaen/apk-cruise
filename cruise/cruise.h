@@ -27,7 +27,7 @@
 // MOD: #include "common/random.h"
 
 // MOD: #include "engines/engine.h"
-#include "alt.h"
+#include "engine/engine.h"
 
 #include "cruise/cruise_main.h"
 #include "cruise/debugger.h"

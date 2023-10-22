@@ -4,17 +4,17 @@ OPTIONS=
 PLATFORM = sdl2
 PROGRAM = ./install/cruise
 
-CFLAGS = -I. -Iapk -Ialt -D__AMIGADATE__="\"$(DATESTR)\""
+CFLAGS = -I. -D__AMIGADATE__="\"$(DATESTR)\""
 
 ifeq ($(PLATFORM), sdl2)
 	OBJ		:= apk/sdl2.cpp
 	CC		= gcc
 	DELETE	= rm -f
-	CFLAGS	+= -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -lc++
+	CFLAGS	+= -O3 -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -lc++
 endif
 
 OBJ += \
-	alt/alt.cpp \
+	engine/engine.cpp \
 	cruise/actor.cpp \
 	cruise/background.cpp \
 	cruise/backgroundIncrust.cpp \

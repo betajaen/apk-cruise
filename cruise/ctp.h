@@ -23,7 +23,7 @@
 #define CRUISE_CTP_H
 
 // MOD: #include "common/rect.h"
-#include "alt.h"
+#include "engine/engine.h"
 
 namespace Cruise {
 

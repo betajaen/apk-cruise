@@ -24,7 +24,7 @@
 
 // MOD: #include "common/scummsys.h"
 // MOD: #include "graphics/surface.h"
-#include "alt.h"
+#include "engine/engine.h"
 
 namespace Cruise {
 

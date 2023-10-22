@@ -24,7 +24,7 @@
 
 // MOD: #include "common/config-manager.h"
 // MOD: #include "common/serializer.h"
-#include "alt.h"
+#include "engine/engine.h"
 
 namespace Cruise {
 

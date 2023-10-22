@@ -24,7 +24,7 @@
 
 // MOD: #include "common/scummsys.h"
 // MOD: #include "common/savefile.h"
-#include "alt.h"
+#include "engine/engine.h"
 
 #include "cruise/overlay.h"
 #include "cruise/object.h"

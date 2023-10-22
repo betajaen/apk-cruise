@@ -21,7 +21,7 @@
 
 
 // MOD: #include "common/endian.h"
-#include "alt.h"
+#include "engine/engine.h"
 
 namespace Cruise {
 
