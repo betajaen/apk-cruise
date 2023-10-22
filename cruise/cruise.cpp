@@ -121,6 +121,7 @@ void CruiseEngine::deinitialize() {
 }
 
 bool CruiseEngine::loadLanguageStrings() {
+#if 0 // MOD:
 	Common::File f;
 
 	// Give preference to a language file
@@ -170,8 +171,34 @@ bool CruiseEngine::loadLanguageStrings() {
 
 		// Load in the located language set
 		for (int i = 0; i < 13; ++i, ++p)
-			_langStrings.push_back(*p);
+            _langStrings.push_back(*p);
 	}
+#else // MOD:
+    const char **p = nullptr;
+		switch (getLanguage()) {
+		case Common::EN_ANY:
+			p = englishLanguageStrings;
+			break;
+		case Common::FR_FRA:
+			p = frenchLanguageStrings;
+			break;
+		case Common::DE_DEU:
+			p = germanLanguageStrings;
+			break;
+		case Common::IT_ITA:
+			p = italianLanguageStrings;
+			break;
+		case Common::ES_ESP:
+			p = spanishLanguageStrings;
+			break;
+		default:
+			return false;
+		}
+
+		// Load in the located language set
+		for (int i = 0; i < 13; ++i, ++p)
+            _langStrings[i] = *p;
+#endif // MOD:
 
 	return true;
 }
@@ -204,7 +231,8 @@ bool CruiseEngine::canLoadGameStateCurrently() {
 	return playerMenuEnabled != 0;
 }
 
-Common::Error CruiseEngine::saveGameState(int slot, const Common::String &desc, bool isAutosave) {
+// MOD: Common::Error CruiseEngine::saveGameState(int slot, const Common::String &desc, bool isAutosave) {
+Common::Error CruiseEngine::saveGameState(int slot, const char* desc, bool isAutosave) {
 	return saveSavegameData(slot, desc);
 }
 

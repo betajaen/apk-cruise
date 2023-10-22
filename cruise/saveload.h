@@ -31,11 +31,11 @@ namespace Cruise {
 
 struct CruiseSavegameHeader {
 	uint8 version;
-	Common::String saveName;
+	char saveName[64]; // MOD: Common::String saveName;
 	Graphics::Surface *thumbnail;
 };
 
-Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName);
+Common::Error saveSavegameData(int saveGameIdx, const char* saveName); // MOD: Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName);
 Common::Error loadSavegameData(int saveGameIdx);
 WARN_UNUSED_RESULT bool readSavegameHeader(Common::InSaveFile *in, CruiseSavegameHeader &header, bool skipThumbnail = true);
 void initVars();

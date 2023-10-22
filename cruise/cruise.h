@@ -48,15 +48,15 @@ namespace Cruise {
 #define MAX_LANGUAGE_STRINGS 25
 
 enum LangStringId { ID_PAUSED = 0, ID_INVENTORY = 5, ID_SPEAK_ABOUT = 6, ID_PLAYER_MENU = 7,
-	ID_SAVE = 9, ID_LOAD = 10, ID_RESTART = 11, ID_QUIT = 12};
-
+	ID_SAVE = 9, ID_LOAD = 10, ID_RESTART = 11, ID_QUIT = 12 // MOD:};
+, ID_COUNT }; // MOD:
 typedef void* CRUISEGameDescription; // MOD: struct CRUISEGameDescription;
 
 class CruiseEngine : public Engine {
 private:
 	bool _preLoad;
 	PCSound *_sound;
-	Common::StringArray _langStrings;
+    const char* _langStrings[ID_COUNT]; // MOD: Common::StringArray _langStrings;
 	CursorType _savedCursor;
 	uint32 _lastTick;
 	int _gameSpeed;
@@ -88,14 +88,15 @@ public:
 	// MOD: Common::Platform getPlatform() const;
 	PCSound &sound() { return *_sound; }
 	virtual void pauseEngine(bool pause);
-	const char *langString(LangStringId langId) { return _langStrings[(int)langId].c_str(); }
-
+    const char *langString(LangStringId langId) { return _langStrings[langId]; } // MOD: const char *langString(LangStringId langId) { return _langStrings[(int)langId].c_str(); }
 	static const char *getSavegameFile(int saveGameIdx);
 	Common::Error loadGameState(int slot) override;
 	bool canLoadGameStateCurrently() override;
-	Common::Error saveGameState(int slot, const Common::String &desc, bool isAutosave = false) override;
+	// MOD: Common::Error saveGameState(int slot, const Common::String &desc, bool isAutosave = false) override;
+    Common::Error saveGameState(int slot, const char* desc, bool isAutosave = false) override;
 	bool canSaveGameStateCurrently() override;
-	Common::String getSaveStateName(int slot) const override { return getSavegameFile(slot); }
+	// MOD: Common::String getSaveStateName(int slot) const override { return getSavegameFile(slot); }
+    const char* getSaveStateName(int slot) const override { return getSavegameFile(slot); }
 	void syncSoundSettings() override;
 
 	const CRUISEGameDescription *_gameDescription;

@@ -782,7 +782,7 @@ void initVars() {
 	PCFadeFlag = false;
 }
 
-Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName) {
+Common::Error saveSavegameData(int saveGameIdx, const char* saveName) { // MOD: Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName) {
 	const char *filename = _vm->getSavegameFile(saveGameIdx);
 	Common::SaveFileManager *saveMan = g_system->getSavefileManager();
 	Common::OutSaveFile *f = saveMan->openForSaving(filename);
@@ -791,7 +791,7 @@ Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName) 
 
 	// Save the savegame header
 	CruiseSavegameHeader header;
-	header.saveName = saveName;
+    sprintf_s(header.saveName, sizeof(header.saveName), "%s", saveName); // MOD: header.saveName = saveName;
 	writeSavegameHeader(f, header);
 
 	if (f->err()) {
@@ -810,7 +810,7 @@ Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName) 
 }
 
 Common::Error loadSavegameData(int saveGameIdx) {
-	Common::String saveName;
+	// MOD: Common::String saveName;
 	cellStruct *currentcellHead;
 
 	Common::SaveFileManager *saveMan = g_system->getSavefileManager();

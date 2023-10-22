@@ -94,8 +94,6 @@ namespace apk {
         }
     };
 
-    typedef Array<String> StringArray;
-
     class PaletteManager {
     public:
         void setPalette(uint8* pal, uint32 start, uint32 end);
@@ -233,7 +231,7 @@ namespace apk {
         virtual Error saveGameState(int slot) {
             return 0;
         }
-        virtual Error saveGameState(int slot, const String& desc, bool isAutoSave = false) {
+        virtual Error saveGameState(int slot, const char* desc, bool isAutoSave = false) {
             return 0;
         }
         virtual bool canLoadGameStateCurrently() {
@@ -242,8 +240,8 @@ namespace apk {
         virtual bool canSaveGameStateCurrently() {
             return false;
         }
-        virtual String getSaveStateName(int slot) const {
-            return String();
+        virtual const char* getSaveStateName(int slot) const {
+            return "NOSAVENAME";
         }
 
         virtual void syncSoundSettings() {

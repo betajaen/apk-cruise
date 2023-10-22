@@ -31,24 +31,6 @@
 
 namespace apk {
 
-
-    class String {
-        char* mem;
-        int32 length;
-    public:
-        String() : mem(NULL), length(0) {}
-
-        String(const char* c_str) {
-        }
-
-        String(const char* c_str, int32 length) {
-        }
-
-        const char* c_str() const {
-            return mem;
-        }
-    };
-
     struct Point {
         int16 x, y;
 
