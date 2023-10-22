@@ -23,8 +23,6 @@ OBJ += \
 	cruise/cruise_main.cpp \
 	cruise/ctp.cpp \
 	cruise/dataLoader.cpp \
-	cruise/debugger.cpp \
-	cruise/decompiler.cpp \
 	cruise/delphine-unpack.cpp \
 	cruise/font.cpp \
 	cruise/function.cpp \
@@ -32,7 +30,6 @@ OBJ += \
 	cruise/linker.cpp \
 	cruise/mainDraw.cpp \
 	cruise/menu.cpp \
-	cruise/metaengine.cpp \
 	cruise/mouse.cpp \
 	cruise/object.cpp \
 	cruise/overlay.cpp \
