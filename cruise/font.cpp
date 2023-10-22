@@ -53,7 +53,7 @@ int32 getLineHeight(int16 charCount, const FontEntry *fontPtr) {
  */
 int32 getTextLineCount(int32 rightBorder_X, int16 wordSpacingWidth,
 					   const FontEntry *fontData, const char *textString) {
-    return 100; // MOD:
+    //return 100; // MOD:
 
 	const char *localString = textString;
 	const char *tempPtr = textString;
@@ -330,9 +330,10 @@ gfxEntryStruct *renderText(int inRightBorder_X, const char *string) {
 		fontPtr = (const FontInfo *)_systemFNT;
 	}
 
-	if (!fontPtr) {
-		return nullptr;
-	}
+    assert(fontPtr); // MOD:
+	// MOD: if (!fontPtr) {
+	// MOD: 	return nullptr;
+	// MOD: }
 
 	fontPtr_Desc = (const FontEntry *)((const uint8 *)fontPtr + sizeof(FontInfo));
 	fontPtr_Data = (const uint8 *)fontPtr + fontPtr->offset;
@@ -414,7 +415,7 @@ gfxEntryStruct *renderText(int inRightBorder_X, const char *string) {
 				} else {
 					if (charData >= 0) {
 						const FontEntry &fe = fontPtr_Desc[charData];
-
+                        assert(fe.offset < 0x20000); // MOD:
 						// should ist be stringRenderBufferSize/2 for the second last param?
 						renderWord((const uint8 *)fontPtr_Data + fe.offset,
 						           currentStrRenderBuffer,

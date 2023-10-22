@@ -6,7 +6,7 @@
 #define Common apk
 #define Cruise apk
 
-#define PACKED_STRUCT
+#define PACKED_STRUCT __attribute__((__packed__))
 #define WARN_UNUSED_RESULT
 
 namespace Graphics {
