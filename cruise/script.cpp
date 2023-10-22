@@ -466,6 +466,7 @@ int32 opcodeType9() {		// stop script
 static int32 opcodeTypeNoop() {
     error("Unhandled op-code!!");
     assert(0);
+    return 0;
 }
 
 void setupFuncArray() {
