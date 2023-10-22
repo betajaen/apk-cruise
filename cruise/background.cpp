@@ -19,7 +19,7 @@
  *
  */
 
-#include "common/textconsole.h"
+// MOD: #include "common/textconsole.h"
 #include "cruise/cruise_main.h"
 #include "cruise/cruise.h"
 

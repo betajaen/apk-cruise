@@ -19,9 +19,9 @@
  *
  */
 
-#include "common/endian.h"
-#include "common/system.h"
-#include "common/textconsole.h"
+// MOD: #include "common/endian.h"
+// MOD: #include "common/system.h"
+// MOD: #include "common/textconsole.h"
 
 #include "cruise/cruise.h"
 #include "cruise/cruise_main.h"

@@ -22,8 +22,9 @@
 #ifndef CRUISE_SAVELOAD_H
 #define CRUISE_SAVELOAD_H
 
-#include "common/scummsys.h"
-#include "graphics/surface.h"
+// MOD: #include "common/scummsys.h"
+// MOD: #include "graphics/surface.h"
+#include "alt.h"
 
 namespace Cruise {
 

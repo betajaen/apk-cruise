@@ -23,7 +23,8 @@
 #define CRUISE_CELL_H
 
 
-#include "common/scummsys.h"
+// MOD: #include "common/scummsys.h"
+#include "alt.h"
 
 namespace Cruise {
 

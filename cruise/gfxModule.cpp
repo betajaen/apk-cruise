@@ -20,12 +20,12 @@
  */
 
 
-#include "common/system.h"
-#include "common/endian.h"
+// MOD: #include "common/system.h"
+// MOD: #include "common/endian.h"
 // MOD: #include "common/list.h"
-#include "common/rect.h"
+// MOD: #include "common/rect.h"
 
-#include "graphics/palette.h"
+// MOD: #include "graphics/palette.h"
 
 #include "cruise/cruise.h"
 #include "cruise/cruise_main.h"

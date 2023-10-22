@@ -28,8 +28,8 @@
 #include "cruise/sound.h"
 #include "cruise/staticres.h"
 
-#include "common/textconsole.h"
-#include "common/util.h"
+// MOD: #include "common/textconsole.h"
+// MOD: #include "common/util.h"
 
 namespace Cruise {
 

@@ -19,11 +19,11 @@
  *
  */
 
-#include "common/config-manager.h"
-#include "common/endian.h"
-#include "common/events.h"
-#include "common/system.h"	// for g_system->getEventManager()
-#include "common/textconsole.h"
+// MOD: #include "common/config-manager.h"
+// MOD: #include "common/endian.h"
+// MOD: #include "common/events.h"
+// MOD: #include "common/system.h"	// for g_system->getEventManager()
+// MOD: #include "common/textconsole.h"
 
 #include "cruise/cruise.h"
 #include "cruise/cruise_main.h"

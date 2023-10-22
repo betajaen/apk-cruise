@@ -22,8 +22,8 @@
 #include "cruise/cruise_main.h"
 #include "cruise/staticres.h"
 
-#include "common/system.h"
-#include "graphics/cursorman.h"
+// MOD: #include "common/system.h"
+// MOD: #include "graphics/cursorman.h"
 
 namespace Cruise {
 

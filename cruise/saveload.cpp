@@ -23,10 +23,10 @@
 #include "cruise/cruise.h"
 #include "cruise/vars.h"
 
-#include "common/serializer.h"
-#include "common/savefile.h"
-#include "common/system.h"
-#include "common/textconsole.h"
+// MOD: #include "common/serializer.h"
+// MOD: #include "common/savefile.h"
+// MOD: #include "common/system.h"
+// MOD: #include "common/textconsole.h"
 
 // MOD: #include "graphics/scaler.h"
 // MOD: #include "graphics/thumbnail.h"

@@ -19,13 +19,13 @@
  *
  */
 
-#include "common/file.h"
-#include "common/debug-channels.h"
-#include "common/textconsole.h"
+// MOD: #include "common/file.h"
+// MOD: #include "common/debug-channels.h"
+// MOD: #include "common/textconsole.h"
 
-#include "engines/util.h"
+// MOD: #include "engines/util.h"
 
-#include "graphics/cursorman.h"
+// MOD: #include "graphics/cursorman.h"
 
 #include "cruise/cruise.h"
 #include "cruise/font.h"

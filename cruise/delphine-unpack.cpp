@@ -20,7 +20,8 @@
  */
 
 
-#include "common/endian.h"
+// MOD: #include "common/endian.h"
+#include "alt.h"
 
 namespace Cruise {
 

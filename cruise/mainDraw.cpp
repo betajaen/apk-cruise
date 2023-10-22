@@ -21,8 +21,8 @@
 
 #include "cruise/cruise_main.h"
 #include "cruise/polys.h"
-#include "common/endian.h"
-#include "common/util.h"
+// MOD: #include "common/endian.h"
+// MOD: #include "common/util.h"
 
 namespace Cruise {
 

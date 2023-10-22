@@ -19,7 +19,7 @@
  *
  */
 
-#include "common/endian.h"
+// MOD: #include "common/endian.h"
 #include "cruise/cruise_main.h"
 
 namespace Cruise {

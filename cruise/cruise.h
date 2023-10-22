@@ -22,11 +22,12 @@
 #ifndef CRUISE_CRUISE_H
 #define CRUISE_CRUISE_H
 
-#include "common/scummsys.h"
-#include "common/util.h"
-#include "common/random.h"
+// MOD: #include "common/scummsys.h"
+// MOD: #include "common/util.h"
+// MOD: #include "common/random.h"
 
-#include "engines/engine.h"
+// MOD: #include "engines/engine.h"
+#include "alt.h"
 
 #include "cruise/cruise_main.h"
 #include "cruise/debugger.h"

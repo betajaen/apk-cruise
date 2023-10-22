@@ -22,8 +22,9 @@
 #ifndef CRUISE_SOUND_H
 #define CRUISE_SOUND_H
 
-#include "common/config-manager.h"
-#include "common/serializer.h"
+// MOD: #include "common/config-manager.h"
+// MOD: #include "common/serializer.h"
+#include "alt.h"
 
 namespace Cruise {
 

@@ -22,7 +22,8 @@
 #ifndef CRUISE_VARS_H
 #define CRUISE_VARS_H
 
-#include "common/file.h"
+// MOD: #include "common/file.h"
+#include "alt.h"
 
 namespace Cruise {
 

@@ -22,8 +22,9 @@
 #ifndef CRUISE_CRUISE_MAIN_H
 #define CRUISE_CRUISE_MAIN_H
 
-#include "common/scummsys.h"
-#include "common/savefile.h"
+// MOD: #include "common/scummsys.h"
+// MOD: #include "common/savefile.h"
+#include "alt.h"
 
 #include "cruise/overlay.h"
 #include "cruise/object.h"

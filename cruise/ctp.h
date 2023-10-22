@@ -22,7 +22,8 @@
 #ifndef CRUISE_CTP_H
 #define CRUISE_CTP_H
 
-#include "common/rect.h"
+// MOD: #include "common/rect.h"
+#include "alt.h"
 
 namespace Cruise {
 

@@ -22,11 +22,12 @@
 #ifndef CRUISE_FONT_H
 #define CRUISE_FONT_H
 
-#include "common/scummsys.h"
+// MOD: #include "common/scummsys.h"
+#include "alt.h"
 
 namespace Cruise {
 
-#include "common/pack-start.h"	// START STRUCT PACKING
+// MOD: #include "common/pack-start.h"	// START STRUCT PACKING
 
 struct FontInfo {
 	uint32 size;
@@ -44,7 +45,7 @@ struct FontEntry {
 	int16 charWidth;
 } PACKED_STRUCT;
 
-#include "common/pack-end.h"	// END STRUCT PACKING
+// MOD: #include "common/pack-end.h"	// END STRUCT PACKING
 
 void loadFNT(const char *fileName);
 void initSystem();
