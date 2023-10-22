@@ -130,7 +130,7 @@ void gfxModuleData_setPalEntries(const byte *ptr, int start, int num) {
 		lpalette[i].R = R;
 		lpalette[i].G = G;
 		lpalette[i].B = B;
-		lpalette[i].A = 255;
+		// MOD: lpalette[i].A = 255;
 	}
 
 	gfxModuleData_setDirtyColors(start, start + num - 1);
@@ -277,6 +277,7 @@ static void mergeClipRects() {
 }
 
 void gfxModuleData_updatePalette() {
+#if 0 // MOD:
 	byte paletteRGB[256 * 3];
 
 	if (palDirtyMax != -1) {
@@ -290,6 +291,9 @@ void gfxModuleData_updatePalette() {
 		palDirtyMin = 256;
 		palDirtyMax = -1;
 	}
+#else
+		g_system->getPaletteManager()->setPalette((uint8*) lpalette, 0, 255);
+#endif
 }
 
 void gfxModuleData_updateScreen() {
