@@ -43,8 +43,6 @@ namespace apk {
             delete m_impl;
             m_impl = NULL;
 
-            printf("Closed file\n");
-
             return true;
         }
         return false;
@@ -64,7 +62,7 @@ namespace apk {
         FILE* fh = fopen(diskPath, "r");
 
         if (fh == NULL) {
-            printf("Could not open %s\n", diskPath);
+            error("File '%s' could not be found in path!\n", diskPath);
             return false;
         }
 
@@ -74,8 +72,6 @@ namespace apk {
         fseek(m_impl->fh, 0, SEEK_END);
         m_impl->size = ftell(m_impl->fh);
         fseek(m_impl->fh, 0, SEEK_SET);
-
-        printf("Opened %s\n", diskPath);
 
         return true;
     }
@@ -94,11 +90,8 @@ namespace apk {
         FILE* fh = fopen(diskPath, "r");
 
         if (fh == NULL) {
-            printf("DID NOT OPEN %s\n", diskPath);
             return false;
         }
-
-        printf("Opened %s\n", diskPath);
 
         fclose(fh);
         return true;
