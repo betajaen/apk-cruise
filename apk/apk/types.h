@@ -66,15 +66,15 @@ namespace apk {
         Rect(int16 R, int16 B) : top(0), left(0), right(R), bottom(B) {}
 
         bool contains(int16 x, int16 y) const {
-            return false;
+            return (left <= x) && (x < right) && (top <= y) && (y < bottom);
         }
 
         bool isEmpty() const {
-            return false;
+            return (left >= right || top >= bottom);
         }
 
         bool intersects(Rect& rect) {
-            return false;
+            return (left < rect.right) && (rect.left < right) && (top < rect.bottom) && (rect.top < bottom);
         }
 
         int16 width() const {
