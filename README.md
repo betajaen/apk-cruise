@@ -1,8 +1,71 @@
-# Cruise for a Corpse
+# Cruise for a Corpse for Commodore Amiga RTG, AGA and modern platforms.
 
-Based upon ScummVM. Currently in Progress.
+This is a port of Cruise for a Corpse for the Commodore Amiga for AGA and RTG support, it also supports other modern platforms that implement SDL2.
+
+This port is based upon the ScummVM 2.8 (or later) implementation of the 'CruisE' engine only, and does not use other parts of the ScummVM codebase.
+
+## Required data files
+
+These can be either the DOS or Amiga verions
+
+* D1
+* D2
+* D3
+* D4
+* D5
+* DELPHINE.LNG (Optional)
+* SYSTEM.FNT
+* VOL.1
+* VOL.2
+* VOL.3
+* VOL.4
+* VOL.5
+
+## Port Status
+
+### Amiga
+
+* [ ] Input
+* [ ] Sound
+* [ ] Music
+* [ ] Graphics via graphics.library (ECS/AGA)
+* [ ] Graphics via RTG
+* [ ] Saved Games
+* [ ] Amiga 32 colour game support
+* [ ] DOS 256 colour game support
+* [ ] Mixed Amiga/DOS game support
+* [ ] Port: Amiga OS 3.x
+* [ ] Controls enhancements
+* [ ] Installer
+
+#### Observations
+
+None.
+
+### SDL 2.0
+
+* [x] Makefiles
+* [x] Input
+* [ ] Sound
+* [ ] Music
+* [x] Graphics via SDL
+* [ ] Saved Games
+* [x] Amiga 32 colour game support
+* [x] DOS 256 colour game support
+* [ ] Mixed Amiga/DOS support
+* [x] Port: MacOS
+* [ ] Windows
+* [ ] Linux
+* [ ] Controls enhancements
+* [ ] Installer
+
+#### Observations
+
+Game can be played normally. Some string errors have been observed. Some walkboxes errors have been noticed. Palette errors occur in opening cutscene.
 
 ---
+
+ScummVM original copyright header as follows.
 
 # [ScummVM README](https://www.scummvm.org/) 
 
