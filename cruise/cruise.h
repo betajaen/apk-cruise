@@ -31,7 +31,7 @@
 
 #include "cruise/cruise_main.h"
 #include "cruise/debugger.h"
-#include "cruise/sound.h"
+// MOD: #include "cruise/sound.h"
 
 /**
  * This is the namespace of the Cruise engine.

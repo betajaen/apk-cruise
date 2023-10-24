@@ -44,7 +44,7 @@ CruiseEngine::CruiseEngine(OSystem * syst, const CRUISEGameDescription *gameDesc
 
 	_vm = this;
 	setDebugger(NULL); // MOD: new Debugger());
-	_sound = new PCSound(_mixer, this);
+	_sound = new PCSound(); // MOD: _sound = new PCSound(_mixer, this);
 
 	PCFadeFlag = false;
 	_preLoad = false;

@@ -25,7 +25,7 @@
 #include "cruise/cruise.h"
 #include "cruise/cruise_main.h"
 #include "cruise/cell.h"
-#include "cruise/sound.h"
+// MOD: #include "cruise/sound.h"
 #include "cruise/staticres.h"
 
 // MOD: #include "common/textconsole.h"

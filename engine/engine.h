@@ -219,6 +219,34 @@ namespace apk {
     };
 
 
+    class PCSound {
+    public:
+        PCSound() {}
+        void loadMusic(const char *name) {}
+        void playMusic() {}
+        void stopMusic() {}
+        void removeMusic() {}
+        void fadeOutMusic() {}
+        void startNote(int, int, int);
+        void playSound(const uint8 *data, int size, int volume) {}
+        void stopSound(int channel) {}
+        void syncSounds() {}
+        void stopChannel(int) {}
+        bool songLoaded() { return true; }
+        bool songPlayed() { return true; }
+        bool isPlaying() { return false; }
+        const char* musicName() { return ""; }
+        void setNumOrders(int) {}
+        int numOrders() { return 0; }
+        void setPattern(int, int) {}
+        void fadeSong() {}
+        bool musicLooping() { return false; }
+        void musicLoop(int) {}
+        int getVolume() { return 0; }
+        void setVolume(int) {}
+        void doSync(Serializer&) {}
+    };
+
     class Engine {
     public:
         Audio::Mixer* _mixer;
@@ -359,36 +387,6 @@ namespace apk {
     };
 
 
-    template<typename T>
-    T ABS(T v) {
-        return v < 0 ? -v : v;
-    }
-
-    template<typename T>
-    T MIN(T lhs, T rhs) {
-        return (lhs < rhs) ? lhs : rhs;
-    }
-
-    template<typename T>
-    T MAX(T lhs, T rhs) {
-        return (lhs > rhs) ? lhs : rhs;
-    }
-
-    template<typename T>
-    T CLIP(T x, T min, T max) {
-        if (x < min)
-            x = min;
-        else if (x > max)
-            x = max;
-        return x;
-    }
-
-    template<typename T>
-    void SWAP(T& l, T& r) {
-        T t = l;
-        l = r;
-        r = t;
-    }
 
     inline void fill(uint8* start, uint8* end, uint8 col) {
         memset(start, col, start - end);

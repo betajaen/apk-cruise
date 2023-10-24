@@ -44,7 +44,6 @@ OBJ += \
 	cruise/polys.cpp \
 	cruise/saveload.cpp \
 	cruise/script.cpp \
-	cruise/sound.cpp \
 	cruise/stack.cpp \
 	cruise/staticres.cpp \
 	cruise/various.cpp \
