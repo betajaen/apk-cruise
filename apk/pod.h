@@ -24,14 +24,15 @@
 #include <exec/types.h>
 
 namespace apk {
-    typedef UCHAR uint8;
-    typedef CHAR int8;
+    typedef UBYTE uint8;
+    typedef BYTE int8;
     typedef UWORD uint16;
     typedef WORD int16;
     typedef ULONG uint32;
     typedef LONG int32;
+    typedef uint8_t byte;
     typedef ULONG size_t;
-    typedef ULONG uint;
+    typedef uint32 uint;
 }
 
 #else

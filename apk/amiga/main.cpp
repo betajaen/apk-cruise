@@ -16,3 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+
+int apk_main() {
+    return 0;
+}

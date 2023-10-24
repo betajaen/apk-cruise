@@ -10,7 +10,14 @@ ifeq ($(PLATFORM), sdl2)
 	OBJ		:= apk/sdl2/main.cpp apk/sdl2/gfx.cpp apk/sdl2/memory.cpp apk/sdl2/file.cpp
 	CC		= gcc
 	DELETE	= rm -f
-	CFLAGS	+= -O3 -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -lc++
+	CFLAGS	+= -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -lc++ -DSKIP_PROTECTION
+endif
+
+ifeq ($(PLATFORM), rtg)
+	OBJ		:= apk/amiga/entry.cpp apk/amiga/main.cpp
+	CC		:= /opt/amiga/bin/m68k-amigaos-gcc
+	DELETE	:= rm -f
+	CFLAGS  += -std=c++17 -m68020
 endif
 
 OBJ += \

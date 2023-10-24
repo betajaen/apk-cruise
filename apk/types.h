@@ -31,6 +31,43 @@
 
 namespace apk {
 
+    template<typename T>
+    inline T MIN(const T& lhs, const T& rhs) {
+        return (lhs < rhs ? lhs : rhs);
+    }
+
+    template<typename T1, typename T2>
+    inline T1 MIN(const T1& lhs, const T2& rhs) {
+        return (lhs < rhs ? lhs : rhs);
+    }
+
+    template<typename T>
+    T ABS(T v) {
+        return v < 0 ? -v : v;
+    }
+
+    template<typename T>
+    T MAX(T lhs, T rhs) {
+        return (lhs > rhs) ? lhs : rhs;
+    }
+
+    template<typename T>
+    T CLIP(T x, T min, T max) {
+        if (x < min)
+            x = min;
+        else if (x > max)
+            x = max;
+        return x;
+    }
+
+    template<typename T>
+    void SWAP(T& l, T& r) {
+        T t = l;
+        l = r;
+        r = t;
+    }
+
+
     struct Point {
         int16 x, y;
 
