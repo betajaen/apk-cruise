@@ -1,23 +1,26 @@
 CC=gcc
 OPTIONS=
 
-PLATFORM = sdl2
+PLATFORM = rtg
 PROGRAM = ./install/cruise
 
-CFLAGS = -I. -D__AMIGADATE__="\"$(DATESTR)\""
+CXXFLAGS := -I. -D__AMIGADATE__="\"$(DATESTR)\""
+LDFLAGS  :=
 
 ifeq ($(PLATFORM), sdl2)
-	OBJ		:= apk/sdl2/main.cpp apk/sdl2/gfx.cpp apk/sdl2/memory.cpp apk/sdl2/file.cpp
-	CC		= gcc
-	DELETE	= rm -f
-	CFLAGS	+= -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -lc++ -DSKIP_PROTECTION
+	OBJ		 := apk/sdl2/main.cpp apk/sdl2/gfx.cpp apk/sdl2/memory.cpp apk/sdl2/file.cpp
+	CC		 := gcc
+	DELETE	 := rm -f
+	CXXFLAGS += -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -lc++
+	LDFLAGS  :=
 endif
 
 ifeq ($(PLATFORM), rtg)
-	OBJ		:= apk/amiga/entry.cpp apk/amiga/main.cpp
-	CC		:= /opt/amiga/bin/m68k-amigaos-gcc
-	DELETE	:= rm -f
-	CFLAGS  += -std=c++17 -m68020
+	OBJ		  := apk/amiga/entry.cpp apk/amiga/main.cpp apk/amiga/gfx.cpp  apk/amiga/memory.cpp apk/amiga/debug.cpp apk/amiga/file.cpp
+	CC		  := /opt/amiga/bin/m68k-amigaos-g++
+	DELETE	  := rm -f
+	CXXFLAGS  += -std=c++17 -m68020 -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
+	LDFLAGS   := -noixemul -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
 endif
 
 OBJ += \
@@ -52,10 +55,10 @@ OBJ += \
 
 all: $(OBJ)
 	$(DELETE) $(PROGRAM)
-	$(CC) -o $(PROGRAM) $(OBJ) $(CFLAGS) || exit 1
+	$(CC) $(CXXFLAGS) $(OBJ) -o $(PROGRAM) $(LDFLAGS)
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@ || exit 1
+	$(CC) $(CXX) -c $< -o $@
 
 clean .IGNORE:
 	$(DELETE) *.o

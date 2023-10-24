@@ -17,43 +17,36 @@
  *
  */
 
-#pragma once
-
-#if defined (__AMIGA__)
-
-#include <exec/types.h>
+#include "apk/types.h"
 
 namespace apk {
-    typedef UBYTE uint8;
-    typedef BYTE int8;
-    typedef UWORD uint16;
-    typedef WORD int16;
-    typedef ULONG uint32;
-    typedef LONG int32;
-    typedef UBYTE byte;
-    typedef ULONG size_t;
-    typedef uint32 uint;
 
-    typedef ULONG uint32_t;
+
+    namespace gfx {
+
+        void createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
+        }
+
+        void destroyScreen() {
+        }
+
+        void flipScreen() {
+        }
+
+        void blit(uint8* data, uint32 size) {
+        }
+
+        void cls(uint8 index) {
+        }
+
+        void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
+        }
+
+        void setRGB(uint8* pal, uint32 begin, uint32 end) {
+        }
+    }
+
+    void fetchEvents() {
+    }
+
 }
-
-#else
-
-#include <stdint.h>
-#include <stddef.h>
-
-namespace apk {
-    typedef uint8_t uint8;
-    typedef uint16_t uint16;
-    typedef uint32_t uint32;
-    typedef int8_t int8;
-    typedef int16_t int16;
-    typedef int32_t int32;
-    typedef uint8_t byte;
-    typedef size_t size_t;
-
-    typedef uint32 uint;
-
-}
-
-#endif

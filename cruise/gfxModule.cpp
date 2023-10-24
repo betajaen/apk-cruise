@@ -255,6 +255,7 @@ static bool unionRectangle(Common::Rect &pDest, const Common::Rect &pSrc1, const
 
 static void mergeClipRects() {
     return; // MOD:
+#if 0 // MOD:
 	CruiseEngine::RectList::iterator rOuter, rInner;
 
 	for (rOuter = _vm->_dirtyRects.begin(); !rOuter.isEnd(); ++rOuter) {
@@ -274,6 +275,7 @@ static void mergeClipRects() {
 			}
 		}
 	}
+#endif
 }
 
 void gfxModuleData_updatePalette() {

@@ -69,11 +69,11 @@ namespace apk {
             return node == nullptr;
         }
 
-        auto& operator*() const {
+        Node& operator*() const {
             return node->getListNodeDataRef();
         }
 
-        auto* operator->() const {
+        Node operator->() const {
             return node->getListNodeDataPtr();
         }
 

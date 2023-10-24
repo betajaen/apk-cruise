@@ -18,21 +18,66 @@
  */
 
 #include "apk/types.h"
-
-int apk_main() {
-    return 0;
-}
+#include "apk/file.h"
 
 namespace apk {
 
-    bool isQuitRequested() {
+    class FileImpl {
+    public:
+        ULONG fh;
+    };
+
+    File::File() {
+        m_impl = NULL;
+    }
+
+    File::~File() {
+        close();
+    }
+
+    bool File::close() {
         return false;
     }
 
-    void delayMs(uint32 ms) {
+    bool File::isOpen() const {
+        return false;
     }
 
-    uint32 getMs() {
+    bool File::open(const char* path) {
+        return false;
+    }
+
+    uint32 File::size() const {
         return 0;
     }
+
+    bool File::exists(const char* path) {
+        return false;
+    }
+
+
+    bool File::seek(int32 where, int32 mode) {
+        return false;
+    }
+
+    uint32 File::read(void* data, uint32 size) {
+        return 0;
+    }
+
+    int16 File::readSint16BE() {
+        return 0;
+    }
+
+    int32 File::readSint32BE() {
+        return 0;
+    }
+
+    uint16 File::readUint16BE() {
+        return 0;
+    }
+
+    uint32 File::readUint32BE() {
+        return 0;
+    }
+
 }
