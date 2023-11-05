@@ -21,7 +21,7 @@
 
 namespace apk {
 
-    void* malloc(size_t size) {
+    void* malloc(APK_SIZE_TYPE size) {
         return NULL;
     }
 

@@ -57,3 +57,12 @@ namespace apk {
 }
 
 #endif
+
+
+#if defined (__AMIGA__)
+typedef unsigned int APK_SIZE_TYPE;
+#else
+typedef size_t APK_SIZE_TYPE;
+#endif
+
+#define APK_ATTR_WEAK __attribute__((weak))

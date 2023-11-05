@@ -18,27 +18,23 @@
  */
 
 #include "apk/types.h"
+#include "stdio.h"
 
 namespace apk {
-    void* malloc(APK_SIZE_TYPE size);
+    void* malloc(apk::size_t size);
     void free(void* mem);
 }
 
-void* operator new(APK_SIZE_TYPE, void* p)
-{
+void* __attribute__((weak)) operator new(APK_SIZE_TYPE n, void* p) {
     return p;
 }
 
-void* operator new(APK_SIZE_TYPE n)
+void* __attribute__((weak)) operator new(APK_SIZE_TYPE n)
 {
     return apk::malloc(n);
 }
 
-void operator delete(void* p)
+void __attribute__((weak)) operator delete(void* p)
 {
-    return apk::free(p);
-}
-
-void operator delete(void* p, APK_SIZE_TYPE n) {
-    return apk::free(p);
+    apk::free(p);
 }

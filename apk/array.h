@@ -21,18 +21,11 @@
 
 #include "pod.h"
 #include "assert.h"
-
-#if defined(__AMIGA__)
-#include <new>
-#else
-void* operator new(unsigned int n);
-void operator delete(void* p);
-void operator delete(void* p, unsigned int);
-#endif
+#include "compat.h"
 
 namespace apk {
 
-    void* malloc(size_t numBytes);
+    void* malloc(APK_SIZE_TYPE numBytes);
     void free(void* mem);
     void memcpy(void* dst, const void* src, size_t size);
 

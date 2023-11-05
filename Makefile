@@ -12,10 +12,10 @@ LDFLAGS  :=
 SDL2_RUN     := (cd $(PROGRAM_DIR) && $(PROGRAM_NAME))
 
 ifeq ($(PLATFORM), sdl2)
-	OBJ		 := apk/sdl2/main.cpp apk/sdl2/gfx.cpp apk/sdl2/memory.cpp apk/sdl2/file.cpp
+	OBJ		 := apk/sdl2/main.cpp apk/sdl2/gfx.cpp apk/sdl2/memory.cpp apk/sdl2/file.cpp apk/sdl2/compat.cpp
 	CC		 := gcc
 	DELETE	 := rm -f
-	CXXFLAGS += -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -lc++
+	CXXFLAGS += -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -fno-exceptions -fno-rtti -fno-threadsafe-statics
 	LDFLAGS  :=
 endif
 

@@ -17,28 +17,11 @@
  *
  */
 
-#include "apk/types.h"
+#pragma once
 
-namespace apk {
-    void* malloc(APK_SIZE_TYPE size);
-    void free(void* mem);
-}
+#include "apk/pod.h"
 
-void* operator new(APK_SIZE_TYPE, void* p)
-{
-    return p;
-}
-
-void* operator new(APK_SIZE_TYPE n)
-{
-    return apk::malloc(n);
-}
-
-void operator delete(void* p)
-{
-    return apk::free(p);
-}
-
-void operator delete(void* p, APK_SIZE_TYPE n) {
-    return apk::free(p);
-}
+void* APK_ATTR_WEAK operator new(APK_SIZE_TYPE n, void* p);
+void* APK_ATTR_WEAK operator new(APK_SIZE_TYPE n);
+void APK_ATTR_WEAK operator delete(void* p);
+void APK_ATTR_WEAK operator delete(void* p, APK_SIZE_TYPE n);

@@ -20,6 +20,7 @@
 #pragma once
 
 #include "pod.h"
+#include "compat.h"
 #include "consts.h"
 #include "array.h"
 #include "list.h"
@@ -147,7 +148,7 @@ namespace apk {
     void sprintf_s(char* dst, size_t dst_length, const char* fmt, ...);
     void printf(const char* fmt, ...);
 
-    void* malloc(size_t length);
+    void* malloc(APK_SIZE_TYPE length);
     void free(void* mem);
 
     bool isQuitRequested();
