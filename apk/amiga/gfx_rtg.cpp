@@ -43,6 +43,11 @@ namespace apk {
 
     namespace gfx {
 
+		struct Screen* mScreen;
+		struct Window* mWindow;
+		struct ScreenBuffer* mScreenBuffer;
+		struct RastPort mRastPort;
+
         bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
 
             CyberGfxBase = OpenLibrary("cybergraphics.library", 41);
@@ -51,10 +56,40 @@ namespace apk {
                 return false;
             }
 
-            return false;
+            ULONG modeId = BestCModeIDTags(
+                CYBRBIDTG_NominalWidth, (ULONG) width,
+                CYBRBIDTG_NominalHeight, (ULONG) height,
+                CYBRBIDTG_Depth, (ULONG) depth,
+                TAG_DONE
+		    );
+
+            if (modeId == INVALID_ID) {
+                requester_okay("Error!", "Cannot find appropriate RTG Screen Mode");
+                return 1;
+            }
+
+            mScreen = OpenScreenTags(NULL,
+                SA_DisplayID, modeId,
+                SA_Left, 0UL,
+                SA_Top, 0UL,
+                SA_Width, (ULONG) width,
+                SA_Height, (ULONG) height,
+                SA_Depth, (ULONG) depth,
+                SA_Title, (ULONG) title,
+                SA_Type, CUSTOMSCREEN,
+                SA_SysFont, 1,
+                TAG_DONE
+		    );
+
+            return true;
         }
 
         void destroyScreen() {
+
+            if (mScreen) {
+                CloseScreen(mScreen);
+                mScreen = NULL;
+            }
 
             if (CyberGfxBase) {
                 CloseLibrary(CyberGfxBase);
