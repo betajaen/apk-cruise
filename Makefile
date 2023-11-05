@@ -36,7 +36,9 @@ AMIGA_RUN 		:= 	fs-uae \
 					--floppy_drive_volume_empty=0 \
 					--scale=2 \
 					--smoothing=0 \
-					--graphics_card=uaegfx
+					--graphics_card=uaegfx \
+					--fssa=0 \
+					--texture_filter=nearest
 
 ifeq ($(PLATFORM), rtg)
 	OBJ		  += $(AMIGA_OBJ)
