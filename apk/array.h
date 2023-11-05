@@ -21,7 +21,14 @@
 
 #include "pod.h"
 #include "assert.h"
+
+#if defined(__AMIGA__)
 #include <new>
+#else
+void* operator new(unsigned int n);
+void operator delete(void* p);
+void operator delete(void* p, unsigned int);
+#endif
 
 namespace apk {
 
