@@ -66,6 +66,8 @@ namespace apk {
         }
 
         memset(s_virtualSurface, 0, s_widthHeight);
+
+        return true;
     }
 
     void destroyScreen() {

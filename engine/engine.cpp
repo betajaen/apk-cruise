@@ -24,13 +24,16 @@ namespace Cruise {
 namespace apk {
 
     void gameMain() {
+        if (apk::gfx::createScreen("Cruise for a Corpse", 320, 240, 8) == false) {
+            return;
+        }
+
         CruiseEngine engine(g_system, nullptr);
         _vm = &engine;
         _vm->run();
     }
 
     void Engine::initGraphics(apk::int32 w, apk::int32 h) {
-        apk::gfx::createScreen("Cruise for a Corpse", w, h, 8);
     }
 
 }

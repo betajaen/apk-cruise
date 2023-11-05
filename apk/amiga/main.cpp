@@ -18,9 +18,23 @@
  */
 
 #include "apk/types.h"
+#include "apk/gfx.h"
+
+namespace apk {
+    bool s_FastMode = true;
+    uint32 s_FastModeTime = 0;
+    Array<Event> s_Event;
+    bool s_quitRequested = true;
+
+    void gameMain();
+}
 
 int apk_main() {
-    return 0;
+    apk::s_quitRequested = false;
+
+    apk::gameMain();
+
+    apk::gfx::destroyScreen();
 }
 
 namespace apk {

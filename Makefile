@@ -33,7 +33,10 @@ AMIGA_RUN 		:= 	fs-uae \
 					--hard_drive_1=./install/ \
 					--hard_drive_1_label="Cruise" \
 					--floppy_drive_volume=0 \
-					--floppy_drive_volume_empty=0
+					--floppy_drive_volume_empty=0 \
+					--scale=2 \
+					--smoothing=0 \
+					--graphics_card=uaegfx
 
 ifeq ($(PLATFORM), rtg)
 	OBJ		  += $(AMIGA_OBJ)

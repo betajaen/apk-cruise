@@ -19,15 +19,47 @@
 
 #include "apk/types.h"
 
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include <proto/intuition.h>
+#include <proto/cybergraphics.h>
+#include <proto/graphics.h>
+#include <proto/datatypes.h>
+
+#include <intuition/intuition.h>
+#include <intuition/screens.h>
+#include <cybergraphx/cybergraphics.h>
+
+#include <graphics/gfx.h>
+#include <graphics/scale.h>
+#include <graphics/displayinfo.h>
+#include <intuition/intuition.h>
+#include <intuition/intuitionbase.h>
+
+struct Library* CyberGfxBase = NULL;
+
 namespace apk {
 
 
     namespace gfx {
 
-        void createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
+        bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
+
+            CyberGfxBase = OpenLibrary("cybergraphics.library", 41);
+            if (!CyberGfxBase) {
+                requester_okay("Error!", "Cannot open cybergraphics.library V41.");
+                return false;
+            }
+
+            return false;
         }
 
         void destroyScreen() {
+
+            if (CyberGfxBase) {
+                CloseLibrary(CyberGfxBase);
+            }
+
         }
 
         void flipScreen() {
