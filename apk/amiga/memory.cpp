@@ -28,10 +28,10 @@ namespace apk {
     void free(void* mem) {
     }
 
-    void memcpy(void* dst, const void* src, size_t length) {
+    void memcpy(void* dst, const void* src, APK_SIZE_TYPE length) {
     }
 
-    void memset(void* dst, int val, size_t length) {
+    void memset(void* dst, int val, APK_SIZE_TYPE length) {
     }
 
     const char* strchr(const char* str, char c) {
@@ -63,11 +63,11 @@ namespace apk {
     void strlcpy(char* dst, const char* src, uint32 length) {
     }
 
-    const char* strlcat(char* dst, const char* src, size_t size) {
+    const char* strlcat(char* dst, const char* src, APK_SIZE_TYPE size) {
         return NULL;
     }
 
-    void sprintf_s(char* dst, size_t dst_length, const char* fmt, ...) {
+    void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...) {
     }
 
     char toupper(char c) {

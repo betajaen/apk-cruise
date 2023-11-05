@@ -27,7 +27,7 @@ namespace apk {
 
     void* malloc(APK_SIZE_TYPE numBytes);
     void free(void* mem);
-    void memcpy(void* dst, const void* src, size_t size);
+    void memcpy(void* dst, const void* src, APK_SIZE_TYPE size);
 
     template<typename T>
     class Array {
@@ -119,17 +119,17 @@ namespace apk {
             m_data[m_size].~T();
         }
 
-        T& operator[](size_t index) {
+        T& operator[](APK_SIZE_TYPE index) {
             assert(index < m_size);
             return m_data[index];
         }
 
-        const T& operator[](size_t index) const {
+        const T& operator[](APK_SIZE_TYPE index) const {
             assert(index < m_size);
             return m_data[index];
         }
 
-        void capacity(size_t newCapacity) {
+        void capacity(APK_SIZE_TYPE newCapacity) {
             if (newCapacity == m_capacity)
                 return;
 
@@ -141,7 +141,7 @@ namespace apk {
             T* tmp = (T*) malloc(sizeof(T) * newCapacity);
 
             if (m_size && m_data) {
-                size_t amountToCopy = 0;
+                APK_SIZE_TYPE amountToCopy = 0;
                 if (newCapacity < m_size) {
                     amountToCopy = newCapacity;
                     m_size = amountToCopy;
@@ -167,11 +167,11 @@ namespace apk {
             m_capacity = newCapacity;
         }
 
-        size_t capacity() const {
+        APK_SIZE_TYPE capacity() const {
             return m_capacity;
         }
 
-        size_t size() const {
+        APK_SIZE_TYPE size() const {
             return m_size;
         }
     };

@@ -60,30 +60,30 @@ namespace apk::endian {
 
 
 
-    template<typename T, size_t ESourceEndian, size_t EDestEndian = Native>
+    template<typename T, APK_SIZE_TYPE ESourceEndian, APK_SIZE_TYPE EDestEndian = Native>
     inline static T peek(const void* mem) {
         const endian::unaligned_pod<T>* v = (const endian::unaligned_pod<T>*) mem;
         return endian_swap<T, ESourceEndian, EDestEndian>(v->val);
     }
 
-    template<typename T, size_t ESourceEndian, size_t EDestEndian = Native>
+    template<typename T, APK_SIZE_TYPE ESourceEndian, APK_SIZE_TYPE EDestEndian = Native>
     inline static void poke(void* mem, T value) {
         endian::unaligned_pod<T>* v = (endian::unaligned_pod<T>*) mem;
         v->val = endian_swap<T, ESourceEndian, EDestEndian>(value);
     }
 
-    template<typename T, size_t ESourceEndian, size_t EDestEndian = Native>
+    template<typename T, APK_SIZE_TYPE ESourceEndian, APK_SIZE_TYPE EDestEndian = Native>
     inline static void poke_inplace(void* mem) {
         endian::unaligned_pod<T>* v = (endian::unaligned_pod<T>*) mem;
         v->val = endian_swap<T, ESourceEndian, EDestEndian>(v->val);
     }
 
-    template<typename T, size_t ESourceEndian, size_t EDestEndian = Native>
+    template<typename T, APK_SIZE_TYPE ESourceEndian, APK_SIZE_TYPE EDestEndian = Native>
     inline static T pod(const T& value) {
         return endian_swap<T, ESourceEndian, EDestEndian>(value);
     }
 
-    template<typename T, size_t ESourceEndian, size_t EDestEndian = Native>
+    template<typename T, APK_SIZE_TYPE ESourceEndian, APK_SIZE_TYPE EDestEndian = Native>
     inline static void array(T* array, uint32 length) {
         for(uint32 i=0;i < length;i++) {
             *array = endian_swap<T, ESourceEndian, EDestEndian>(*array);

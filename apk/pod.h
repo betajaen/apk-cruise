@@ -31,7 +31,6 @@ namespace apk {
     typedef ULONG uint32;
     typedef LONG int32;
     typedef UBYTE byte;
-    typedef ULONG size_t;
     typedef uint32 uint;
 
     typedef ULONG uint32_t;
@@ -50,8 +49,6 @@ namespace apk {
     typedef int16_t int16;
     typedef int32_t int32;
     typedef uint8_t byte;
-    typedef size_t size_t;
-
     typedef uint32 uint;
 
 }
@@ -64,5 +61,10 @@ typedef unsigned int APK_SIZE_TYPE;
 #else
 typedef size_t APK_SIZE_TYPE;
 #endif
+
+namespace apk {
+    typedef APK_SIZE_TYPE size_t;
+}
+
 
 #define APK_ATTR_WEAK __attribute__((weak))

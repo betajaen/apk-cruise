@@ -108,7 +108,7 @@ namespace apk {
 
 
     int strcmp(const char* lhs, const char* rhs);
-    void memcpy(void* dst, const void* src, size_t length);
+    void memcpy(void* dst, const void* src, APK_SIZE_TYPE length);
     uint32 strlen(const char* str);
     void strcpy( char* dst, const char* src);
     void strlcpy(char* dst, const char* src, uint32 length);
@@ -132,7 +132,7 @@ namespace apk {
     char* strchr(char* str, char search);
     char* strrchr(char* str, char search);
 
-    const char* strlcat(char* str, const char* str2, size_t size);
+    const char* strlcat(char* str, const char* str2, APK_SIZE_TYPE size);
 
     inline const char* strcat(char* str, const char* str2) {
         return strlcat(str, str2, 0xFFFFffff);
@@ -144,8 +144,8 @@ namespace apk {
 
     char toupper(char);
 
-    void memset(void* dst, int val, size_t length);
-    void sprintf_s(char* dst, size_t dst_length, const char* fmt, ...);
+    void memset(void* dst, int val, APK_SIZE_TYPE length);
+    void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...);
     void printf(const char* fmt, ...);
 
     void* malloc(APK_SIZE_TYPE length);

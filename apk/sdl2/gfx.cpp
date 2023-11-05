@@ -86,7 +86,7 @@ namespace apk {
 
         uint8* s = src;
         uint8* d = (uint8*)dst->pixels;
-        const size_t stride =  w * 4 * scale;
+        const APK_SIZE_TYPE stride =  w * 4 * scale;
         uint8 line[stride];
 
         for(uint32 y=0;y < h;y++) {

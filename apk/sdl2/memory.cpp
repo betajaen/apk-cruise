@@ -35,11 +35,11 @@ namespace apk {
         return ::free(mem);
     }
 
-    void memcpy(void* dst, const void* src, size_t length) {
+    void memcpy(void* dst, const void* src, APK_SIZE_TYPE length) {
         ::memcpy(dst, src, length);
     }
 
-    void memset(void* dst, int val, size_t length) {
+    void memset(void* dst, int val, APK_SIZE_TYPE length) {
         ::memset(dst, val, length);
     }
 
@@ -75,11 +75,11 @@ namespace apk {
         ::strlcpy(dst, src, length);
     }
 
-    const char* strlcat(char* dst, const char* src, size_t size) {
+    const char* strlcat(char* dst, const char* src, APK_SIZE_TYPE size) {
         return ::strcat(dst, src);
     }
 
-    void sprintf_s(char* dst, size_t dst_length, const char* fmt, ...) {
+    void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);
         ::vsnprintf(dst, dst_length, fmt, args);

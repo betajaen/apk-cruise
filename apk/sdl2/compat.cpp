@@ -21,7 +21,7 @@
 #include "stdio.h"
 
 namespace apk {
-    void* malloc(apk::size_t size);
+    void* malloc(APK_SIZE_TYPE size);
     void free(void* mem);
 }
 
