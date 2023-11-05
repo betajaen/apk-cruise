@@ -1,11 +1,15 @@
 CC=gcc
 OPTIONS=
 
-PLATFORM = rtg
-PROGRAM = ./install/cruise
+PLATFORM = sdl2
+PROGRAM_DIR = ./install/
+PROGRAM_NAME = cruise
+PROGRAM = $(PROGRAM_DIR)$(PROGRAM_NAME)
 
 CXXFLAGS := -I. -D__AMIGADATE__="\"$(DATESTR)\""
 LDFLAGS  :=
+
+SDL2_RUN     := (cd $(PROGRAM_DIR) && $(PROGRAM_NAME))
 
 ifeq ($(PLATFORM), sdl2)
 	OBJ		 := apk/sdl2/main.cpp apk/sdl2/gfx.cpp apk/sdl2/memory.cpp apk/sdl2/file.cpp
@@ -15,12 +19,29 @@ ifeq ($(PLATFORM), sdl2)
 	LDFLAGS  :=
 endif
 
+AMIGA_OBJ       := apk/amiga/entry.cpp apk/amiga/main.cpp  apk/amiga/memory.cpp apk/amiga/debug.cpp apk/amiga/file.cpp
+AMIGA_CC		:= /opt/amiga/bin/m68k-amigaos-g++
+AMIGA_DELETE	:= rm -f
+AMIGA_CXXFLAGS  := -std=c++17 -m68020 -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
+AMIGA_LDFLAGS   := -noixemul -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
+AMIGA_RUN 		:= 	fs-uae \
+					--model=A1200 \
+					--cpu=68030 \
+					--zorro_iii_memory=16384 \
+					--kickstart_file=./install/amigaos-3.2-a1200.rom \
+					--hard_drive_0=./install/amigaos-3.2-a1200.hdf \
+					--hard_drive_1=./install/ \
+					--hard_drive_1_label="Cruise" \
+					--floppy_drive_volume=0 \
+					--floppy_drive_volume_empty=0
+
 ifeq ($(PLATFORM), rtg)
-	OBJ		  := apk/amiga/entry.cpp apk/amiga/main.cpp apk/amiga/gfx.cpp  apk/amiga/memory.cpp apk/amiga/debug.cpp apk/amiga/file.cpp
-	CC		  := /opt/amiga/bin/m68k-amigaos-g++
-	DELETE	  := rm -f
-	CXXFLAGS  += -std=c++17 -m68020 -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
-	LDFLAGS   := -noixemul -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
+	OBJ		  += $(AMIGA_OBJ)
+	OBJ       += apk/amiga/gfx_rtg.cpp
+	CC		  := $(AMIGA_CC)
+	DELETE	  := $(AMIGA_DELETE)
+	CXXFLAGS  += $(AMIGA_CXXFLAGS)
+	LDFLAGS   := $(AMIGA_LDFLAGS)
 endif
 
 OBJ += \
@@ -53,9 +74,15 @@ OBJ += \
 	cruise/vars.cpp \
 	cruise/volume.cpp
 
-all: $(OBJ)
-	$(DELETE) $(PROGRAM)
-	$(CC) $(CXXFLAGS) $(OBJ) -o $(PROGRAM) $(LDFLAGS)
+all: $(PROGRAM)
+
+$(PROGRAM): $(OBJ)
+	$(DELETE) $(PROGRAM) || exit 1
+	if $(CC) $(CXXFLAGS) $(OBJ) -o $(PROGRAM) $(LDFLAGS); then \
+		echo "Compiled to $(PROGRAM)"; \
+	else \
+	  	echo "Compilation failed."; \
+	fi
 
 %.o: %.cpp
 	$(CC) $(CXX) -c $< -o $@
@@ -63,3 +90,13 @@ all: $(OBJ)
 clean .IGNORE:
 	$(DELETE) *.o
 	$(DELETE) $(PROGRAM)
+
+run:
+	@HUNK_COOKIE="000003F3"; \
+	if hexdump -n 4 -e '4/1 "%02X"' $(PROGRAM) | grep -q "$$HUNK_COOKIE"; then \
+		$(AMIGA_RUN); \
+	else \
+		$(SDL2_RUN); \
+	fi
+
+.PHONY: $(PROGRAM) run run_amiga
