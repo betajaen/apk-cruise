@@ -29,6 +29,7 @@
 #include "endian.h"
 #include "memory.h"
 #include "input.h"
+#include "requester.h"
 
 namespace apk {
 
@@ -157,10 +158,6 @@ namespace apk {
     uint32 getMs();
 
 
-    void debug(int, const char* fmt, ...);
-    void debug(const char* str, ...);
-    void warning(const char* fmt, ...);
-    void error(const char* fmt, ...);
 }
 
 
