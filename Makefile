@@ -34,15 +34,28 @@ AMIGA_RUN 		:= 	fs-uae \
 					--hard_drive_1_label="Cruise" \
 					--floppy_drive_volume=0 \
 					--floppy_drive_volume_empty=0 \
-					--scale=2 \
 					--smoothing=0 \
 					--graphics_card=uaegfx \
 					--fssa=0 \
-					--texture_filter=nearest
+					--texture_filter=nearest \
+					--window_x=3001 \
+					--window_y=-200 \
+					--window_width=1400 \
+					--window_height=1024 \
+					--scale=2
 
 ifeq ($(PLATFORM), rtg)
 	OBJ		  += $(AMIGA_OBJ)
 	OBJ       += apk/amiga/gfx_rtg.cpp
+	CC		  := $(AMIGA_CC)
+	DELETE	  := $(AMIGA_DELETE)
+	CXXFLAGS  += $(AMIGA_CXXFLAGS)
+	LDFLAGS   := $(AMIGA_LDFLAGS)
+endif
+
+ifeq ($(PLATFORM), aga)
+	OBJ		  += $(AMIGA_OBJ)
+	OBJ       += apk/amiga/gfx_aga.cpp
 	CC		  := $(AMIGA_CC)
 	DELETE	  := $(AMIGA_DELETE)
 	CXXFLAGS  += $(AMIGA_CXXFLAGS)
