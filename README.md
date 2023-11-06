@@ -30,13 +30,13 @@ The following files must be placed in the `data/dos` or `data/amiga` drawers, wh
 * [ ] Input
 * [ ] Sound
 * [ ] Music
-* [ ] Graphics via graphics.library (ECS/AGA)
-* [ ] Graphics via Real-time Graphics (RTG)
+* [IN PROGRESS] Graphics via graphics.library (ECS/AGA)
+* [IN PROGRESS] Graphics via Real-time Graphics (RTG)
 * [ ] Saved Games
-* [ ] Amiga 32 colour game support
-* [ ] DOS 256 colour game support
+* [IN PROGRESS] Amiga 32 colour game support
+* [IN PROGRESS] DOS 256 colour game support
 * [ ] Mixed Amiga/DOS game support
-* [ ] Port: Amiga OS 3.x
+* [IN PROGRESS] Port: Amiga OS 3.x
 * [ ] Controls enhancements
 * [ ] Installer
 
@@ -63,7 +63,9 @@ None.
 
 #### Observations
 
-Game can be played normally. Some string errors have been observed. Some walkboxes errors have been noticed. Palette errors occur in opening cutscene.
+DOS: Game can be played normally. Some string errors have been observed. Some walkboxes errors have been noticed. Palette errors occur in opening cutscene.
+
+Amiga: Amiga can play opening cutscene with some corrupted colours (like DOS), it crashes when loading the study.
 
 ## ScummVM differences
 
