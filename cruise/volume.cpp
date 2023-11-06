@@ -340,7 +340,7 @@ int16 readVolCnf() {
 		volumeData[i].diskNumber = fileHandle.readSint16BE();
 		volumeData[i].size = fileHandle.readSint32BE();
 
-		debug(1, "Disk number: %d", volumeData[i].diskNumber);
+		debug(1, "Disk number: %ld", volumeData[i].diskNumber); // MOD: debug(1, "Disk number: %d", volumeData[i].diskNumber);
 	}
 
 	for (int i = 0; i < numOfDisks; i++) {
