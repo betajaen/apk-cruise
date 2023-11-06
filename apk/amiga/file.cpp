@@ -20,11 +20,14 @@
 #include "apk/types.h"
 #include "apk/file.h"
 
+#include <proto/dos.h>
+
 namespace apk {
 
     class FileImpl {
     public:
         ULONG fh;
+        ULONG size;
     };
 
     File::File() {
@@ -36,48 +39,107 @@ namespace apk {
     }
 
     bool File::close() {
+        if (m_impl) {
+            Close(m_impl->fh);
+            delete m_impl;
+            m_impl = NULL;
+            return true;
+        }
         return false;
     }
 
     bool File::isOpen() const {
-        return false;
+        return m_impl != NULL;
     }
 
     bool File::open(const char* path) {
-        return false;
+        close();
+
+        char diskPath[256] = { 0 };
+        sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:data/dos/%s", path);
+
+        ULONG fh = Open(diskPath, MODE_OLDFILE);
+        if (fh == 0UL) {
+            return false;
+        }
+
+        m_impl = new FileImpl();
+        m_impl->fh = fh;
+        Seek(fh, 0, OFFSET_END);
+        m_impl->size = Seek(fh, 0, OFFSET_BEGINNING);
+
+        return true;
     }
 
     uint32 File::size() const {
-        return 0;
+
+        if (m_impl == NULL) {
+            return 0;
+        }
+
+        return m_impl->size;
     }
 
     bool File::exists(const char* path) {
-        return false;
+
+        char diskPath[256] = { 0 };
+        sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:data/dos/%s", path);
+
+        ULONG fh = Open(diskPath, MODE_OLDFILE);
+
+        if (fh == 0UL) {
+            return false;
+        }
+
+        Close(fh);
+
+        return true;
     }
 
 
     bool File::seek(int32 where, int32 mode) {
-        return false;
+        assert(m_impl);
+
+        switch(mode) {
+            default:
+                return false;
+            case kSEEK_SET:
+                return Seek(m_impl->fh, where, OFFSET_BEGINNING) != 0;
+            case kSEEK_CUR:
+                return Seek(m_impl->fh, where, OFFSET_CURRENT) != 0;
+            case kSEEK_END:
+                return Seek(m_impl->fh, where, OFFSET_END) != 0;
+        }
     }
 
     uint32 File::read(void* data, uint32 size) {
-        return 0;
+        assert(m_impl);
+
+        return (ULONG) Read(m_impl->fh, data, size);
     }
 
     int16 File::readSint16BE() {
-        return 0;
+        int16 value;
+        read(&value, sizeof(value));
+        return endian::pod<int16, endian::Big>(value);
     }
 
     int32 File::readSint32BE() {
-        return 0;
+        int32 value;
+        read(&value, sizeof(value));
+        return endian::pod<int32, endian::Big>(value);
     }
 
     uint16 File::readUint16BE() {
-        return 0;
+        uint16 value;
+        read(&value, sizeof(value));
+        return endian::pod<uint16, endian::Big>(value);
     }
 
     uint32 File::readUint32BE() {
-        return 0;
+        uint32 value;
+        read(&value, sizeof(value));
+        return endian::pod<uint32, endian::Big>(value);
     }
 
 }
