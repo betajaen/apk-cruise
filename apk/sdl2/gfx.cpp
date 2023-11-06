@@ -37,7 +37,7 @@ namespace apk {
     namespace gfx {
 
 
-    void createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
+    bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
         SDL_assert(s_screen == NULL);
 
         s_screen = SDL_CreateWindow(title,
