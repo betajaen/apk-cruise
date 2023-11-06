@@ -38,6 +38,10 @@ namespace apk {
     }
 
     void doAssert(const char* file, int line) {
+        static char tmp[200];
+        sprintf_s(tmp, sizeof(tmp), "Program asserted at\n%s:%ld", file, line);
+        requester_okay("Assert!", tmp);
+        while(1);
     }
 
     bool pollEvents(Event& evt) {
