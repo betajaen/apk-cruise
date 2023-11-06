@@ -19,19 +19,38 @@
 
 #include "apk/types.h"
 
+#include <proto/exec.h>
+
+typedef VOID(*PUTCHARPROC)();
+static const ULONG PutChar = 0x16c04e75;
+static const ULONG LenChar = 0x52934e75;
+
 namespace apk {
 
     void* malloc(APK_SIZE_TYPE size) {
-        return NULL;
+        return AllocVec(size, MEMF_CLEAR);
     }
 
     void free(void* mem) {
+        if (mem != NULL) {
+            FreeVec(mem);
+        }
     }
 
     void memcpy(void* dst, const void* src, APK_SIZE_TYPE length) {
+        CopyMem(src, dst, length);
     }
 
     void memset(void* dst, int val, APK_SIZE_TYPE length) {
+        if (dst == NULL) {
+            return;
+        }
+
+        BYTE* d = (BYTE*) dst;
+        BYTE v = (BYTE) val;
+        for(APK_SIZE_TYPE i=0;i < length;i++) {
+            *d++ = v;
+        }
     }
 
     const char* strchr(const char* str, char c) {
@@ -68,6 +87,18 @@ namespace apk {
     }
 
     void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...) {
+
+		uint32 length = 0;
+		const char* arg = (const char*)(&fmt + 1);
+
+		RawDoFmt((CONST_STRPTR)fmt, (APTR)arg, (PUTCHARPROC)&LenChar, &length);
+
+        if (length == 0 || length > dst_length) {
+            *dst = '\0';
+            return;
+		}
+
+        RawDoFmt((CONST_STRPTR)fmt, (APTR)arg, (PUTCHARPROC)&PutChar, dst);
     }
 
     char toupper(char c) {
