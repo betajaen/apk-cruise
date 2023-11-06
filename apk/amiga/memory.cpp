@@ -54,13 +54,27 @@ namespace apk {
     }
 
     const char* strchr(const char* str, char c) {
+        while(*str != '\0') {
+            if (*str == c) {
+                return str;
+            }
+            str++;
+        }
+        return NULL;
     }
 
     const char* strrchr(const char* str, char c) {
+        debug("strrchr not implemented");
         return NULL;
     }
 
     char* strchr(char* str, char c) {
+        while(*str != '\0') {
+            if (*str == c) {
+                return str;
+            }
+            str++;
+        }
         return NULL;
     }
 
@@ -69,21 +83,40 @@ namespace apk {
     }
 
     int strcmp(const char* lhs, const char* rhs) {
-        return 0;
+
+        const unsigned char *p1 = ( const unsigned char * ) lhs;
+        const unsigned char *p2 = ( const unsigned char * ) rhs;
+
+        while ( *p1 && *p1 == *p2 ) ++p1, ++p2;
+
+        return ( *p1 > *p2 ) - ( *p2  > *p1 );
     }
 
     uint32 strlen(const char* str) {
-        return 0;
+        uint32 length = 0;
+        while(*str++ != '\0') {
+            length++;
+        }
+        return length;
     }
 
     void strcpy(char* dst, const char* src) {
+        strlcpy(dst, src, 0xFFFFFFFF);
     }
 
     void strlcpy(char* dst, const char* src, uint32 length) {
+        uint32 src_length = strlen(src);
+        uint32 amount_to_copy = length < src_length ? length : src_length;
+        while(amount_to_copy > 0) {
+            *dst++ = *src++;
+            amount_to_copy--;
+        }
+        *dst = '\0';
     }
 
     const char* strlcat(char* dst, const char* src, APK_SIZE_TYPE size) {
-        return NULL;
+        sprintf_s(dst, size, "%s%s", dst, src);
+        return dst;
     }
 
     void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...) {
@@ -102,6 +135,9 @@ namespace apk {
     }
 
     char toupper(char c) {
+        if (c >= 'a' && c <= 'z') {
+            c = c - 'a' + 'A';
+        }
         return c;
     }
 

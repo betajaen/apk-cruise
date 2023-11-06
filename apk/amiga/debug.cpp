@@ -20,21 +20,53 @@
 #include "apk/types.h"
 #include "apk/assert.h"
 
+#include <proto/exec.h>
+#include <proto/dos.h>
+
+typedef VOID(*PUTCHARPROC)();
+
+static const ULONG PutChar = 0x16c04e75;
+static const ULONG LenChar = 0x52934e75;
+static char BufChar[1024] = { 0 };
+
 namespace apk {
 
     void printf(const char* fmt, ...) {
+		const char* arg = (const char*)(&fmt + 1);
+		RawDoFmt((CONST_STRPTR) fmt, (APTR) arg, (PUTCHARPROC)&PutChar, &BufChar[0]);
+		PutStr(BufChar);
     }
 
     void debug(int l, const char* fmt, ...) {
+		const char* arg = (const char*)(&fmt + 1);
+		RawDoFmt((CONST_STRPTR) fmt, (APTR) arg, (PUTCHARPROC)&PutChar, &BufChar[0]);
+        PutStr("[D] ");
+		PutStr(BufChar);
+        PutStr("\n");
     }
 
     void debug(const char* fmt, ...) {
+		const char* arg = (const char*)(&fmt + 1);
+		RawDoFmt((CONST_STRPTR) fmt, (APTR) arg, (PUTCHARPROC)&PutChar, &BufChar[0]);
+        PutStr("[D] ");
+		PutStr(BufChar);
+        PutStr("\n");
     }
 
     void warning(const char* fmt, ...) {
+		const char* arg = (const char*)(&fmt + 1);
+		RawDoFmt((CONST_STRPTR) fmt, (APTR) arg, (PUTCHARPROC)&PutChar, &BufChar[0]);
+        PutStr("[W] ");
+		PutStr(BufChar);
+        PutStr("\n");
     }
 
     void error(const char* fmt, ...) {
+		const char* arg = (const char*)(&fmt + 1);
+		RawDoFmt((CONST_STRPTR) fmt, (APTR) arg, (PUTCHARPROC)&PutChar, &BufChar[0]);
+        PutStr("[E] ");
+		PutStr(BufChar);
+        PutStr("\n");
     }
 
     void doAssert(const char* file, int line) {

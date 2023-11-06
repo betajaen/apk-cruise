@@ -39,14 +39,18 @@ int apk_main() {
 
 namespace apk {
 
+    static ULONG ticks = 0;
+
     bool isQuitRequested() {
         return false;
     }
 
     void delayMs(uint32 ms) {
+        ticks += ms;
     }
 
     uint32 getMs() {
-        return 0;
+        ticks++;
+        return ticks;
     }
 }

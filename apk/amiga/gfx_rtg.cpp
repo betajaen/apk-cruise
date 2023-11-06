@@ -159,6 +159,7 @@ namespace apk {
         }
 
         void blit(uint8* data, uint32 size) {
+            WritePixelArray(data, 0, 0, 320, &mRastPort, 0, 0, 320, 240, RECTFMT_LUT8);
         }
 
         void cls(uint8 index) {
@@ -178,6 +179,7 @@ namespace apk {
                 *dst++ = *pal++ << 24 | 0x00FFffFF;
                 *dst++ = *pal++ << 24 | 0x00FFffFF;
             }
+			LoadRGB32(&mScreen->ViewPort, &sPalette[0]);
         }
     }
 
