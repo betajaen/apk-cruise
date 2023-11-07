@@ -37,6 +37,7 @@
 namespace apk {
 
 
+    extern Array<Event> s_Event;
     namespace gfx {
 
 		struct Window* mWindow;
@@ -84,6 +85,81 @@ namespace apk {
     }
 
     void fetchEvents() {
+
+        struct IntuiMessage* imsg;
+
+        while(true) {
+
+            imsg = (struct IntuiMessage*) GetMsg(gfx::mWindow->UserPort);
+
+            if (imsg == NULL)
+                break;
+
+            ReplyMsg((struct Message*) imsg);
+
+            debug("Message! %d", imsg->Class);
+
+            switch(imsg->Class) {
+                case IDCMP_MOUSEMOVE:
+                {
+                    Event evt;
+                    evt.type = EVENT_MOUSEMOVE;
+                    evt.mouse.x = imsg->MouseX;
+                    evt.mouse.y = imsg->MouseY;
+                    s_Event.push_back(evt);
+                }
+                break;
+                case IDCMP_MOUSEBUTTONS:
+                {
+                    Event evt;
+                    evt.type = EVENT_MOUSEMOVE;
+                    evt.mouse.x = imsg->MouseX;
+                    evt.mouse.y = imsg->MouseY;
+                    s_Event.push_back(evt);
+
+                    if (imsg->Code == SELECTDOWN) {
+                        Event evt;
+                        evt.type = EVENT_LBUTTONDOWN;
+                        s_Event.push_back(evt);
+                    }
+
+                    if (imsg->Code == SELECTUP) {
+                        Event evt;
+                        evt.type = EVENT_LBUTTONUP;
+                        s_Event.push_back(evt);
+                    }
+
+                    if (imsg->Code == MENUDOWN) {
+                        Event evt;
+                        evt.type = EVENT_RBUTTONDOWN;
+                        s_Event.push_back(evt);
+                    }
+
+                    if (imsg->Code == MENUUP) {
+                        Event evt;
+                        evt.type = EVENT_RBUTTONUP;
+                        s_Event.push_back(evt);
+                    }
+                }
+                break;
+            }
+
+
+        }
+
+
+
+    }
+
+
+
+    bool pollEvents(Event& evt) {
+        if (s_Event.size() == 0) {
+            return false;
+        }
+        evt = s_Event[s_Event.size()-1];
+        s_Event.pop_back();
+        return true;
     }
 
 }

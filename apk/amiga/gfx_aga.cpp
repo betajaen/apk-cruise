@@ -126,6 +126,7 @@ namespace apk {
         }
 
         void flipScreen() {
+            fetchEvents();
         }
 
         void blit(uint8* data, uint32 size) {

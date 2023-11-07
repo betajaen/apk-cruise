@@ -76,9 +76,6 @@ namespace apk {
         while(1);
     }
 
-    bool pollEvents(Event& evt) {
-        return false;
-    }
 
 
 }
