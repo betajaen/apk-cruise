@@ -133,16 +133,6 @@ namespace apk {
     char* strchr(char* str, char search);
     char* strrchr(char* str, char search);
 
-    const char* strlcat(char* str, const char* str2, APK_SIZE_TYPE size);
-
-    inline const char* strcat(char* str, const char* str2) {
-        return strlcat(str, str2, 0xFFFFffff);
-    }
-
-    inline const char* strcat_s(char* str, const char* str2) {
-        return strlcat(str, str2, 0xFFFFffff);
-    }
-
     char toupper(char);
 
     void memset(void* dst, int val, APK_SIZE_TYPE length);

@@ -162,8 +162,9 @@ int loadOverlay(const char *scriptName) {
 
 	overlayTable[scriptIdx].ovlData->scriptNumber = scriptIdx;
 
-	Common::strlcpy(fileName, scriptName, sizeof(fileName));
-	Common::strlcat(fileName, ".OVL", sizeof(fileName));
+	Common::sprintf_s(fileName, sizeof(fileName), "%s.OVL", scriptName); // MOD:
+	// MOD: Common::strlcpy(fileName, scriptName, sizeof(fileName));
+	// MOD: Common::strlcat(fileName, ".OVL", sizeof(fileName));
 
 	debug(1, "Attempting to load overlay file %s...", fileName);
 
@@ -513,8 +514,9 @@ int loadOverlay(const char *scriptName) {
 		//uint8 fileName[50];
 		//char* unpackedBuffer;
 
-		Common::strlcpy(fileName, scriptName, sizeof(fileName));
-		Common::strlcat(fileName, ".FR", sizeof(fileName));
+		Common::sprintf_s(fileName, sizeof(fileName), "%s.FR", scriptName); // MOD:
+		// MOD: Common::strlcpy(fileName, scriptName, sizeof(fileName));
+		// MOD: Common::strlcat(fileName, ".FR", sizeof(fileName));
 
 		fileIdx = findFileInDisks(fileName);
 

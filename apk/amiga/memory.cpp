@@ -79,6 +79,7 @@ namespace apk {
     }
 
     char* strrchr(char* str, char c) {
+        debug("strrchr not implemented");
         return NULL;
     }
 
@@ -101,7 +102,10 @@ namespace apk {
     }
 
     void strcpy(char* dst, const char* src) {
-        strlcpy(dst, src, 0xFFFFFFFF);
+        while(*src != '\0') {
+            *dst++ = *src++;
+        }
+        *dst = '\0';
     }
 
     void strlcpy(char* dst, const char* src, uint32 length) {
@@ -112,11 +116,6 @@ namespace apk {
             amount_to_copy--;
         }
         *dst = '\0';
-    }
-
-    const char* strlcat(char* dst, const char* src, APK_SIZE_TYPE size) {
-        sprintf_s(dst, size, "%s%s", dst, src);
-        return dst;
     }
 
     void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...) {

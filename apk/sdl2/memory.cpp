@@ -75,10 +75,6 @@ namespace apk {
         ::strlcpy(dst, src, length);
     }
 
-    const char* strlcat(char* dst, const char* src, APK_SIZE_TYPE size) {
-        return ::strcat(dst, src);
-    }
-
     void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);

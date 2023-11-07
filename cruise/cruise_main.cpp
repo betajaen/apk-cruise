@@ -356,7 +356,8 @@ int loadFileSub1(uint8 **ptr, const char *name, uint8 *ptr2) {
 		 * else
 		 * if (useAdLib)
 		 * { */
-		Common::strcat_s(buffer,".ADL");
+		Common::sprintf_s(buffer, sizeof(buffer), "%s.ADL", buffer); // MOD:
+		// MOD: Common::strcat_s(buffer,".ADL");
 		/* }
 		 * else
 		 * {
@@ -1622,9 +1623,10 @@ int CruiseEngine::processInput() {
 							changeCursor(CURSOR_NORMAL);
 						} else { // else create the message for the linked relation
 							char text[80];
-							Common::strcpy_s(text, menuTable[0]->stringPtr);
-							Common::strcat_s(text, ":");
-							Common::strcat_s(text, currentMenuElement->string);
+							Common::sprintf_s(text, sizeof(text), "%s:%s", menuTable[0]->stringPtr, currentMenuElement->string); // MOD:
+							// MOD: Common::strcpy_s(text, menuTable[0]->stringPtr);
+							// MOD: Common::strcat_s(text, ":");
+							// MOD: Common::strcat_s(text, currentMenuElement->string);
 							linkedMsgList = renderText(320, (const char *)text);
 							changeCursor(CURSOR_CROSS);
 						}
