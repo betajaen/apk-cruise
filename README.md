@@ -27,7 +27,7 @@ The following files must be placed in the `data/dos` or `data/amiga` drawers, wh
 
 ### Amiga
 
-* [ ] Input
+* [X] Input (MOUSE ONLY)
 * [ ] Sound
 * [ ] Music
 * [X Graphics via graphics.library (ECS/AGA)
@@ -65,7 +65,7 @@ None.
 
 DOS: Game can be played normally. Some string errors have been observed. Some walkboxes errors have been noticed. Palette errors occur in opening cutscene.
 
-Amiga: Plays opening scene normally. Some palette errors occur similar to SDL2. Game runs to study. No input implement to play game further.
+Amiga: Plays opening scene normally. Some palette errors occur similar to SDL2. Game runs to study. Basic input is implemented. Game and Input performance is based upon frame-rate thus laggy in complicated scenes.
 
 ## ScummVM differences
 
