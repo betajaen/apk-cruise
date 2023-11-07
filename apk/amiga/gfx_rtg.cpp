@@ -44,11 +44,14 @@ namespace apk {
     namespace gfx {
 
 		struct Screen* mScreen;
-		struct Window* mWindow;
+		extern struct Window* mWindow;
 		struct ScreenBuffer* mScreenBuffer;
 		struct RastPort mRastPort;
 
         static ULONG sPalette[2 + (256 * 3)] = { 0 };
+
+        bool createWindow(struct Screen* screen, uint16 width, uint16 height, uint8 depth);
+        void destroyWindow();
 
         bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
 
@@ -105,29 +108,8 @@ namespace apk {
             InitRastPort(&mRastPort);
             mRastPort.BitMap = mScreenBuffer->sb_BitMap;
 
-            mWindow = OpenWindowTags(NULL,
-                WA_Left, 0,
-                WA_Top, 0,
-                WA_Width, width,
-                WA_Height, height,
-                WA_CustomScreen, (ULONG)mScreen,
-                WA_Backdrop, TRUE,
-                WA_Borderless, TRUE,
-                WA_DragBar, FALSE,
-                WA_Activate, TRUE,
-                WA_SimpleRefresh, TRUE,
-                WA_CloseGadget, FALSE,
-                WA_DepthGadget, FALSE,
-                WA_IDCMP, IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEBUTTONS,
-                TAG_END
-		    );
-
-            if (mWindow == NULL) {
-                requester_okay("Error", "Could open Window for Screen!");
+            if (createWindow(mScreen, width, height, depth) == false)
                 return false;
-            }
-
-
 
             return true;
         }
@@ -139,10 +121,7 @@ namespace apk {
                 mScreenBuffer = NULL;
             }
 
-            if (mWindow) {
-                CloseWindow(mWindow);
-                mWindow = NULL;
-            }
+            destroyWindow();
 
             if (mScreen) {
                 CloseScreen(mScreen);
@@ -181,9 +160,6 @@ namespace apk {
             }
 			LoadRGB32(&mScreen->ViewPort, &sPalette[0]);
         }
-    }
-
-    void fetchEvents() {
     }
 
 }
