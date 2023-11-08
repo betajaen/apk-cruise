@@ -69,6 +69,9 @@ private:
 	bool loadLanguageStrings();
 	void mainLoop();
 	int processInput();
+    void mainLoop_Start(); // MOD:
+    void mainLoop_Stop(); // MOD:
+    void mainLoop_Frame(); // MOD:
 public: // MOD: protected:
 	// Engine APIs
 	Common::Error run() override;

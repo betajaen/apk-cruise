@@ -1792,18 +1792,11 @@ void getMouseStatus(int16 *pMouseVar, int16 *pMouseX, int16 *pMouseButton, int16
 	*pMouseY = currentMouseY;
 	*pMouseButton = currentMouseButton;
 }
+static int16 mouseX, mouseY, mouseButton, enableUser; // MOD:
 
+void CruiseEngine::mainLoop_Start() { // MOD:
 
-void CruiseEngine::mainLoop() {
-	//int32 t_start,t_left;
-	//uint32 t_end;
-	//int32 q=0;                     /* Dummy */
-	int16 mouseX, mouseY;
-	int16 mouseButton;
-
-	int enableUser = 0;
-
-	nextOverlay[0] = '\0';
+    nextOverlay[0] = '\0';
 	lastOverlay[0] = '\0';
 	cmdLine[0] = '\0';
 
@@ -1812,6 +1805,7 @@ void CruiseEngine::mainLoop() {
 	linkedRelation = nullptr;
 	userWait = false;
 	autoTrack = false;
+    enableUser = 0;
 
 	initAllData();
 
@@ -1820,8 +1814,23 @@ void CruiseEngine::mainLoop() {
 	if (ConfMan.hasKey("save_slot"))
 		loadGameState(ConfMan.getInt("save_slot"));
 
-	do {
-		// Handle frame delay
+}
+
+void CruiseEngine::mainLoop_Stop() { // MOD:
+	// Free data
+	removeAllScripts(&relHead);
+	removeAllScripts(&procHead);
+	resetActorPtr(&actorHead);
+	freeOverlayTable();
+	closeCnf();
+	closeBase();
+	resetFileEntryRange(0, NUM_FILE_ENTRIES);
+	freeObjectList(&cellHead);
+	freeBackgroundIncrustList(&backgroundIncrustHead);
+}
+
+void CruiseEngine::mainLoop_Frame() { // MOD:
+ 		// Handle frame delay
 		uint32 currentTick = g_system->getMillis();
 
 		// Delay for the specified amount of time, but still respond to events
@@ -1875,7 +1884,7 @@ void CruiseEngine::mainLoop() {
 
 		} while (currentTick < _lastTick + _gameSpeed && !bFastMode);
 		if (_playerDontAskQuit)
-			break;
+			return;
 
 		_lastTick = g_system->getMillis();
 
@@ -1903,7 +1912,7 @@ void CruiseEngine::mainLoop() {
 
 		_playerDontAskQuit = processInput();
 		if (_playerDontAskQuit)
-			break;
+			return;
 
 		if (enableUser) {
 			userEnabled = 1;
@@ -1976,7 +1985,7 @@ void CruiseEngine::mainLoop() {
 			if (userWait) {
 				// Waiting for press - original wait loop has been integrated into the
 				// main event loop
-				continue;
+				return;
 			}
 
 			// wait for character to finish auto track
@@ -2005,19 +2014,16 @@ void CruiseEngine::mainLoop() {
 			// Keep ScummVM being responsive even when displayOn is false
 			g_system->updateScreen();
 		}
+}
 
+void CruiseEngine::mainLoop() {
+    mainLoop_Start();
+
+	do {
+        mainLoop_Frame();
 	} while (!_playerDontAskQuit);
 
-	// Free data
-	removeAllScripts(&relHead);
-	removeAllScripts(&procHead);
-	resetActorPtr(&actorHead);
-	freeOverlayTable();
-	closeCnf();
-	closeBase();
-	resetFileEntryRange(0, NUM_FILE_ENTRIES);
-	freeObjectList(&cellHead);
-	freeBackgroundIncrustList(&backgroundIncrustHead);
+    mainLoop_Stop();
 }
 
 } // End of namespace Cruise
