@@ -13,7 +13,6 @@ namespace Cruise {
     }
 
     void OSystem::copyToScreen(uint8* data, uint32 size) {
-        apk::gfx::blit(data, size);
     }
 
     void OSystem::box(uint32 left, uint32 top, uint32 right, uint32 bottom) {
@@ -24,7 +23,7 @@ namespace Cruise {
 namespace apk {
 
     void gameMain() {
-        if (apk::gfx::createScreen("Cruise for a Corpse", 320, 240, 8) == false) {
+        if (apk::gfx::createScreen("Cruise for a Corpse", 320, 200, 8) == false) {
             return;
         }
 
