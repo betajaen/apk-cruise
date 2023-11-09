@@ -1994,15 +1994,113 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 		}
 }
 
-void CruiseEngine::mainLoop() {
+
+void EventCb(void* ce, apk::Event& event) { // MOD:
+		bool abortFlag = true;
+
+		switch (event.type) {
+		case Common::EVENT_LBUTTONDOWN:
+			currentMouseButton |= CRS_MB_LEFT;
+			break;
+		case Common::EVENT_LBUTTONUP:
+			currentMouseButton &= ~CRS_MB_LEFT;
+			break;
+		case Common::EVENT_RBUTTONDOWN:
+			currentMouseButton |= CRS_MB_RIGHT;
+			break;
+		case Common::EVENT_RBUTTONUP:
+			currentMouseButton &= ~CRS_MB_RIGHT;
+			break;
+		case Common::EVENT_MOUSEMOVE:
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			abortFlag = false;
+			break;
+		case Common::EVENT_QUIT:
+		case Common::EVENT_RETURN_TO_LAUNCHER:
+			_playerDontAskQuit = true;
+			break;
+        case Common::EVENT_FAST_MODE:  // MOD:
+        {
+            bFastMode = !bFastMode;
+            debug("Fast Mode %d", bFastMode);
+        }
+        break;
+        case Common::EVENT_SKIP_PROTECTION: // MOD:
+        {
+            bSkipProtection = !bSkipProtection;
+            debug("Skip Protection %d", bSkipProtection);
+        }
+        break;
+		case Common::EVENT_PAUSE: // MOD:
+		{
+#if 0
+			keyboardCode = Common::KEYCODE_INVALID;
+			_vm->pauseEngine(true);
+			mouseOff();
+
+			bool pausedButtonDown = false;
+			bool endPause = false;
+			while (!_vm->shouldQuit() && endPause == false) {
+				eventMan->fetchEvents();
+				while(eventMan->pollEvent(event)) {
+					if (event.type == EVENT_PAUSE) {
+						endPause = true;
+						break;
+					}
+					else if (event.type == EVENT_QUIT) {
+						_playerDontAskQuit = true;
+						endPause = true;
+						break;
+					}
+				}
+				delayMs(10);
+			}
+			_vm->pauseEngine(false);
+			mouseOn();
+#endif
+		}
+		break;
+		case Common::EVENT_KEYUP:
+			switch (event.kbd.keycode) {
+			case Common::KEYCODE_ESCAPE:
+				currentMouseButton &= ~CRS_MB_MIDDLE;
+				break;
+			default:
+				break;
+			}
+			break;
+		case Common::EVENT_KEYDOWN:
+			switch (event.kbd.keycode) {
+			case Common::KEYCODE_ESCAPE:
+				currentMouseButton |= CRS_MB_MIDDLE;
+				break;
+			default:
+				keyboardCode = event.kbd.keycode;
+				break;
+			}
+
+			if (event.kbd.hasFlags(Common::KBD_CTRL) && event.kbd.keycode == Common::KEYCODE_f) {
+				bFastMode = !bFastMode;
+				keyboardCode = Common::KEYCODE_INVALID;
+			}
+
+		default:
+			break;
+		}
+}
+
+void TimerCb(void* ce) { // MOD:
+	CruiseEngine* c = (CruiseEngine*) ce;
+	c->mainLoop_Frame();
+	flipScreen();
+	// ((CruiseEngine*)ce)->mainLoop_Frame();
+
+}
+
+void CruiseEngine::mainLoop() { // MOD:
     mainLoop_Start();
-
-	do {
-		manageEvents();
-        mainLoop_Frame();
-		flipScreen();
-	} while (!_playerDontAskQuit);
-
+	apk::gfx::windowLoop(this, (1000000 / 30), EventCb, TimerCb);
     mainLoop_Stop();
 }
 

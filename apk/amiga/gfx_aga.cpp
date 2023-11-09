@@ -126,7 +126,6 @@ namespace apk {
         }
 
         void flipScreen() {
-            fetchEvents();
         }
 
         void writeChunkyPixels(uint8* data) {

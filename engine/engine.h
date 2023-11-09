@@ -85,10 +85,11 @@ namespace apk {
     class EventManager {
     public:
         void fetchEvents() {
-            ::apk::fetchEvents();
+            //::apk::fetchEvents();
         }
         bool pollEvent(Event& evt) {
-            return ::apk::pollEvents(evt);
+            return false;
+            //return ::apk::pollEvents(evt);
         }
     };
 

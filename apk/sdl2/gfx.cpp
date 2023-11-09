@@ -83,7 +83,7 @@ namespace apk {
     }
 
     static void scaleCopy(SDL_Surface* dst, byte* src, uint32 scale, uint32 w, uint32 h) {
-;
+
         SDL_LockSurface(dst);
 
         uint8* s = src;
@@ -121,11 +121,9 @@ namespace apk {
     }
 
 
-    void flipScreen() {
+    static void surfaceCopy() {
         scaleCopy(s_screenSurface, s_virtualSurface, kScreenScale, s_width, s_height);
         SDL_UpdateWindowSurface(s_screen);
-
-        fetchEvents();
 
         if (s_FastMode) {
             s_FastModeTime++;
@@ -160,17 +158,17 @@ namespace apk {
 
     void writeChunkyPixels(uint8* data) {
         blit(data, s_widthHeight);
-        flipScreen();
+        surfaceCopy();
     }
 
     void clearChunkyPixels(uint8 index) {
         cls(index);
-        flipScreen();
+        surfaceCopy();
     }
 
 }
 
-
+#if 0
     void fetchEvents() {
         SDL_Event evt;
         while(SDL_PollEvent(&evt)) {
@@ -246,6 +244,7 @@ namespace apk {
             }
         }
     }
+#endif
 
 }
 

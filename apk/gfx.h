@@ -21,10 +21,17 @@
 
 namespace apk {
 
+    struct Event;
+
     namespace gfx {
+
+        typedef void(*WindowEventFn)(void* user, Event& evt);
+        typedef void(*WindowTimerFn)(void* user);
 
         bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth);
         void destroyScreen();
+        void windowLoop(void* user, uint32 waitTime_usec, WindowEventFn evtFn, WindowTimerFn timerFn);
+        void windowStopLoop();
         void flipScreen();
         void writeChunkyPixels(uint8* data);
         void clearChunkyPixels(uint8 index);
