@@ -1869,10 +1869,10 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 				changeCursor(CURSOR_NORMAL);
 			}
 
-			g_system->updateScreen();
+// MOD:			g_system->updateScreen();
 
-			if (!skipEvents || bFastMode)
-				skipEvents = manageEvents();
+// MOD:			if (!skipEvents || bFastMode)
+// MOD:				skipEvents = manageEvents();
 
 			if (!bFastMode) {
 				g_system->delayMillis(10);
@@ -1956,31 +1956,12 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 
 		processAnimation();
 
-		if (remdo) {
-			// assert(0);
-			/*    main3 = 0;
-			 * var24 = 0;
-			 * var23 = 0;
-			 *
-			 * freeStuff2(); */
-		}
-
-		if (cmdLine[0]) {
-			assert(0);
-			/*        redrawStrings(0,&cmdLine,8);
-
-			        waitForPlayerInput();
-
-			        cmdLine = 0; */
-		}
-
 		if (displayOn) {
 			if (doFade)
 				PCFadeFlag = false;
 
 			/*if (!PCFadeFlag)*/
 			mainDraw(userWait);
-			flipScreen();
 
 			if (userWait) {
 				// Waiting for press - original wait loop has been integrated into the
@@ -2010,9 +1991,6 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 				removeCell(&cellHead, autoOvl, autoMsg, 5, masterScreen);
 				autoMsg = -1;
 			}
-		} else {
-			// Keep ScummVM being responsive even when displayOn is false
-			g_system->updateScreen();
 		}
 }
 
@@ -2020,7 +1998,9 @@ void CruiseEngine::mainLoop() {
     mainLoop_Start();
 
 	do {
+		manageEvents();
         mainLoop_Frame();
+		flipScreen();
 	} while (!_playerDontAskQuit);
 
     mainLoop_Stop();
