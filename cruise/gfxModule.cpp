@@ -32,10 +32,10 @@
 
 namespace Cruise {
 
-uint8 page00[320 * 200];
-uint8 page10[320 * 200];
+static APK_ALIGNED uint8* page00 = NULL; // MOD: uint8 page00[320 * 200];
+static APK_ALIGNED uint8* page10 = NULL; // MOD: uint8 page10[320 * 200];
 
-char screen[320 * 200];
+static APK_ALIGNED uint8* screen = NULL; // MOD: char screen[320 * 200];
 palEntry lpalette[256];
 
 int palDirtyMin = 256;
@@ -44,6 +44,7 @@ int palDirtyMax = -1;
 bool _dirtyRectScreen = false;
 bool s_screenIsDirty = false; // MOD:
 bool s_paletteIsDirty = false; // MOD:
+static uint8 drawFlags[(320/8)*(200/8)] = { 0 }; // MOD:
 
 gfxModuleDataStruct gfxModuleData = {
 	0,			// use Tandy
@@ -54,12 +55,18 @@ gfxModuleDataStruct gfxModuleData = {
 	page10,			// pPage10
 };
 
+void gfxModuleData_deleteFrameBuffers() {
+    apk::free_aligned(page00); page00 = NULL;
+    apk::free_aligned(page10); page00 = NULL;
+    apk::free_aligned(screen); screen = NULL;
+}
+
 void gfxModuleData_gfxClearFrameBuffer(uint8 *ptr) {
-	memset(ptr, 0, 64000);
+    apk::memset_aligned(ptr, 0, 64000); // MOD: memset(ptr, 0, 64000);
 }
 
 void gfxModuleData_gfxCopyScreen(const uint8 *sourcePtr, uint8 *destPtr) {
-	memcpy(destPtr, sourcePtr, 320 * 200);
+    apk::memcpy_aligned(destPtr, sourcePtr, 64000); // MOD: memcpy(destPtr, sourcePtr, 320 * 200);
 }
 
 void outputBit(char *buffer, int bitPlaneNumber, uint8 data) {
@@ -219,9 +226,14 @@ void gfxCopyRect(const uint8 *sourceBuffer, int width, int height, byte *dest, i
 }
 
 void gfxModuleData_Init() {
-	memset(globalScreen, 0, 320 * 200);
-	memset(page00, 0, 320 * 200);
-	memset(page10, 0, 320 * 200);
+    page00 = (uint8*) apk::malloc_aligned(64000); // MOD:
+    page10 = (uint8*) apk::malloc_aligned(64000); // MOD:
+    screen = (uint8*) apk::malloc_aligned(64000); // MOD:
+	gfxModuleData.pPage00 = page00;
+	gfxModuleData.pPage10 = page10;
+	// MOD: memset(globalScreen, 0, 320 * 200);
+	// MOD: memset(page00, 0, 320 * 200);
+	// MOD: memset(page10, 0, 320 * 200);
 }
 
 void gfxModuleData_flipScreen() {

@@ -118,6 +118,7 @@ void CruiseEngine::deinitialize() {
 			backgroundScreens[i] = nullptr;
 		}
 	}
+	gfxModuleData_deleteFrameBuffers();
 }
 
 bool CruiseEngine::loadLanguageStrings() {

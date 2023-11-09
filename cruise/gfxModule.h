@@ -42,6 +42,9 @@ struct palEntry {
 
 extern gfxModuleDataStruct gfxModuleData;
 
+void gfxModuleData_initFrameBuffers(); // MOD:
+void gfxModuleData_deleteFrameBuffers(); // MOD:
+
 void gfxModuleData_gfxClearFrameBuffer(uint8 *ptr);
 void gfxModuleData_setDirtyColors(int min, int max);
 void gfxModuleData_setPalColor(int idx, int r, int g, int b);
