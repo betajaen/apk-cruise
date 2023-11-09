@@ -34,8 +34,8 @@ namespace Cruise {
 
 static APK_ALIGNED uint8* page00 = NULL; // MOD: uint8 page00[320 * 200];
 static APK_ALIGNED uint8* page10 = NULL; // MOD: uint8 page10[320 * 200];
+// MOD: char screen[320 * 200];
 
-static APK_ALIGNED uint8* screen = NULL; // MOD: char screen[320 * 200];
 palEntry lpalette[256];
 
 int palDirtyMin = 256;
@@ -58,7 +58,6 @@ gfxModuleDataStruct gfxModuleData = {
 void gfxModuleData_deleteFrameBuffers() {
     apk::free_aligned(page00); page00 = NULL;
     apk::free_aligned(page10); page00 = NULL;
-    apk::free_aligned(screen); screen = NULL;
 }
 
 void gfxModuleData_gfxClearFrameBuffer(uint8 *ptr) {
@@ -228,7 +227,6 @@ void gfxCopyRect(const uint8 *sourceBuffer, int width, int height, byte *dest, i
 void gfxModuleData_Init() {
     page00 = (uint8*) apk::malloc_aligned(64000); // MOD:
     page10 = (uint8*) apk::malloc_aligned(64000); // MOD:
-    screen = (uint8*) apk::malloc_aligned(64000); // MOD:
 	gfxModuleData.pPage00 = page00;
 	gfxModuleData.pPage10 = page10;
 	// MOD: memset(globalScreen, 0, 320 * 200);
