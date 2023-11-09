@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "apk/types.h"
+#include "apk/gfx.h"
 
 #define Common apk
 #define Cruise apk

@@ -282,7 +282,7 @@ extern int16 flagSpeed;
 extern int16 speedGame;
 extern int16 oldSpeedGame;
 
-extern uint8 globalScreen[320 * 200];
+// MOD: extern uint8 globalScreen[320 * 200];
 
 //extern OSystem *osystem;
 

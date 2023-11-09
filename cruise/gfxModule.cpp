@@ -235,9 +235,13 @@ void gfxModuleData_Init() {
 }
 
 void gfxModuleData_flipScreen() {
-	memcpy(globalScreen, gfxModuleData.pPage00, 320 * 200);
+	// MOD: memcpy(globalScreen, gfxModuleData.pPage00, 320 * 200);
 
-	flip();
+    if (s_screenIsDirty || s_paletteIsDirty) {
+		apk::gfx::writeChunkyPixels(gfxModuleData.pPage00);
+        s_screenIsDirty = false;
+		s_paletteIsDirty = false;
+    }
 }
 
 void gfxModuleData_addDirtyRect(const Common::Rect &r) {
@@ -347,14 +351,6 @@ void flip() {
     g_system->copyToScreen(globalScreen, sizeof(globalScreen)); // MOD:
 
 	// Allow the screen to update
-#else
-
-    if (s_screenIsDirty || s_paletteIsDirty) {
-        g_system->copyToScreen(globalScreen, sizeof(globalScreen)); // MOD:
-	    g_system->updateScreen();
-        s_screenIsDirty = false;
-		s_paletteIsDirty = false;
-    }
 
 #endif
 

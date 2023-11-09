@@ -273,7 +273,7 @@ int playerMenu(int menuX, int menuY) {
 		case 6: // restart
 			_vm->sound().fadeOutMusic();
 			Op_FadeOut();
-			memset(globalScreen, 0, 320 * 200);
+			apk::gfx::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
 			initVars();
 			_vm->initAllData();
 			changeCursor(CURSOR_NORMAL);

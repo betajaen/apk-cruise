@@ -6,14 +6,12 @@ namespace Cruise {
     OSystem OSystem::s_instance = {};
 
     void OSystem::updateScreen() {
-        apk::gfx::flipScreen();
     }
 
     void OSystem::copyRectToScreen(uint8* data, uint32 pitch, uint32 x, uint32 y, uint32 w, uint32 h) {
     }
 
     void OSystem::copyToScreen(uint8* data, uint32 size) {
-        apk::gfx::blit(data, size);
     }
 
     void OSystem::box(uint32 left, uint32 top, uint32 right, uint32 bottom) {

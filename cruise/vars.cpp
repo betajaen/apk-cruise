@@ -161,7 +161,7 @@ int16 flagSpeed;
 int16 speedGame;
 int16 oldSpeedGame;
 
-uint8 globalScreen[320 * 200];
+// MOD: uint8 globalScreen[320 * 200];
 
 //OSystem *osystem;
 

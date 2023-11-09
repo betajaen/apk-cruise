@@ -26,8 +26,8 @@ namespace apk {
         bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth);
         void destroyScreen();
         void flipScreen();
-        void blit(uint8* data, uint32 size);
-        void cls(uint8 index);
+        void writeChunkyPixels(uint8* data);
+        void clearChunkyPixels(uint8 index);
         void setRGB(uint8 index, uint8 r, uint8 g, uint8 b);
         void setRGB(uint8* pal, uint32 begin, uint32 end);
 

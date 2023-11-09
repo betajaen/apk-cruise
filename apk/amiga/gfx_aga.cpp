@@ -129,11 +129,12 @@ namespace apk {
             fetchEvents();
         }
 
-        void blit(uint8* data, uint32 size) {
+        void writeChunkyPixels(uint8* data) {
             WriteChunkyPixels(&mRastPort, 0,0, 320-1, 240-1, data, 320);
         }
 
-        void cls(uint8 index) {
+        void clearChunkyPixels(uint8 index) {
+            SetRast(&mRastPort, index);
         }
 
         void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {

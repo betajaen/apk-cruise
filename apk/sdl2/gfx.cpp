@@ -158,6 +158,16 @@ namespace apk {
         }
     }
 
+    void writeChunkyPixels(uint8* data) {
+        blit(data, s_widthHeight);
+        flipScreen();
+    }
+
+    void clearChunkyPixels(uint8 index) {
+        cls(index);
+        flipScreen();
+    }
+
 }
 
 
