@@ -110,6 +110,8 @@ namespace apk {
 
     int strcmp(const char* lhs, const char* rhs);
     void memcpy(void* dst, const void* src, APK_SIZE_TYPE length);
+    void memcpy_aligned(void* dst, const void* src, APK_SIZE_TYPE length);
+
     uint32 strlen(const char* str);
     void strcpy( char* dst, const char* src);
     void strlcpy(char* dst, const char* src, uint32 length);
@@ -140,7 +142,9 @@ namespace apk {
     void printf(const char* fmt, ...);
 
     void* malloc(APK_SIZE_TYPE length);
+    void* malloc_aligned(APK_SIZE_TYPE length);
     void free(void* mem);
+    void free_aligned(void* mem);
 
     bool isQuitRequested();
 
@@ -151,5 +155,6 @@ namespace apk {
 }
 
 
+#define APK_ALIGNED /* aligned */
 
 #define ARRAYSIZE(X) ((sizeof(X)) / (sizeof(X[0])))

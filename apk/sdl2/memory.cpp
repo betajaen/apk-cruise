@@ -31,7 +31,15 @@ namespace apk {
         return ::malloc(size);
     }
 
+    void* malloc_aligned(APK_SIZE_TYPE size) {
+        return ::malloc(size);
+    }
+
     void free(void* mem) {
+        return ::free(mem);
+    }
+
+    void free_aligned(void* mem) {
         return ::free(mem);
     }
 
@@ -39,8 +47,21 @@ namespace apk {
         ::memcpy(dst, src, length);
     }
 
+    void memcpy_aligned(void* dst, const void* src, APK_SIZE_TYPE length) {
+        ::memcpy(dst, src, length);
+    }
+
     void memset(void* dst, int val, APK_SIZE_TYPE length) {
         ::memset(dst, val, length);
+    }
+
+    void memset_aligned(void* dst, int val, APK_SIZE_TYPE length) {
+        //::memset(dst, val, length);
+        uint32* d = (uint32*) dst;
+        length >>= 2;
+        while(length--) {
+            *d++ = val;
+        }
     }
 
     const char* strchr(const char* str, char c) {

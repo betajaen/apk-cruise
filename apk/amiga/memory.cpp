@@ -31,14 +31,28 @@ namespace apk {
         return AllocVec(size, MEMF_CLEAR);
     }
 
+    void* malloc_aligned(APK_SIZE_TYPE size) {
+        return AllocVec(size, MEMF_CLEAR); // AllocVec is always longword aligned.
+    }
+
     void free(void* mem) {
         if (mem != NULL) {
             FreeVec(mem);
         }
     }
 
+    void free_aligned(void* mem) {
+        if (mem != NULL) {
+            FreeVec(mem);  // AllocVec is always longword aligned.
+        }
+    }
+
     void memcpy(void* dst, const void* src, APK_SIZE_TYPE length) {
         CopyMem(src, dst, length);
+    }
+
+    void memcpy_aligned(void* dst, const void* src, APK_SIZE_TYPE length) {
+        CopyMemQuick(src, dst, length);
     }
 
     void memset(void* dst, int val, APK_SIZE_TYPE length) {
@@ -50,6 +64,14 @@ namespace apk {
         BYTE v = (BYTE) val;
         for(APK_SIZE_TYPE i=0;i < length;i++) {
             *d++ = v;
+        }
+    }
+
+    void memset_aligned(void* dst, int val, APK_SIZE_TYPE length) {
+        uint32* d = (uint32*) dst;
+        length >>= 2;
+        while(length--) {
+            *d++ = val;
         }
     }
 
