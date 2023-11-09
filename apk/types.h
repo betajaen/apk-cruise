@@ -138,6 +138,7 @@ namespace apk {
     char toupper(char);
 
     void memset(void* dst, int val, APK_SIZE_TYPE length);
+    void memset_aligned(void* dst, int val, APK_SIZE_TYPE length);
     void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...);
     void printf(const char* fmt, ...);
 
