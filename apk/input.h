@@ -23,6 +23,7 @@
 
 namespace apk {
 
+    constexpr int32 EVENT_NONE = 0;
     constexpr int32 EVENT_LBUTTONDOWN = 1;
     constexpr int32 EVENT_LBUTTONUP = 2;
     constexpr int32 EVENT_RBUTTONDOWN = 3;

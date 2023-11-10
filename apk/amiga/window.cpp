@@ -168,7 +168,7 @@ namespace apk {
                 WA_SimpleRefresh, TRUE,
                 WA_CloseGadget, FALSE,
                 WA_DepthGadget, FALSE,
-                WA_IDCMP, IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEBUTTONS,
+                WA_IDCMP, IDCMP_MENUPICK | IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEBUTTONS,
                 TAG_END
 		    );
 
@@ -202,6 +202,8 @@ namespace apk {
 
         void windowLoop(void* user, uint32 waitTime_usec, WindowEventFn evtFn, WindowTimerFn timerFn) {
 
+            struct IntuiMessage* msg;
+
 
             SystemTimer mTimer;
             mTimer.open();
@@ -211,6 +213,7 @@ namespace apk {
 		    ULONG signalBits = windowBit | timerBit | SIGBREAKF_CTRL_C;
 
             mWindowLoopStop = FALSE;
+            uint32 mouseX = 0, mouseY = 0;
 
 		    while (mWindowLoopStop == false) {
 
@@ -223,14 +226,10 @@ namespace apk {
 
                 if (signal & windowBit) {
 
-                    struct IntuiMessage* msg;
-
-                    while (true)
+                    while ((msg = (struct IntuiMessage*)GetMsg(mWindow->UserPort)) != NULL)
                     {
-                        msg = (struct IntuiMessage*)GetMsg(mWindow->UserPort);
-
-                        if (msg == NULL)
-                            break;
+                        Event evt;
+                        evt.type = EVENT_NONE;
 
                         switch (msg->Class)
                         {
@@ -239,15 +238,25 @@ namespace apk {
                             }
                             break;
                             case IDCMP_VANILLAKEY: {
+                                mouseX = msg->MouseX;
+                                mouseY = msg->MouseY;
+
                                 if (msg->Code == 27) {
                                     mWindowLoopStop = TRUE;
                                 }
                             }
                             break;
+                            case IDCMP_MOUSEMOVE: {
+                                mouseX = msg->MouseX;
+                                mouseY = msg->MouseY;
+                            }
+                            break;
                             case IDCMP_MOUSEBUTTONS: {
-                                Event evt;
-                                evt.mouse.x = msg->MouseX;
-                                evt.mouse.y = msg->MouseY;
+                                mouseX = msg->MouseX;
+                                mouseY = msg->MouseY;
+
+                                evt.mouse.x = mouseX;
+                                evt.mouse.y = mouseY;
 
                                 if (msg->Code == SELECTUP) {
                                     evt.type = EVENT_LBUTTONUP;
@@ -263,11 +272,14 @@ namespace apk {
                                     evt.type = EVENT_RBUTTONDOWN;
                                 }
 
-                                evtFn(user, evt);
                             }
                             break;
                         }
+
                         ReplyMsg((struct Message*)msg);
+                        if (evt.type != EVENT_NONE) {
+                            evtFn(user, evt);
+                        }
                     }
                 }
 
@@ -281,6 +293,8 @@ namespace apk {
 		    }
 
 		    mTimer.close();
+
+
         }
     }
 }

@@ -2001,15 +2001,23 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 		switch (event.type) {
 		case Common::EVENT_LBUTTONDOWN:
 			currentMouseButton |= CRS_MB_LEFT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
 			break;
 		case Common::EVENT_LBUTTONUP:
 			currentMouseButton &= ~CRS_MB_LEFT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
 			break;
 		case Common::EVENT_RBUTTONDOWN:
 			currentMouseButton |= CRS_MB_RIGHT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
 			break;
 		case Common::EVENT_RBUTTONUP:
 			currentMouseButton &= ~CRS_MB_RIGHT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
 			break;
 		case Common::EVENT_MOUSEMOVE:
 			currentMouseX = event.mouse.x;
