@@ -67,7 +67,7 @@ namespace apk {
         }
     }
 
-    void memset_aligned(void* dst, int val, APK_SIZE_TYPE length) {
+    void memset_aligned(void* dst, uint32 val, APK_SIZE_TYPE length) {
         uint32* d = (uint32*) dst;
         length >>= 2;
         while(length--) {

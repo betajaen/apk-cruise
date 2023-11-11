@@ -223,7 +223,8 @@ void CruiseEngine::pauseEngine(bool pause) {
 		changeCursor(_savedCursor);
 	}
 
-	gfxModuleData_addDirtyRect(Common::Rect(64, 100, 256, 117));
+	// MOD: gfxModuleData_addDirtyRect(Common::Rect(64, 100, 256, 117));
+	gfxModuleData_addDirtyTileRect(64, 100, 256, 117, RECT_TYPE_ANY);
 }
 
 Common::Error CruiseEngine::loadGameState(int slot) {

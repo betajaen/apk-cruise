@@ -526,7 +526,7 @@ int16 Op_LoadBackground() {
 
 		result = loadBackground(bgName, bgIdx);
 
-		gfxModuleData_addDirtyRect(Common::Rect(0, 0, 320, 200));
+		gfxModuleData_addDirtyAll(); // MOD: gfxModuleData_addDirtyRect(Common::Rect(0, 0, 320, 200));
 	}
 
 	changeCursor(CURSOR_NORMAL);

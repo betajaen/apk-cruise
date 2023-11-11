@@ -29,6 +29,7 @@
 
 #include "cruise/cruise.h"
 #include "cruise/cruise_main.h"
+#include "cruise/gfxModule.h" // MOD:
 
 namespace Cruise {
 
@@ -42,9 +43,54 @@ int palDirtyMin = 256;
 int palDirtyMax = -1;
 
 bool _dirtyRectScreen = false;
-bool s_screenIsDirty = false; // MOD:
 bool s_paletteIsDirty = false; // MOD:
 static uint8 drawFlags[(320/8)*(200/8)] = { 0 }; // MOD:
+
+// MOD:
+#define DEBUG_RECTS 1
+#define DEBUG_FRAME_TIME 1
+#define ENABLE_TILE_RENDERER 0
+
+// MOD:
+#define MAX_TILES ((320 / GFX_TILE_W) * (200 / GFX_TILE_H))  // MOD:
+#define TILE_THRESHOLD (MAX_TILES - (MAX_TILES / 3))
+static APK_ALIGNED uint8* sDrawTiles = NULL; // MOD:
+uint16  sDrawTileCount = 0;
+
+#if defined(DEBUG_RECTS)
+struct DebugRect {
+	uint16 left, top, right, bottom, type;
+};
+DebugRect sDebugRects[128];
+uint16 sDebugRectsCount = 0;
+
+
+static void hline_mod(uint8* dst, uint32 l, uint32 r, uint32 y, int16 mod) { // MOD:
+	uint32 idx = (y * 320) + l;
+	for(;l < r;l++, idx++) {
+		dst[idx] += mod;
+	}
+}
+
+static void vline_mod(uint8* dst, uint32 x, uint32 t, uint32 b, int16 mod) { // MOD:
+	uint32 idx = (t * 320) + x;
+	for(;t < b;t++, idx+=320) {
+		dst[idx] += mod;
+	}
+}
+
+static void rect_mod(uint8* dst, uint32 l, uint32 t, uint32 r, uint32 b, int16 mod) { // MOD:
+	hline_mod(dst, l, r, t, mod);
+	hline_mod(dst, l, r, b, mod);
+	vline_mod(dst, l, t, b, mod);
+	vline_mod(dst, r, t, b, mod);
+}
+
+#endif
+
+static inline uint32 mul_320(uint32 x) { // MOD:
+	return (x << 8) + (x << 6);
+}
 
 gfxModuleDataStruct gfxModuleData = {
 	0,			// use Tandy
@@ -58,6 +104,7 @@ gfxModuleDataStruct gfxModuleData = {
 void gfxModuleData_deleteFrameBuffers() {
     apk::free_aligned(page00); page00 = NULL;
     apk::free_aligned(page10); page00 = NULL;
+    apk::free_aligned(sDrawTiles); sDrawTiles = NULL;
 }
 
 void gfxModuleData_gfxClearFrameBuffer(uint8 *ptr) {
@@ -227,32 +274,215 @@ void gfxCopyRect(const uint8 *sourceBuffer, int width, int height, byte *dest, i
 void gfxModuleData_Init() {
     page00 = (uint8*) apk::malloc_aligned(64000); // MOD:
     page10 = (uint8*) apk::malloc_aligned(64000); // MOD:
-	gfxModuleData.pPage00 = page00;
-	gfxModuleData.pPage10 = page10;
+	gfxModuleData.pPage00 = page00; // MOD:
+	gfxModuleData.pPage10 = page10; // MOD:
+    sDrawTiles = (uint8*) apk::malloc_aligned(sizeof(uint8) * MAX_TILES);
 	// MOD: memset(globalScreen, 0, 320 * 200);
 	// MOD: memset(page00, 0, 320 * 200);
 	// MOD: memset(page10, 0, 320 * 200);
 }
 
-void gfxModuleData_flipScreen() {
-	// MOD: memcpy(globalScreen, gfxModuleData.pPage00, 320 * 200);
-
-    if (s_screenIsDirty || s_paletteIsDirty) {
-		apk::gfx::writeChunkyPixels(gfxModuleData.pPage00);
-        s_screenIsDirty = false;
-		s_paletteIsDirty = false;
+void gfxModuleData_hilight(uint32 x, uint32 y, uint32 w, uint32 h) {
+    uint32 r = x + w;
+    uint32 b = y + h;
+    for(uint32 j=y;j < b;j++) {
+        uint32 offset = (x + (j * 320));
+        for(uint32 i=x;i < r;i++) {
+            gfxModuleData.pPage00[offset]++;
+            offset++;
+        }
     }
 }
 
-void gfxModuleData_addDirtyRect(const Common::Rect &r) {
+void gfxModuleData_unhilight(uint32 x, uint32 y, uint32 w, uint32 h) {
+    uint32 r = x + w;
+    uint32 b = y + h;
+    for(uint32 j=y;j < b;j++) {
+        uint32 offset = (x + (j * 320));
+        for(uint32 i=x;i < r;i++) {
+            gfxModuleData.pPage00[offset]--;
+            offset++;
+        }
+    }
+}
 
+#if DEBUG_FRAME_TIME == 1
+static uint32 sFrameNum = 0;
+#endif
+
+void gfxModuleData_flipScreen() {
+	// MOD: memcpy(globalScreen, gfxModuleData.pPage00, 320 * 200);
+
+	uint32 newCount = 0;
+
+#if DEBUG_RECTS == 1
+	for(uint16 i=0;i < sDebugRectsCount;i++) {
+		DebugRect& dr = sDebugRects[i];
+		rect_mod(gfxModuleData.pPage00, dr.left, dr.top, dr.right, dr.bottom, +1);
+	}
+#endif
+
+	if (ENABLE_TILE_RENDERER == 0 || sDrawTileCount == MAX_TILES) {
+		apk::gfx::writeChunkyPixels(gfxModuleData.pPage00);
+
+        #if DEBUG_RECTS == 1
+            apk::gfx::writePixel(64 + (sFrameNum & 0xF), 2, sFrameNum & 0xF);
+        #endif
+	}
+	else if (sDrawTileCount != 0) {
+
+        #if DEBUG_RECTS == 1
+            apk::gfx::writePixel(64 + (sFrameNum & 0xF), 2, sFrameNum & 0xF);
+        #endif
+
+		uint32 offset = 0, x = 0, y = 0;
+		for(uint16 i=0;i < MAX_TILES;i++) {
+			uint8 v = sDrawTiles[i];
+			if (v != 0) {
+
+				apk::gfx::writeChunkyPixelsBlit(gfxModuleData.pPage00 + offset,
+					x,
+					y,
+					GFX_TILE_W,
+					GFX_TILE_H,
+					320);
+
+				v = 0;
+				sDrawTiles[i] = v;
+				if (v) {
+					newCount++;
+				}
+			}
+
+			x += GFX_TILE_W;
+			if (x == 320) {
+				x = 0;
+				y += GFX_TILE_H;
+				offset = mul_320(y);
+			}
+			else {
+				offset += GFX_TILE_W;
+			}
+		}
+	}
+
+	sDrawTileCount = newCount;
+
+#if DEBUG_RECTS == 1
+	for(uint16 i=0;i < sDebugRectsCount;i++) {
+		DebugRect& dr = sDebugRects[i];
+		rect_mod(gfxModuleData.pPage00, dr.left, dr.top, dr.right, dr.bottom, -1);
+	}
+	sDebugRectsCount = 0;
+#endif
+
+
+#if DEBUG_FRAME_TIME == 1
+    apk::gfx::writePixel(63 + (sFrameNum & 0xF), 0, 0);
+    apk::gfx::writePixel(64 + (sFrameNum & 0xF), 0, sFrameNum & 0xF);
+    sFrameNum++;
+#endif
+
+}
+
+void gfxModuleData_addDirtyTile(uint16 x, uint16 y) { // MOD:
+
+    x = MIN(x, GFX_TILE_W - 1);
+    y = MIN(y, GFX_TILE_H - 1);
+
+    uint32 idx = x + (y * (320 / GFX_TILE_W));
+    uint8  state = sDrawTiles[idx];
+    if (state == 0) {
+		if (sDrawTileCount >= TILE_THRESHOLD) {
+			sDrawTileCount = MAX_TILES;
+		}
+		else {
+			sDrawTileCount++;
+		}
+		sDrawTiles[idx] = 2;
+    }
+
+}
+
+void gfxModuleData_addDirtyAll() { // MOD:
+	if (sDrawTileCount != MAX_TILES) {
+		sDrawTileCount = MAX_TILES;
+		apk::memset_aligned(sDrawTiles, 0x02020202, MAX_TILES * sizeof(uint8));
+	}
+}
+
+void gfxModuleData_addDirtyColumn(uint16 x) { // MOD:
+
+	if (sDrawTileCount == MAX_TILES)
+		return;
+
+    x = MIN(x, GFX_TILE_W - 1);
+
+    for(uint y=0;y < (200 / GFX_TILE_H);y++) {
+        uint32 idx = x + (y * (320 / GFX_TILE_W));
+
+        uint8  state = sDrawTiles[idx];
+        if (state == 0) {
+            sDrawTileCount++;
+			sDrawTiles[idx] = 2;
+        }
+    }
+}
+
+void gfxModuleData_addDirtyTileRect(int16 left, int16 top, int16 right, int16 bottom, uint8 type) { // MOD:
+
+	if (sDrawTileCount == MAX_TILES)
+		return;
+
+	left   = CLIP(left, (int16) 0, (int16) 319);
+	top    = CLIP(top, (int16) 0, (int16) 199);
+	right  = CLIP(right, (int16) 0, (int16) 319);
+	bottom = CLIP(bottom, (int16) 0, (int16) 199);
+
+	SORT(left, right);
+	SORT(top, bottom);
+
+#if DEBUG_RECTS == 1
+	DebugRect dr;
+	dr.left = left;
+	dr.top = top;
+	dr.right = right;
+	dr.bottom = bottom;
+	dr.type = type;
+	sDebugRects[sDebugRectsCount++] = dr;
+#endif
+
+	if (left == 0 && top == 0 && right == 319 && bottom == 199) {
+		gfxModuleData_addDirtyAll();
+		return;
+	}
+
+	left /= GFX_TILE_W;
+	top /= GFX_TILE_H;
+	right /= GFX_TILE_W;
+	bottom /= GFX_TILE_H;
+
+	for(int16 j=top;j < bottom;j++) {
+		for(int i=left;i < right;i++) {
+
+			uint32 idx = i + (j * (320 / GFX_TILE_W));
+			uint8  state = sDrawTiles[idx];
+
+			if (state == 0) {
+				sDrawTileCount++;
+				sDrawTiles[idx] = 2;
+			}
+
+		}
+	}
+
+}
+
+void gfxModuleData_addDirtyRect(const Common::Rect &r) {
 #if 0 // MOD:
     _vm->_dirtyRects.push_back(Common::Rect(	MAX(r.left, (int16)0), MAX(r.top, (int16)0),
 		MIN(r.right, (int16)320), MIN(r.bottom, (int16)200)));
-#else
-    s_screenIsDirty = true; // MOD:
 #endif
-
 }
 
 /**
@@ -357,7 +587,6 @@ void flip() {
 }
 
 void drawSolidBox(int32 x1, int32 y1, int32 x2, int32 y2, uint8 color) {
-	s_screenIsDirty = true; // MOD:
 	for (int y = y1; y < y2; ++y) {
 		byte *p = &gfxModuleData.pPage00[y * 320 + x1];
 		Common::fill(p, p + (x2 - x1), color);
@@ -365,7 +594,6 @@ void drawSolidBox(int32 x1, int32 y1, int32 x2, int32 y2, uint8 color) {
 }
 
 void resetBitmap(uint8 *dataPtr, int32 dataSize) {
-	s_screenIsDirty = true; // MOD:
 	memset(dataPtr, 0, dataSize);
 }
 
@@ -374,12 +602,15 @@ void resetBitmap(uint8 *dataPtr, int32 dataSize) {
  * to figure out rectangles of changed areas for dirty rectangles
  */
 void switchBackground(const byte *newBg) {
-	s_screenIsDirty = true; // MOD:
+
+	gfxModuleData_addDirtyAll();
+
+#if 0 // MOD:
 	const byte *bg = gfxModuleData.pPage00;
 
 	// If both the upper corners are different, presume it's a full screen change
 	if ((*newBg != *bg) && (*(newBg + 319) != *(bg + 319))) {
-		gfxModuleData_addDirtyRect(Common::Rect(0, 0, 320, 200));
+		gfxModuleData_addDirtyAll(); // MOD: gfxModuleData_addDirtyRect(Common::Rect(0, 0, 320, 200));
 		return;
 	}
 
@@ -402,14 +633,15 @@ void switchBackground(const byte *newBg) {
 
 			} else if ((sliceXEnd != -1) && (xp >= (sliceXEnd + 10))) {
 				// If more than 10 pixels have gone by without any changes, then end the slice
-				gfxModuleData_addDirtyRect(Common::Rect(sliceXStart, yp, sliceXEnd + 1, MIN(yp + 2, 200)));
+				//// MOD: ROBIN gfxModuleData_addDirtyRect(Common::Rect(sliceXStart, yp, sliceXEnd + 1, MIN(yp + 2, 200)));
 				sliceXStart = sliceXEnd = -1;
 			}
 		}
 
-		if (sliceXStart != -1)
-			gfxModuleData_addDirtyRect(Common::Rect(sliceXStart, yp, 320, MIN(yp + 2, 200)));
+		//// MOD: ROBIN if (sliceXStart != -1)
+		//// MOD: ROBIN 	gfxModuleData_addDirtyRect(Common::Rect(sliceXStart, yp, 320, MIN(yp + 2, 200)));
 	}
+#endif
 }
 
 } // End of namespace Cruise

@@ -69,6 +69,14 @@ namespace apk {
         r = t;
     }
 
+    template<typename T>
+    void SORT(T& l, T& r) {
+        if (l > r) {
+            SWAP(l, r);
+        }
+    }
+
+
 
     struct Point {
         int16 x, y;
@@ -138,7 +146,7 @@ namespace apk {
     char toupper(char);
 
     void memset(void* dst, int val, APK_SIZE_TYPE length);
-    void memset_aligned(void* dst, int val, APK_SIZE_TYPE length);
+    void memset_aligned(void* dst, uint32 val, APK_SIZE_TYPE length);
     void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...);
     void printf(const char* fmt, ...);
 

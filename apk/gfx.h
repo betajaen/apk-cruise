@@ -34,6 +34,9 @@ namespace apk {
         void windowStopLoop();
         void flipScreen();
         void writeChunkyPixels(uint8* data);
+        void writeChunkyPixelsBlit(uint8* data, uint32 x, uint32 y, uint32 w, uint32 h, uint32 stride);
+        void writeRect(uint32 l, uint32 t, uint32 r, uint32 b, uint8 col);
+        void writePixel(uint32 x, uint32 y, uint8 col);
         void clearChunkyPixels(uint8 index);
         void setRGB(uint8 index, uint8 r, uint8 g, uint8 b);
         void setRGB(uint8* pal, uint32 begin, uint32 end);

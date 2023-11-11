@@ -1115,7 +1115,8 @@ void mainDrawPolygons(int fileIndex, cellStruct *plWork, int X, int scale, int Y
 	if (spriteY1 == spriteY2)
 		return;
 
-	gfxModuleData_addDirtyRect(Common::Rect(spriteX2, spriteY2, spriteX1, spriteY1));
+	//// MOD: ROBIN gfxModuleData_addDirtyRect(Common::Rect(spriteX2, spriteY2, spriteX1, spriteY1));
+	gfxModuleData_addDirtyTileRect(spriteX2, spriteY2, spriteX1, spriteY1, RECT_TYPE_POLYGON);
 
 	memset(polygonMask, 0xFF, (320*200) / 8);
 
@@ -1167,7 +1168,8 @@ void drawMessage(const gfxEntryStruct *pGfxPtr, int globalX, int globalY, int wi
 			globalY = 198 - pGfxPtr->height;
 		}
 
-		gfxModuleData_addDirtyRect(Common::Rect(globalX, globalY, globalX + width, globalY + height));
+		//// MOD: gfxModuleData_addDirtyRect(Common::Rect(globalX, globalY, globalX + width, globalY + height));
+		gfxModuleData_addDirtyTileRect(globalX, globalY, globalX + width, globalY + height, RECT_TYPE_TEXT);
 
 		uint8 *initialOuput = ouputPtr + (globalY * 320) + globalX;
 
@@ -1199,11 +1201,14 @@ void drawSprite(int width, int height, cellStruct *currentObjPtr, const uint8 *d
 	int y = 0;
 
 	// Flag the given area as having been changed
-	Common::Point ps = Common::Point(MAX(MIN(xs, 320), 0), MAX(MIN(ys, 200), 0));
-	Common::Point pe = Common::Point(MAX(MIN(xs + width, 320), 0), MAX(MIN(ys + height, 200), 0));
-	if ((ps.x != pe.x) && (ps.y != pe.y))
-		// At least part of sprite is on-screen
-		gfxModuleData_addDirtyRect(Common::Rect(ps.x, ps.y, pe.x, pe.y));
+	//// MOD: Common::Point ps = Common::Point(MAX(MIN(xs, 320), 0), MAX(MIN(ys, 200), 0));
+	//// MOD: Common::Point pe = Common::Point(MAX(MIN(xs + width, 320), 0), MAX(MIN(ys + height, 200), 0));
+
+	// At least part of sprite is on-screen
+	//// MOD: ROBIN if ((ps.x != pe.x) && (ps.y != pe.y))
+	//// MOD: ROBIN 	gfxModuleData_addDirtyRect(Common::Rect(ps.x, ps.y, pe.x, pe.y));
+
+	gfxModuleData_addDirtyTileRect(xs, ys, xs + width, ys + height, RECT_TYPE_SPRITE); // MOD:
 
 	cellStruct* plWork = currentObjPtr;
 	int workBufferSize = height * (width / 8);

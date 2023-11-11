@@ -22,6 +22,9 @@
 #ifndef CRUISE_GFXMODULE_H
 #define CRUISE_GFXMODULE_H
 
+#define GFX_TILE_W 32
+#define GFX_TILE_H 25
+
 namespace Cruise {
 
 struct gfxModuleDataStruct {
@@ -65,6 +68,14 @@ void gfxModuleData_convertOldPalColor(uint16 oldColor, uint8 *pOutput);
 void gfxModuleData_setPalEntries(const byte *ptr, int start, int num);
 void gfxModuleData_setPal256(const byte *ptr);
 void gfxModuleData_addDirtyRect(const Common::Rect &r);
+void gfxModuleData_addDirtyTile(uint16 x, uint16 y); // MOD:
+void gfxModuleData_addDirtyColumn(uint16 x); // MOD:
+void gfxModuleData_addDirtyAll(); // MOD:
+#define RECT_TYPE_ANY     1  // MOD:
+#define RECT_TYPE_SPRITE  2  // MOD:
+#define RECT_TYPE_TEXT    3  // MOD:
+#define RECT_TYPE_POLYGON 4  // MOD:
+void gfxModuleData_addDirtyTileRect(int16 l, int16 t, int16 r, int16 b, uint8 type); // MOD:
 void flip();
 void drawSolidBox(int32 x1, int32 y1, int32 x2, int32 y2, uint8 color);
 void resetBitmap(uint8 *dataPtr, int32 dataSize);
