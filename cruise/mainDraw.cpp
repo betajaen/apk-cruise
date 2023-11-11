@@ -94,6 +94,9 @@ void calcRGB(uint8* pColorSrc, uint8* pColorDst, int* offsetTable) {
 }
 
 void fadeIn() {
+#if 0 // MOD:
+	// MOD: Robin - Removed Fade-in due to how this won't work with the event
+	//              driven code. TODO: Make this event-friendly.
 	for (long int i = 256; i >= 0; i -= 32) {
 		for (long int j = 0; j < 256; j++) {
 			int offsetTable[3];
@@ -107,6 +110,7 @@ void fadeIn() {
 		gfxModuleData_updatePalette();
 		gfxModuleData_updateScreen();
 	}
+#endif
 
 	for (long int j = 0; j < 256; j++) {
 		int offsetTable[3];
@@ -117,6 +121,7 @@ void fadeIn() {
 	}
 
 	gfxModuleData_setPal256(workpal);
+	gfxModuleData_updatePalette(); // MOD:
 
 	fadeFlag = 0;
 	PCFadeFlag = false;
@@ -129,6 +134,7 @@ void flipScreen() {
 		}
 		switchPal = 0;
 		gfxModuleData_setPal256(workpal);
+		gfxModuleData_updatePalette(); // MOD:
 	}
 
 	SWAP(gfxModuleData.pPage00, gfxModuleData.pPage10);
