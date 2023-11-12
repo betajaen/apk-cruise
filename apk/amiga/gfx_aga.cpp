@@ -160,6 +160,7 @@ namespace apk {
             *dst++ = r << 24 | 0x00FFffFF;
             *dst++ = g << 24 | 0x00FFffFF;
             *dst++ = b << 24 | 0x00FFffFF;
+			LoadRGB32(&mScreen->ViewPort, &sPalette[0]);
         }
 
         void setRGB(uint8* pal, uint32 begin, uint32 end) {

@@ -30,6 +30,7 @@
 #include "memory.h"
 #include "input.h"
 #include "requester.h"
+#include "math.h"
 
 namespace apk {
 

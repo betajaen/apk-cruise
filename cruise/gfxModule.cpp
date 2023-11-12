@@ -44,17 +44,19 @@ int palDirtyMax = -1;
 
 bool _dirtyRectScreen = false;
 bool s_paletteIsDirty = false; // MOD:
-static uint8 drawFlags[(320/8)*(200/8)] = { 0 }; // MOD:
 
 // MOD:
-#define DEBUG_RECTS 1
+#define DEBUG_RECTS 0
+#define DEBUG_TILES 0
 #define DEBUG_FRAME_TIME 1
 #define ENABLE_TILE_RENDERER 0
 
 // MOD:
-#define MAX_TILES ((320 / GFX_TILE_W) * (200 / GFX_TILE_H))  // MOD:
+#if ENABLE_TILE_RENDERER == 1
 #define TILE_THRESHOLD (MAX_TILES - (MAX_TILES / 3))
 static APK_ALIGNED uint8* sDrawTiles = NULL; // MOD:
+#endif
+#define MAX_TILES ((320 / GFX_TILE_W) * (200 / GFX_TILE_H))  // MOD:
 uint16  sDrawTileCount = 0;
 
 #if defined(DEBUG_RECTS)
@@ -64,16 +66,60 @@ struct DebugRect {
 DebugRect sDebugRects[128];
 uint16 sDebugRectsCount = 0;
 
+#endif
+
+
+
+#if DEBUG_TILES == 1
+
+static uint8 sDebugDrawTiles[MAX_TILES];
+
+static const uint8 sDebugTileCoords[] = {
+	0, 0,
+	1, 1,
+	2, 2,
+	3, 2,
+	4, 3,
+	5, 4,
+	6, 5,
+	7, 5,
+	8, 6,
+	9, 7,
+	10, 8,
+	11, 9,
+	12, 9,
+	13, 10,
+	14, 11,
+	15, 12,
+	16, 12,
+	17, 13,
+	18, 14,
+	19, 15,
+	20, 15,
+	21, 16,
+	22, 17,
+	23, 18,
+	24, 19,
+	25, 19,
+	26, 20,
+	27, 21,
+	28, 22,
+	29, 22,
+	30, 23,
+	31, 24
+};
+
+#endif
 
 static void hline_mod(uint8* dst, uint32 l, uint32 r, uint32 y, int16 mod) { // MOD:
-	uint32 idx = (y * 320) + l;
+	uint32 idx = mul_320(y) + l;
 	for(;l < r;l++, idx++) {
 		dst[idx] += mod;
 	}
 }
 
 static void vline_mod(uint8* dst, uint32 x, uint32 t, uint32 b, int16 mod) { // MOD:
-	uint32 idx = (t * 320) + x;
+	uint32 idx = mul_320(t) + x;
 	for(;t < b;t++, idx+=320) {
 		dst[idx] += mod;
 	}
@@ -86,10 +132,23 @@ static void rect_mod(uint8* dst, uint32 l, uint32 t, uint32 r, uint32 b, int16 m
 	vline_mod(dst, r, t, b, mod);
 }
 
-#endif
+static void coord_mod(uint8* dst, uint32 x, uint32 y, uint8* coords, int8 count, int16 mod) {
+	while(count--) {
+		uint8 mx = *coords++;
+		uint8 my = *coords++;
+		uint32 idx = (mul_320(my + y)) + x + mx;
+		dst[idx] += mod;
+	}
+}
 
-static inline uint32 mul_320(uint32 x) { // MOD:
-	return (x << 8) + (x << 6);
+static void fill_mod(uint8* dst, uint32 l, uint32 t, uint32 r, uint32 b, int16 mod) {
+	uint32 idx = mul_320(t) + l;
+	for(uint32 y=t;y < b;y++) {
+		for(uint32 x=l;x < r;x++) {
+			dst[idx++] += mod;
+		}
+		idx += 320 - (r - l);
+	}
 }
 
 gfxModuleDataStruct gfxModuleData = {
@@ -104,7 +163,9 @@ gfxModuleDataStruct gfxModuleData = {
 void gfxModuleData_deleteFrameBuffers() {
     apk::free_aligned(page00); page00 = NULL;
     apk::free_aligned(page10); page00 = NULL;
+#if ENABLE_TILE_RENDERER == 1
     apk::free_aligned(sDrawTiles); sDrawTiles = NULL;
+#endif
 }
 
 void gfxModuleData_gfxClearFrameBuffer(uint8 *ptr) {
@@ -276,7 +337,9 @@ void gfxModuleData_Init() {
     page10 = (uint8*) apk::malloc_aligned(64000); // MOD:
 	gfxModuleData.pPage00 = page00; // MOD:
 	gfxModuleData.pPage10 = page10; // MOD:
+#if ENABLE_TILE_RENDERER == 1
     sDrawTiles = (uint8*) apk::malloc_aligned(sizeof(uint8) * MAX_TILES);
+#endif
 	// MOD: memset(globalScreen, 0, 320 * 200);
 	// MOD: memset(page00, 0, 320 * 200);
 	// MOD: memset(page10, 0, 320 * 200);
@@ -316,27 +379,57 @@ void gfxModuleData_flipScreen() {
 	uint32 newCount = 0;
 
 #if DEBUG_RECTS == 1
-	for(uint16 i=0;i < sDebugRectsCount;i++) {
-		DebugRect& dr = sDebugRects[i];
-		rect_mod(gfxModuleData.pPage00, dr.left, dr.top, dr.right, dr.bottom, +1);
+	{
+		for (uint16 i = 0; i < sDebugRectsCount; i++) {
+			DebugRect& dr = sDebugRects[i];
+			rect_mod(gfxModuleData.pPage00, dr.left, dr.top, dr.right, dr.bottom, +100);
+		}
+	}
+#endif
+
+#if DEBUG_TILES == 1
+	{
+		uint32 x = 0, y = 0;
+
+		for (uint16 i = 0; i < MAX_TILES; i++) {
+			uint8 v = sDrawTiles[i];
+			if (v != 0) {
+				fill_mod(gfxModuleData.pPage00, x, y, x + GFX_TILE_W, y + GFX_TILE_H, +100);
+			}
+
+			x += GFX_TILE_W;
+			if (x == 320) {
+				x = 0;
+				y += GFX_TILE_H;
+			}
+		}
+
+        memcpy(sDebugDrawTiles, sDrawTiles, MAX_TILES);
 	}
 #endif
 
 	if (ENABLE_TILE_RENDERER == 0 || sDrawTileCount == MAX_TILES) {
+		sFrameNum++;
 		apk::gfx::writeChunkyPixels(gfxModuleData.pPage00);
 
-        #if DEBUG_RECTS == 1
-            apk::gfx::writePixel(64 + (sFrameNum & 0xF), 2, sFrameNum & 0xF);
-        #endif
+#if DEBUG_RECTS == 1
+		apk::gfx::writePixel(64 + (sFrameNum & 0xF), 2, sFrameNum & 0xF);
+#endif
+
+#if ENABLE_TILE_RENDERER == 1
+		apk::memset_aligned(sDrawTiles, 0, MAX_TILES);
+#endif
 	}
 	else if (sDrawTileCount != 0) {
+#if ENABLE_TILE_RENDERER == 1
+		sFrameNum++;
 
-        #if DEBUG_RECTS == 1
-            apk::gfx::writePixel(64 + (sFrameNum & 0xF), 2, sFrameNum & 0xF);
-        #endif
+#if DEBUG_RECTS == 1
+		apk::gfx::writePixel(64 + (sFrameNum & 0xF), 2, sFrameNum & 0xF);
+#endif
 
 		uint32 offset = 0, x = 0, y = 0;
-		for(uint16 i=0;i < MAX_TILES;i++) {
+		for (uint16 i = 0; i < MAX_TILES; i++) {
 			uint8 v = sDrawTiles[i];
 			if (v != 0) {
 
@@ -347,7 +440,7 @@ void gfxModuleData_flipScreen() {
 					GFX_TILE_H,
 					320);
 
-				v = 0;
+				v = (v-1) & 2;
 				sDrawTiles[i] = v;
 				if (v) {
 					newCount++;
@@ -364,55 +457,76 @@ void gfxModuleData_flipScreen() {
 				offset += GFX_TILE_W;
 			}
 		}
+#endif
 	}
 
 	sDrawTileCount = newCount;
 
-#if DEBUG_RECTS == 1
-	for(uint16 i=0;i < sDebugRectsCount;i++) {
-		DebugRect& dr = sDebugRects[i];
-		rect_mod(gfxModuleData.pPage00, dr.left, dr.top, dr.right, dr.bottom, -1);
+#if DEBUG_TILES == 1
+	{
+		uint32 x = 0, y = 0;
+
+		for (uint16 i = 0; i < MAX_TILES; i++) {
+			uint8 v = sDrawTiles[i];
+			if (v != 0) {
+				fill_mod(gfxModuleData.pPage00, x, y, x + GFX_TILE_W, y + GFX_TILE_H, -100);
+			}
+
+			x += GFX_TILE_W;
+			if (x == 320) {
+				x = 0;
+				y += GFX_TILE_H;
+			}
+		}
+
+        apk::gfx::writeChunkyPixelsBlit(sDebugDrawTiles, 0, 0, (320 / GFX_TILE_W), (200 / GFX_TILE_H), (320 / GFX_TILE_W));
 	}
-	sDebugRectsCount = 0;
+#endif
+
+#if DEBUG_RECTS == 1
+	{
+		for (uint16 i = 0; i < sDebugRectsCount; i++) {
+			DebugRect& dr = sDebugRects[i];
+			rect_mod(gfxModuleData.pPage00, dr.left, dr.top, dr.right, dr.bottom, -100);
+		}
+		sDebugRectsCount = 0;
+	}
 #endif
 
 
 #if DEBUG_FRAME_TIME == 1
     apk::gfx::writePixel(63 + (sFrameNum & 0xF), 0, 0);
     apk::gfx::writePixel(64 + (sFrameNum & 0xF), 0, sFrameNum & 0xF);
-    sFrameNum++;
+    apk::gfx::writePixel(65 + (sFrameNum & 0xF), 0, 0);
 #endif
 
 }
 
 void gfxModuleData_addDirtyTile(uint16 x, uint16 y) { // MOD:
-
+#if ENABLE_TILE_RENDERER == 1
     x = MIN(x, GFX_TILE_W - 1);
     y = MIN(y, GFX_TILE_H - 1);
 
     uint32 idx = x + (y * (320 / GFX_TILE_W));
     uint8  state = sDrawTiles[idx];
     if (state == 0) {
-		if (sDrawTileCount >= TILE_THRESHOLD) {
-			sDrawTileCount = MAX_TILES;
-		}
-		else {
-			sDrawTileCount++;
-		}
-		sDrawTiles[idx] = 2;
+		sDrawTileCount++;
+		sDrawTiles[idx] = 3;
     }
-
+#endif
 }
 
 void gfxModuleData_addDirtyAll() { // MOD:
+#if ENABLE_TILE_RENDERER == 1
 	if (sDrawTileCount != MAX_TILES) {
 		sDrawTileCount = MAX_TILES;
-		apk::memset_aligned(sDrawTiles, 0x02020202, MAX_TILES * sizeof(uint8));
+		apk::memset_aligned(sDrawTiles, 0x03030303, MAX_TILES * sizeof(uint8));
 	}
+#endif
 }
 
 void gfxModuleData_addDirtyColumn(uint16 x) { // MOD:
-
+#if ENABLE_TILE_RENDERER == 1
 	if (sDrawTileCount == MAX_TILES)
 		return;
 
@@ -424,13 +538,34 @@ void gfxModuleData_addDirtyColumn(uint16 x) { // MOD:
         uint8  state = sDrawTiles[idx];
         if (state == 0) {
             sDrawTileCount++;
-			sDrawTiles[idx] = 2;
+			sDrawTiles[idx] = 3;
         }
     }
+#endif
 }
 
-void gfxModuleData_addDirtyTileRect(int16 left, int16 top, int16 right, int16 bottom, uint8 type) { // MOD:
+#if ENABLE_TILE_RENDERER == 1
+static inline int16 grid_x(int16 x) {
+    int16 gx = x / (GFX_TILE_W);
+	int16 gh = x - (gx * GFX_TILE_W);
+	if (gh > (GFX_TILE_W / 2)) {
+		gx++;
+	}
+	return MIN(gx, (320 / GFX_TILE_W) - 1);
+}
 
+static inline int16 grid_y(int16 y) {
+    int16 gy = y / (GFX_TILE_H);
+	int16 gh = y - (gy * GFX_TILE_H);
+	if (gh > (GFX_TILE_H / 2)) {
+		gy++;
+	}
+	return MIN(gy, (200 / GFX_TILE_H) - 1);
+}
+#endif
+
+void gfxModuleData_addDirtyTileRect(int16 left, int16 top, int16 right, int16 bottom, uint8 type) { // MOD:
+#if ENABLE_TILE_RENDERER == 1
 	if (sDrawTileCount == MAX_TILES)
 		return;
 
@@ -457,25 +592,25 @@ void gfxModuleData_addDirtyTileRect(int16 left, int16 top, int16 right, int16 bo
 		return;
 	}
 
-	left /= GFX_TILE_W;
-	top /= GFX_TILE_H;
-	right /= GFX_TILE_W;
-	bottom /= GFX_TILE_H;
+	left = grid_x(left);
+	top = grid_y(top);
+	right = grid_x(right);
+	bottom = grid_y(bottom);
 
-	for(int16 j=top;j < bottom;j++) {
-		for(int i=left;i < right;i++) {
+	for(int16 j=top;j <= bottom;j++) {
+		for(int i=left;i <= right;i++) {
 
 			uint32 idx = i + (j * (320 / GFX_TILE_W));
 			uint8  state = sDrawTiles[idx];
 
 			if (state == 0) {
 				sDrawTileCount++;
-				sDrawTiles[idx] = 2;
+				sDrawTiles[idx] = 3;
 			}
 
 		}
 	}
-
+#endif
 }
 
 void gfxModuleData_addDirtyRect(const Common::Rect &r) {
