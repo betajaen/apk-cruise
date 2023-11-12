@@ -1196,6 +1196,9 @@ void drawMessage(const gfxEntryStruct *pGfxPtr, int globalX, int globalY, int wi
 	}
 }
 
+unsigned char* sWorkBuffer = NULL;
+uint32 sWorkBufferSize = 0;
+
 void drawSprite(int width, int height, cellStruct *currentObjPtr, const uint8 *dataIn, int ys, int xs, uint8 *output, const uint8 *dataBuf) {
 	int x = 0;
 	int y = 0;
@@ -1211,9 +1214,21 @@ void drawSprite(int width, int height, cellStruct *currentObjPtr, const uint8 *d
 	gfxModuleData_addDirtyTileRect(xs, ys, xs + width, ys + height, RECT_TYPE_SPRITE); // MOD:
 
 	cellStruct* plWork = currentObjPtr;
-	int workBufferSize = height * (width / 8);
+	unsigned int workBufferSize = height * (width / 8); // MOD:
+    //workBufferSize += (workBufferSize & 3);
 
-	unsigned char* workBuf = (unsigned char*)MemAlloc(workBufferSize);
+	if (sWorkBuffer == NULL || workBufferSize > sWorkBufferSize) { // MOD:
+
+		if (sWorkBuffer != NULL) {
+			apk::free(sWorkBuffer);
+		}
+		sWorkBuffer = (unsigned char*) malloc(workBufferSize);
+        sWorkBufferSize = workBufferSize;
+        printf("work buf %ld\n", sWorkBufferSize);
+	}
+    unsigned char* workBuf = sWorkBuffer;
+
+	// MOD: unsigned char* workBuf = (unsigned char*)MemAlloc(workBufferSize);
 	memcpy(workBuf, dataBuf, workBufferSize);
 
 	int numPasses = 0;
@@ -1252,7 +1267,7 @@ void drawSprite(int width, int height, cellStruct *currentObjPtr, const uint8 *d
 		}
 	}
 
-	MemFree(workBuf);
+	// MOD: MemFree(workBuf);
 }
 
 #ifdef _DEBUG
