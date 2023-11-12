@@ -141,8 +141,27 @@ namespace apk {
             WritePixelArray(data, 0, 0, 320, &mRastPort, 0, 0, 320, 240, RECTFMT_LUT8);
         }
 
+        void writeChunkyPixelsBlit(uint8* data, uint32 x, uint32 y, uint32 w, uint32 h, uint32 stride) {
+            WritePixelArray(data, 0, 0, stride, &mRastPort, x, y, w, h, RECTFMT_LUT8);
+        }
+
+        void writeRect(uint32 l, uint32 t, uint32 r, uint32 b, uint8 col) {
+          SetAPen(&mRastPort, col);
+
+          Move(&mRastPort, l, t);
+          Draw(&mRastPort, r, t);
+          Draw(&mRastPort, r, b);
+          Draw(&mRastPort, l, b);
+          Draw(&mRastPort, l, t);
+        }
+
         void clearChunkyPixels(uint8 index) {
             SetRast(&mRastPort, index);
+        }
+
+        void writePixel(uint32 x, uint32 y, uint8 col) {
+            SetAPen(&mRastPort, col);
+            WritePixel(&mRastPort, x, y);
         }
 
         void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
