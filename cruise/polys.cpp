@@ -342,7 +342,7 @@ void fillpoly(int16 *point_data, int lineCount, ColorP color) {
 	// Drawing.
 	for (int y = top; y <= bottom; y++) {
 		for (int i = 0; i < num_intersect[y]; i += 2) {
-			hline(intersect[y][i], intersect[y][i + 1], y, color);
+			hline_unchecked(intersect[y][i], intersect[y][i + 1], y, color); // MOD: hline(intersect[y][i], intersect[y][i + 1], y, color);
 		}
 	}
 }
