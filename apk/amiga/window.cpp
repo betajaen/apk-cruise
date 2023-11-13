@@ -168,7 +168,8 @@ namespace apk {
                 WA_SimpleRefresh, TRUE,
                 WA_CloseGadget, FALSE,
                 WA_DepthGadget, FALSE,
-                WA_IDCMP, IDCMP_MENUPICK | IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEBUTTONS,
+                WA_RMBTrap, TRUE,
+                WA_IDCMP, IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEBUTTONS,
                 TAG_END
 		    );
 
