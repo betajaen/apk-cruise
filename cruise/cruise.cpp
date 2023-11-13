@@ -66,9 +66,10 @@ CruiseEngine::~CruiseEngine() {
 	delete _sound;
 
 	freeSystem();
-
+#if 0 // MOD:
 	if (gDebugLevel > 0)
 		MemoryList();
+#endif
 }
 
 bool CruiseEngine::hasFeature(EngineFeature f) const {

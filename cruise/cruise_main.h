@@ -111,13 +111,20 @@ void initBigVar3();
 void resetActorPtr(actorStruct *ptr);
 void removeAllScripts(scriptInstanceStruct *ptrHandle);
 
+#if 1
+#define mallocAndZero(size)  ::apk::malloc(size)
+#define MemAlloc(size) ::apk::malloc(size)
+#define MemFree(v) ::apk::free(v)
+#else
 void MemoryList();
 void *MemoryAlloc(uint32 size, bool clearFlag, int32 lineNum, const char *fname);
 void MemoryFree(void *v);
 
-#define mallocAndZero(size) MemoryAlloc(size, true, __LINE__, __FILE__)
+#define mallocAndZero(size)  MemoryAlloc(size, true, __LINE__, __FILE__)
 #define MemAlloc(size) MemoryAlloc(size, false, __LINE__, __FILE__)
 #define MemFree(v) MemoryFree(v)
+#endif
+
 
 } // End of namespace Cruise
 

@@ -42,7 +42,7 @@ namespace OPL {
 
 namespace apk {
 
-    constexpr int32 gDebugLevel = 10;
+    constexpr int32 gDebugLevel = 0;
     constexpr int32 kSupportsReturnToLauncher = 0;
     constexpr int32 kSupportsLoadingDuringRuntime = 1;
     constexpr int32 kSupportsSavingDuringRuntime = 2;

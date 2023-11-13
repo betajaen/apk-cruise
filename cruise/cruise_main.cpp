@@ -39,6 +39,7 @@ unsigned int timer = 0;
 
 gfxEntryStruct *linkedMsgList = nullptr;
 
+#if 0 // MOD:
 typedef CruiseEngine::MemInfo MemInfo;
 
 void MemoryList() {
@@ -88,11 +89,12 @@ void MemoryFree(void *v) {
 		MemInfo* p = (MemInfo *)v - 1; // MOD: MemInfo *const p = (MemInfo *)v - 1;
 		assert(p->magic == MemInfo::cookie);
 
-        MOD: _vm->_memList.remove(p);
+        //MOD: _vm->_memList.remove(p);
 		free(p);
 	} else
 		free(v);
 }
+#endif
 
 void drawBlackSolidBoxSmall() {
 //  gfxModuleData.drawSolidBox(64,100,256,117,0);
