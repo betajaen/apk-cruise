@@ -95,7 +95,7 @@ int loadBackground(const char *name, int idx) {
 	}
 
 	if (!backgroundScreens[idx]) {
-		backgroundScreens[idx] = (uint8 *)mallocAndZero(320 * 200);
+		backgroundScreens[idx] = (uint8 *) apk::malloc_aligned(320*200); // MOD: backgroundScreens[idx] = (uint8 *)mallocAndZero(320 * 200);
 	}
 
 	if (!backgroundScreens[idx]) {
@@ -108,7 +108,7 @@ int loadBackground(const char *name, int idx) {
 	ptrToFree = gfxModuleData.pPage10;
 	if (loadFileSub1(&ptrToFree, name, nullptr) < 0) {
 		if (ptrToFree != gfxModuleData.pPage10)
-			MemFree(ptrToFree);
+			apk::free_aligned(ptrToFree); // MOD: MemFree(ptrToFree);
 
 		return (-18);
 	}
@@ -213,7 +213,7 @@ int loadBackground(const char *name, int idx) {
 		loadCVT(&ptr2);
 	}
 
-	MemFree(ptrToFree);
+	apk::free_aligned(ptrToFree); // MOD: MemFree(ptrToFree);
 
 	// NOTE: the following is really meant to compare pointers and not the actual
 	// strings. See r48092 and r48094.
