@@ -155,8 +155,13 @@ int spriteY2;
 char *polyOutputBuffer;
 
 void pixel(int x, int y, char color) {
+#if 1 // MOD:
+	if (x >= 0 && x < 320 && y >= 0 && y < 200)
+		polyOutputBuffer[mul_320(y) + x] = color;
+#else
 	if (x >= 0 && x < 320 && y >= 0 && y < 200)
 		polyOutputBuffer[320 * y + x] = color;
+#endif
 }
 
 // this function checks if the dataPtr is not 0, else it retrives the data for X, Y, scale and DataPtr again (OLD: mainDrawSub1Sub1)

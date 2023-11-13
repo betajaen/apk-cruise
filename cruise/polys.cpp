@@ -30,16 +30,66 @@ typedef char ColorP;
 #define MAXPTS 10
 #define putdot(x,y) {if ((y >= 0) && (y < SCREENHEIGHT)) dots[y][counters[y]++] = x;}
 
+extern char *polyOutputBuffer; // MOD:
+
 void hline(int x1, int x2, int y, char c) {
+#if 1 // MOD:
+	if (y < 0 || y > 199)
+		return;
+    if (x2 < x1) {
+		SWAP(x1, x2);
+	}
+	x1 = MAX(0, x1);
+	x2 = MIN(319, x2);
+	uint32 idx = mul_320(y) + x1;
+	int32 count = x2 - x1;
+	while(count--) {
+		polyOutputBuffer[idx++] = c;
+	}
+#else
 	for (; x1 <= x2; x1++) {
 		pixel(x1, y, c);
+	}
+#endif
+}
+
+void hline_unchecked(int x1, int x2, int y, char c) { // MOD:
+	uint32 idx = mul_320(y) + x1;
+	int32 count = x2 - x1;
+	while(count--) {
+		polyOutputBuffer[idx++] = c;
 	}
 }
 
 void vline(int x, int y1, int y2, char c) {
+#if 1 // MOD:
+    if (x < 0 || x > 319)
+        return;
+    if (y2 < y1) {
+		SWAP(y1, y2);
+	}
+    y1 = MAX(0, y1);
+    y2 = MIN(199, y2);
+    uint32 idx = mul_320(y1) + x;
+    uint32 count = y2 - y1;
+    while(count--) {
+        polyOutputBuffer[idx] = c;
+        idx += 320;
+    }
+#else
 	for (; y1 <= y2; y1++) {
 		pixel(x, y1, c);
 	}
+#endif
+}
+
+void vline_unchecked(int x, int y1, int y2, char c) {
+    uint32 idx = mul_320(y1) + x;
+    uint32 count = y2 - y1;
+    while(count--) {
+        polyOutputBuffer[idx] = c;
+        idx += 320;
+    }
 }
 
 void bsubline_1(int x1, int y1, int x2, int y2, char c) {
@@ -54,9 +104,16 @@ void bsubline_1(int x1, int y1, int x2, int y2, char c) {
 		SWAP(y1, y2);
 	}
 
+	CLIP(x1, 0, 319); // MOD:
+	CLIP(x2, 0, 319); // MOD:
+	CLIP(y1, 0, 199); // MOD:
+	CLIP(y2, 0, 199); // MOD:
+
 	for (x = x1, y = y1; x <= x2; x++) {
 
-		pixel(x, y, c);
+		// MOD: pixel(x, y, c);
+		uint32 idx = mul_320(y) + x;  // MOD:
+		polyOutputBuffer[idx] = c;    // MOD:
 		if (e < 0) {
 			y++;
 			e += ddx - ddy;
@@ -80,9 +137,16 @@ void bsubline_2(int x1, int y1, int x2, int y2, char c) {
 		SWAP(y1, y2);
 	}
 
+	CLIP(x1, 0, 319); // MOD:
+	CLIP(x2, 0, 319); // MOD:
+	CLIP(y1, 0, 199); // MOD:
+	CLIP(y2, 0, 199); // MOD:
+
 	for (y = y1, x = x1; y <= y2; y++) {
 
-		pixel(x, y, c);
+		// MOD: pixel(x, y, c);
+		uint32 idx = mul_320(y) + x;  // MOD:
+		polyOutputBuffer[idx] = c;    // MOD:
 		if (e < 0) {
 			x++;
 			e += ddy - ddx;
@@ -107,9 +171,17 @@ void bsubline_3(int x1, int y1, int x2, int y2, char c) {
 		SWAP(y1, y2);
 	}
 
+	CLIP(x1, 0, 319); // MOD:
+	CLIP(x2, 0, 319); // MOD:
+	CLIP(y1, 0, 199); // MOD:
+	CLIP(y2, 0, 199); // MOD:
+
 	for (y = y1, x = x1; y <= y2; y++) {
 
-		pixel(x, y, c);
+		// MOD: pixel(x, y, c);
+		uint32 idx = mul_320(y) + x;  // MOD:
+		polyOutputBuffer[idx] = c;    // MOD:
+
 		if (e < 0) {
 			x--;
 			e += ddy - ddx;
@@ -134,9 +206,17 @@ void bsubline_4(int x1, int y1, int x2, int y2, char c) {
 		SWAP(y1, y2);
 	}
 
+	CLIP(x1, 0, 319); // MOD:
+	CLIP(x2, 0, 319); // MOD:
+	CLIP(y1, 0, 199); // MOD:
+	CLIP(y2, 0, 199); // MOD:
+
 	for (x = x1, y = y1; x <= x2; x++) {
 
-		pixel(x, y, c);
+		// MOD: pixel(x, y, c);
+		uint32 idx = mul_320(y) + x;  // MOD:
+		polyOutputBuffer[idx] = c;    // MOD:
+
 		if (e < 0) {
 			y--;
 			e += ddx - ddy;
@@ -147,7 +227,7 @@ void bsubline_4(int x1, int y1, int x2, int y2, char c) {
 }
 
 void line(int x1, int y1, int x2, int y2, char c) {
-	float k;
+	// MOD: float k;
 
 	if ((x1 == x2) && (y1 == y2)) {
 		pixel(x1, y1, c);
@@ -163,7 +243,9 @@ void line(int x1, int y1, int x2, int y2, char c) {
 		hline(MIN(x1, x2), MAX(x1, x2), y1, c);
 		return;
 	}
-
+#if 0 // MOD:
+	// FPU support on Amiga is optional, this will crash on most Amigas.
+	// TODO: Change this to a better algorithm.
 	k = (float)(y2 - y1) / (float)(x2 - x1);
 
 	if ((k >= 0) && (k <= 1)) {
@@ -175,6 +257,7 @@ void line(int x1, int y1, int x2, int y2, char c) {
 	} else {
 		bsubline_3(x1, y1, x2, y2, c);
 	}
+#endif
 }
 
 // Filled polygons. This probably isn't pixel-perfect compared to the original,
