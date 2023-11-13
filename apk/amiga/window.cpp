@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnreachableCode"
 /* Amiga Port Kit (APK)
  *
  * (c) Robin Southern - github.com/betajaen
@@ -201,10 +203,54 @@ namespace apk {
         typedef void(*WindowEventFn)(void* user, Event& evt);
         typedef void(*WindowTimerFn)(void* user);
 
-        void windowLoop(void* user, uint32 waitTime_usec, WindowEventFn evtFn, WindowTimerFn timerFn) {
+#define MAX_STACK_SIZE 4
+
+        template<typename T, uint32 max_size>
+        struct CallbackStack {
+
+            T m_Callbacks[max_size];
+            void* m_Data[max_size];
+            uint32 m_Size;
+
+            CallbackStack() {
+                for(uint32 i=0;i < max_size;i++) {
+                    m_Callbacks[i] = NULL;
+                    m_Data[i] = NULL;
+                }
+                m_Size = 0;
+            }
+
+            void push(T cb, void* data) {
+                assert(m_Size < max_size);
+                m_Callbacks[m_Size] = cb;
+                m_Data[m_Size] = data;
+                m_Size++;
+            }
+
+            void pop() {
+                assert(m_Size > 0);
+                m_Callbacks[m_Size] = NULL;
+                m_Data[m_Size] = NULL;
+                m_Size--;
+            }
+
+            T getCallback() const {
+                assert(m_Size > 0);
+                return m_Callbacks[m_Size-1];
+            }
+
+            void* getData() const {
+                assert(m_Size > 0);
+                return m_Data[m_Size-1];
+            }
+        };
+
+        CallbackStack<WindowEventFn, 4> s_EventCallbacks;
+        CallbackStack<WindowTimerFn, 4> s_TimerCallbacks;
+
+        void windowStartLoop(void* user, uint32 waitTime_usec) {
 
             struct IntuiMessage* msg;
-
 
             SystemTimer mTimer;
             mTimer.open();
@@ -279,14 +325,18 @@ namespace apk {
 
                         ReplyMsg((struct Message*)msg);
                         if (evt.type != EVENT_NONE) {
-                            evtFn(user, evt);
+                            auto cb = s_EventCallbacks.getCallback();
+                            auto data = s_EventCallbacks.getData();
+                            cb(data, evt);
                         }
                     }
                 }
 
                 if (signal & timerBit) {
                     if (mTimer.isReady()) {
-                        timerFn(user);
+                        auto cb = s_TimerCallbacks.getCallback();
+                        auto data = s_TimerCallbacks.getData();
+                        cb(data);
                         mTimer.start(waitTime_usec);
                     }
                 }
@@ -294,8 +344,22 @@ namespace apk {
 		    }
 
 		    mTimer.close();
-
-
         }
+
+        void pushWindowEventCallback(WindowEventFn cb, void* data) {
+            s_EventCallbacks.push(cb, data);
+        }
+        void pushWindowTimerCallback(WindowTimerFn cb, void* data) {
+            s_TimerCallbacks.push(cb, data);
+        }
+
+        void popWindowEventCallback() {
+            s_EventCallbacks.pop();
+        }
+        void popWindowTimerCallback() {
+            s_TimerCallbacks.pop();
+        }
+
     }
 }
+#pragma clang diagnostic pop
