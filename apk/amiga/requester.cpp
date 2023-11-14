@@ -54,4 +54,17 @@ namespace apk {
         return rv;
     }
 
+    int32 requester_options(const char* title, const char* text, const char* options) {
+        EasyStruct str;
+        str.es_StructSize = sizeof(EasyStruct);
+        str.es_Flags = 0;
+        str.es_GadgetFormat = (CONST_STRPTR)options;
+        str.es_TextFormat = (CONST_STRPTR)text;
+        str.es_Title = (CONST_STRPTR)title;
+
+        int rv = EasyRequest(NULL, &str, NULL);
+
+        return rv;
+    }
+
 }
