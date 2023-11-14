@@ -30,15 +30,15 @@ namespace apk {
         ULONG size;
     };
 
-    File::File() {
+    ReadFile::ReadFile() {
         m_impl = NULL;
     }
 
-    File::~File() {
+    ReadFile::~ReadFile() {
         close();
     }
 
-    bool File::close() {
+    bool ReadFile::close() {
         if (m_impl) {
             Close(m_impl->fh);
             delete m_impl;
@@ -48,11 +48,11 @@ namespace apk {
         return false;
     }
 
-    bool File::isOpen() const {
+    bool ReadFile::isOpen() const {
         return m_impl != NULL;
     }
 
-    bool File::open(const char* path) {
+    bool ReadFile::open(const char* path) {
         close();
 
         char diskPath[256] = { 0 };
@@ -71,7 +71,7 @@ namespace apk {
         return true;
     }
 
-    uint32 File::size() const {
+    uint32 ReadFile::size() const {
 
         if (m_impl == NULL) {
             return 0;
@@ -80,7 +80,7 @@ namespace apk {
         return m_impl->size;
     }
 
-    bool File::exists(const char* path) {
+    bool ReadFile::exists(const char* path) {
 
         char diskPath[256] = { 0 };
         sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:data/dos/%s", path);
@@ -97,7 +97,7 @@ namespace apk {
     }
 
 
-    bool File::seek(int32 where, int32 mode) {
+    bool ReadFile::seek(int32 where, int32 mode) {
         assert(m_impl);
 
         switch(mode) {
@@ -112,31 +112,31 @@ namespace apk {
         }
     }
 
-    uint32 File::read(void* data, uint32 size) {
+    uint32 ReadFile::read(void* data, uint32 size) {
         assert(m_impl);
 
         return (ULONG) Read(m_impl->fh, data, size);
     }
 
-    int16 File::readSint16BE() {
+    int16 ReadFile::readSint16BE() {
         int16 value;
         read(&value, sizeof(value));
         return endian::pod<int16, endian::Big>(value);
     }
 
-    int32 File::readSint32BE() {
+    int32 ReadFile::readSint32BE() {
         int32 value;
         read(&value, sizeof(value));
         return endian::pod<int32, endian::Big>(value);
     }
 
-    uint16 File::readUint16BE() {
+    uint16 ReadFile::readUint16BE() {
         uint16 value;
         read(&value, sizeof(value));
         return endian::pod<uint16, endian::Big>(value);
     }
 
-    uint32 File::readUint32BE() {
+    uint32 ReadFile::readUint32BE() {
         uint32 value;
         read(&value, sizeof(value));
         return endian::pod<uint32, endian::Big>(value);

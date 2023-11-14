@@ -125,14 +125,14 @@ public:
 	RectList _dirtyRects;
 	RectList _priorFrameRects;
 
-	Common::File _currentVolumeFile;
+	Common::ReadFile _currentVolumeFile;
 
 	Common::Array<CtStruct> _polyStructNorm;
 	Common::Array<CtStruct> _polyStructExp;
 	Common::Array<CtStruct> *_polyStructs;
 	Common::Array<CtStruct> *_polyStruct;
 
-	Common::File _PAL_file;
+	Common::ReadFile _PAL_file;
 };
 
 extern CruiseEngine *_vm;

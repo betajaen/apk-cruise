@@ -211,7 +211,7 @@ void askDisk(int16 discNumber) {
 
 #if 0 // skip drive selection stuff
 	bool messageDrawn = false;
-	while (Common::File::exists((const char*)fileName)) {
+	while (Common::ReadFile::exists((const char*)fileName)) {
 		if (!messageDrawn) {
 			drawMsgString(string);
 			messageDrawn = true;
@@ -313,7 +313,7 @@ int closeCnf() {
 }
 
 int16 readVolCnf() {
-	Common::File fileHandle;
+	Common::ReadFile fileHandle;
 	//short int sizeHEntry;
 
 	volumeDataLoaded = 0;
@@ -412,8 +412,8 @@ int16 readVolCnf() {
 
 				delphineUnpack((uint8 *) uncompBuffer, (const uint8 *) bufferLocal, buffer[j].size);
 
-				Common::File fout;
-				fout.open(nameBuffer, Common::File::kFileWriteMode);
+				Common::ReadFile fout;
+				fout.open(nameBuffer, Common::ReadFile::kFileWriteMode);
 				if (fout.isOpen())
 					fout.write(uncompBuffer, buffer[j].extSize);
 

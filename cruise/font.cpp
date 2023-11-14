@@ -102,7 +102,7 @@ void loadFNT(const char *fileName) {
 
 	_systemFNT = nullptr;
 
-	Common::File fontFileHandle;
+	Common::ReadFile fontFileHandle;
 
 	// MOD: if (!fontFileHandle.exists(fileName))
 	// MOD:	return;

@@ -259,7 +259,9 @@ void playerMenu_LoadGame() {
 }
 
 void playerMenu_SaveGame() {
-    apk::requester_okay("Save Game?", "Save Game!??");
+    //apk::requester_okay("Save Game?", "Save Game!??");
+    Common::Error rv = saveSavegameData(0, "save.bin");
+    debug("save rv = %ld", rv);
 }
 
 void playerMenu_ResetGame() {

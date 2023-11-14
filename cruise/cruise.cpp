@@ -124,7 +124,7 @@ void CruiseEngine::deinitialize() {
 
 bool CruiseEngine::loadLanguageStrings() {
 #if 0 // MOD:
-	Common::File f;
+	Common::ReadFile f;
 
 	// Give preference to a language file
 	if (f.open("DELPHINE.LNG")) {

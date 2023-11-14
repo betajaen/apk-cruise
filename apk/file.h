@@ -26,14 +26,14 @@ namespace apk {
 
     class FileImpl;
 
-    class File {
+    class ReadFile {
 
         FileImpl* m_impl;
 
     public:
 
-        File();
-        ~File();
+        ReadFile();
+        ~ReadFile();
 
         bool open(const char*);
 
