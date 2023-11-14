@@ -42,6 +42,7 @@
 #include <proto/timer.h>
 #include <inline/timer.h>
 
+
 struct Device* TimerBase;
 
 #include <clib/exec_protos.h>
@@ -171,7 +172,7 @@ namespace apk {
                 WA_CloseGadget, FALSE,
                 WA_DepthGadget, FALSE,
                 WA_RMBTrap, TRUE,
-                WA_IDCMP, IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEBUTTONS,
+                WA_IDCMP, IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_RAWKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEBUTTONS,
                 TAG_END
 		    );
 
@@ -210,38 +211,39 @@ namespace apk {
 
             T m_Callbacks[max_size];
             void* m_Data[max_size];
-            uint32 m_Size;
+            int32 m_Top;
 
             CallbackStack() {
                 for(uint32 i=0;i < max_size;i++) {
                     m_Callbacks[i] = NULL;
                     m_Data[i] = NULL;
                 }
-                m_Size = 0;
+                m_Top = -1;
             }
 
             void push(T cb, void* data) {
-                assert(m_Size < max_size);
-                m_Callbacks[m_Size] = cb;
-                m_Data[m_Size] = data;
-                m_Size++;
+                m_Top++;
+                m_Callbacks[m_Top] = cb;
+                m_Data[m_Top] = data;
+                printf("push : stack top is %ld\n", m_Top);
             }
 
             void pop() {
-                assert(m_Size > 0);
-                m_Callbacks[m_Size] = NULL;
-                m_Data[m_Size] = NULL;
-                m_Size--;
+                assert(m_Top >= 0);
+                m_Callbacks[m_Top] = NULL;
+                m_Data[m_Top] = NULL;
+                m_Top--;
+                printf("pop : stack top is %ld\n", m_Top);
             }
 
             T getCallback() const {
-                assert(m_Size > 0);
-                return m_Callbacks[m_Size-1];
+                assert(m_Top >= 0);
+                return m_Callbacks[m_Top];
             }
 
             void* getData() const {
-                assert(m_Size > 0);
-                return m_Data[m_Size-1];
+                assert(m_Top >= 0);
+                return m_Data[m_Top];
             }
         };
 
@@ -285,12 +287,22 @@ namespace apk {
                             }
                             break;
                             case IDCMP_VANILLAKEY: {
-                                mouseX = msg->MouseX;
-                                mouseY = msg->MouseY;
-
                                 if (msg->Code == 27) {
                                     mWindowLoopStop = TRUE;
                                 }
+                                else if (msg->Code == ' ') {
+                                    evt.type = EVENT_KEYINSTANT;
+                                    evt.kbd.keycode = 0x40;
+                                }
+                            }
+                            break;
+                            case IDCMP_RAWKEY: {
+                                mouseX = msg->MouseX;
+                                mouseY = msg->MouseY;
+
+                                evt.type = EVENT_KEYINSTANT;
+                                evt.kbd.keycode = msg->Code;
+                                printf("[D] Raw Key = %ld, Qualifier = %ld\n", msg->Code, msg->Qualifier);
                             }
                             break;
                             case IDCMP_MOUSEMOVE: {
