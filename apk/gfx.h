@@ -44,6 +44,7 @@ namespace apk {
         void clearChunkyPixels(uint8 index);
         void setRGB(uint8 index, uint8 r, uint8 g, uint8 b);
         void setRGB(uint8* pal, uint32 begin, uint32 end);
+        void clearPalette();
 
     }
 

@@ -52,6 +52,7 @@ namespace apk {
 
         bool createWindow(struct Screen* screen, uint16 width, uint16 height, uint8 depth);
         void destroyWindow();
+        void clearPalette();
 
         bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
 
@@ -98,12 +99,7 @@ namespace apk {
                 return false;
             }
 
-            sPalette[0] = 256L << 16 | 0;
-            sPalette[1] = 0xFFffffff;
-            sPalette[2] = 0xFFffffff;
-            sPalette[3] = 0xFFffffff;
-
-            LoadRGB32(&mScreen->ViewPort, sPalette);
+            clearPalette();
 
             InitRastPort(&mRastPort);
             mRastPort.BitMap = mScreenBuffer->sb_BitMap;
@@ -179,6 +175,18 @@ namespace apk {
                 *dst++ = *pal++ << 24 | 0x00FFffFF;
             }
 			LoadRGB32(&mScreen->ViewPort, &sPalette[0]);
+        }
+
+        void clearPalette() {
+
+            memset(sPalette, 0, sizeof(sPalette));
+
+            sPalette[0] = 256L << 16 | 0;
+            sPalette[1] = 0xFFffffff;
+            sPalette[2] = 0xFFffffff;
+            sPalette[3] = 0xFFffffff;
+
+            LoadRGB32(&mScreen->ViewPort, sPalette);
         }
     }
 
