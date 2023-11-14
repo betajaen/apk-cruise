@@ -48,7 +48,7 @@ bool s_paletteIsDirty = false; // MOD:
 // MOD:
 #define DEBUG_RECTS 0
 #define DEBUG_TILES 0
-#define DEBUG_FRAME_TIME 1
+#define DEBUG_FRAME_TIME 0
 #define ENABLE_TILE_RENDERER 0
 
 // MOD:
@@ -418,7 +418,9 @@ void gfxModuleData_flipScreen() {
 #endif
 
 	if (ENABLE_TILE_RENDERER == 0 || sDrawTileCount == MAX_TILES) {
-		sFrameNum++;
+#if DEBUG_FRAME_TIME == 1
+    sFrameNum++;
+#endif
 		apk::gfx::writeChunkyPixels(gfxModuleData.pPage00);
 
 #if DEBUG_RECTS == 1
@@ -431,7 +433,9 @@ void gfxModuleData_flipScreen() {
 	}
 	else if (sDrawTileCount != 0) {
 #if ENABLE_TILE_RENDERER == 1
-		sFrameNum++;
+#if DEBUG_FRAME_TIME == 1 \
+    sFrameNum++;
+#endif
 
 #if DEBUG_RECTS == 1
 		apk::gfx::writePixel(64 + (sFrameNum & 0xF), 2, sFrameNum & 0xF);
