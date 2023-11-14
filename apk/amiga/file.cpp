@@ -142,4 +142,45 @@ namespace apk {
         return endian::pod<uint32, endian::Big>(value);
     }
 
+
+    AppendFile::AppendFile() {
+        m_impl = NULL;
+    }
+
+    AppendFile::~AppendFile() {
+        close();
+    }
+
+    bool AppendFile::open(const char* path) {
+        close();
+
+        char diskPath[256] = { 0 };
+        sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:data/dos/%s", path);
+
+        ULONG fh = Open(diskPath, MODE_NEWFILE);
+        if (fh == 0UL) {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool AppendFile::close() {
+         if (m_impl) {
+            Close(m_impl->fh);
+            delete m_impl;
+            m_impl = NULL;
+            return true;
+        }
+        return false;
+    }
+
+    bool AppendFile::isOpen() const {
+        return m_impl != NULL;
+    }
+
+    uint32 AppendFile::write(void* data, uint32 size) {
+        return (ULONG) Write(m_impl->fh, data, size);
+    }
+
 }

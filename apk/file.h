@@ -60,5 +60,25 @@ namespace apk {
     };
 
 
+    class AppendFile {
+
+        FileImpl* m_impl;
+
+    public:
+
+        AppendFile();
+        ~AppendFile();
+
+        bool open(const char*);
+
+        bool close();
+
+        bool isOpen() const;
+
+        uint32 write(void* data, uint32 size);
+
+    };
+
+
 
 }
