@@ -31,11 +31,13 @@ namespace apk {
     constexpr int32 EVENT_MOUSEMOVE = 5;
     constexpr int32 EVENT_KEYDOWN = 6;
     constexpr int32 EVENT_KEYUP = 7;
-    constexpr int32 EVENT_QUIT = 8;
-    constexpr int32 EVENT_RETURN_TO_LAUNCHER = 9;
-    constexpr int32 EVENT_FAST_MODE = 10;
-    constexpr int32 EVENT_SKIP_PROTECTION = 11;
-    constexpr int32 EVENT_PAUSE = 12;
+    constexpr int32 EVENT_KEYINSTANT = 8;
+    constexpr int32 EVENT_QUIT = 9;
+    constexpr int32 EVENT_RETURN_TO_LAUNCHER = 10;
+    constexpr int32 EVENT_FAST_MODE = 11;
+    constexpr int32 EVENT_SKIP_PROTECTION = 12;
+    constexpr int32 EVENT_PAUSE = 13;
+    constexpr int32 EVENT_MENU = 14;
 
     struct Event {
         int32 type;
