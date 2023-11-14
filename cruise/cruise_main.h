@@ -110,6 +110,7 @@ int removeFinishedScripts(scriptInstanceStruct *ptrHandle);
 void initBigVar3();
 void resetActorPtr(actorStruct *ptr);
 void removeAllScripts(scriptInstanceStruct *ptrHandle);
+void ProcessEvents_NoReaction(apk::Event& evt); // MOD:
 
 #if 1
 #define mallocAndZero(size)  ::apk::malloc(size)

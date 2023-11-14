@@ -150,6 +150,7 @@ void updateMenuMouse(int mouseX, int mouseY, menuStruct *pMenu) {
 
 bool manageEvents();
 
+#if 0 // MOD:
 int processMenu(menuStruct *pMenu) {
 	int16 mouseX;
 	int16 mouseY;
@@ -161,8 +162,8 @@ int processMenu(menuStruct *pMenu) {
 	mainDraw(true);
 	flipScreen();
 
-	di = 0;
-	si = 0;
+	// MOD: di = 0;
+	// MOD: si = 0;
 
 	do {
 		getMouseStatus(&main10, &mouseX, &mouseButton, &mouseY);
@@ -205,6 +206,7 @@ int processMenu(menuStruct *pMenu) {
 
 	return -1;
 }
+#endif
 
 static void handleSaveLoad(bool saveFlag) {
 	if (saveFlag)
@@ -213,6 +215,161 @@ static void handleSaveLoad(bool saveFlag) {
 		_vm->loadGameDialog();
 }
 
+static int playerMenu_Stop(menuStruct* pMenu, int mouseButton);
+
+void playerMenu_EventCb(void*, apk::Event& evt) {
+	ProcessEvents_NoReaction(evt);
+}
+
+static int playerMenu_di, playerMenu_si; // MOD:
+
+void playerMenu_TimerCb(void* data) {
+	int16 mouseX;
+	int16 mouseY;
+	int16 mouseButton;
+
+	menuStruct* pMenu = (menuStruct*) data;
+	assert(pMenu);
+
+
+	getMouseStatus(&main10, &mouseX, &mouseButton, &mouseY);
+
+	updateMenuMouse(mouseX, mouseY, pMenu);
+
+	mainDraw(true);
+	flipScreen();
+
+
+    if (mouseButton) {
+        if (playerMenu_di) {
+            playerMenu_si = 1;
+        }
+    } else {
+        playerMenu_di = 1;
+    }
+
+    if (playerMenu_si == 1) {
+        playerMenu_Stop(pMenu, mouseButton);
+    }
+
+}
+
+void playerMenu_LoadGame() {
+    apk::requester_okay("Load Game?", "Load Game!??");
+}
+
+void playerMenu_SaveGame() {
+    apk::requester_okay("Save Game?", "Save Game!??");
+}
+
+void playerMenu_ResetGame() {
+    _vm->sound().fadeOutMusic();
+    Op_FadeOut();
+    apk::gfx::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
+    gfxModuleData_clearAll();
+    gfxModuleData_zeroPalette();
+    initVars();
+    _vm->initAllData();
+    changeCursor(CURSOR_NORMAL);
+    userEnabled = 0;
+}
+
+void playerMenu_ExitGame() {
+    apk::gfx::windowStopLoop();
+}
+
+void playerMenu_PauseGame() {
+	requester_okay("Paused", "Continue");
+}
+
+int playerMenu_Start(int menuX, int menuY) { // MOD:
+
+    debug("start of player menu");
+
+	if (playerMenuEnabled && displayOn) {
+		if (remdo) {
+			_vm->sound().stopMusic();
+			freeStuff2();
+		}
+
+		freeDisk();
+
+		menuTable[0] = createMenu(menuX, menuY, _vm->langString(ID_PLAYER_MENU));
+		assert(menuTable[0]);
+
+		//addSelectableMenuEntry(0, 3, menuTable[0], 1, -1, "Save game disk");
+		if (userEnabled) {
+			addSelectableMenuEntry(0, 4, menuTable[0], 1, -1, _vm->langString(ID_SAVE));
+		}
+		addSelectableMenuEntry(0, 5, menuTable[0], 1, -1, _vm->langString(ID_LOAD));
+		addSelectableMenuEntry(0, 6, menuTable[0], 1, -1, _vm->langString(ID_RESTART));
+		addSelectableMenuEntry(0, 7, menuTable[0], 1, -1, _vm->langString(ID_QUIT));
+
+        playerMenu_di = 0;
+        playerMenu_si = 0;
+	    currentActiveMenu = 0;
+
+		apk::gfx::pushWindowEventCallback(playerMenu_EventCb, menuTable[0]);
+		apk::gfx::pushWindowTimerCallback(playerMenu_TimerCb, menuTable[0]);
+
+	}
+
+    return 0;
+}
+
+static int playerMenu_Stop(menuStruct* pMenu, int mouseButton) { // MOD:
+
+    int rc = 0;
+	apk::gfx::popWindowEventCallback();
+	apk::gfx::popWindowTimerCallback();
+
+	currentActiveMenu = -1;
+
+	if (mouseButton & 1) {
+		menuElementSubStruct* pSelectedEntry = getSelectedEntryInMenu(pMenu);
+
+		if (pSelectedEntry) {
+			rc = pSelectedEntry->header;
+		} else {
+			rc = -1;
+		}
+	}
+
+	freeMenu(menuTable[0]);
+	menuTable[0] = nullptr;
+	currentMouseButton = 0;
+
+	switch (rc) {
+		case 3: // select save drive
+			break;
+		case 4: // save
+		case 5: // load
+			handleSaveLoad(rc == 4);
+			break;
+		case 6: // restart
+			_vm->sound().fadeOutMusic();
+			Op_FadeOut();
+			apk::gfx::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
+			initVars();
+			_vm->initAllData();
+			changeCursor(CURSOR_NORMAL);
+			userEnabled = 0;
+			break;
+		case 7: // exit
+			break;
+		default:
+			break;
+	}
+
+	mainDraw(true);
+	flipScreen();
+
+    debug("End of player menu");
+
+    return 0;
+}
+
+#if 0 // MOD:
 int playerMenu(int menuX, int menuY) {
 	//int restartGame = 0;
 
@@ -288,6 +445,7 @@ int playerMenu(int menuX, int menuY) {
 
 	return 0;
 }
+#endif
 
 void freeMenu(menuStruct *pMenu) {
 	menuElementStruct *pElement = pMenu->ptrNextElement;

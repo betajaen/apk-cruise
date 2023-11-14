@@ -1415,10 +1415,13 @@ int CruiseEngine::processInput() {
 		buttonDown = 0;
 	}
 
+#if 0 // MOD:
 	// Check for Exit 'X' key
 	if (keyboardCode == Common::KEYCODE_x)
 		return 1;
+#endif
 
+#if 0 // MOD:
 	// Check for Pause 'P' key
 	if (keyboardCode == Common::KEYCODE_p) {
 		keyboardCode = Common::KEYCODE_INVALID;
@@ -1449,13 +1452,42 @@ int CruiseEngine::processInput() {
 		mouseOn();
 		return 0;
 	}
+#endif
 
+	if (keyboardCode == Common::KEYCODE_SPACE) { // MOD:
+		keyboardCode = Common::KEYCODE_INVALID;
+		playerMenu_PauseGame();
+	}
+
+	if (keyboardCode == Common::KEYCODE_F8) { // MOD:
+		keyboardCode = Common::KEYCODE_INVALID;
+		playerMenu_ResetGame();
+	}
+
+	if (keyboardCode == Common::KEYCODE_F5) { // MOD:
+		keyboardCode = Common::KEYCODE_INVALID;
+		playerMenu_SaveGame();
+	}
+
+	if (keyboardCode == Common::KEYCODE_F9) { // MOD:
+		keyboardCode = Common::KEYCODE_INVALID;
+		playerMenu_LoadGame();
+	}
+
+	if (keyboardCode == Common::KEYCODE_ESCAPE) { // MOD:
+		keyboardCode = Common::KEYCODE_INVALID;
+		playerMenu_ExitGame();
+	}
+
+#if 0
 	// Player Menu - test for both buttons or the F10 key
 	if (((button & CRS_MB_BOTH) == CRS_MB_BOTH) || (keyboardCode == Common::KEYCODE_F10)) {
 		changeCursor(CURSOR_NORMAL);
 		keyboardCode = Common::KEYCODE_INVALID;
-		return (playerMenu(mouseX, mouseY));
+		playerMenu_Start(mouseX, mouseY); // MOD: return (playerMenu(mouseX, mouseY));
+        return 1;
 	}
+#endif
 
 	if (userWait) {
 		// Check for left mouse button click or Space to end user waiting
@@ -1754,6 +1786,10 @@ bool manageEvents() {
 			mouseOn();
 		}
 		break;
+		case Common::EVENT_KEYINSTANT: // MOD:
+		    keyboardCode = event.kbd.keycode;
+            requester_okay("keyboard", "keyboard");
+        break;
 		case Common::EVENT_KEYUP:
 			switch (event.kbd.keycode) {
 			case Common::KEYCODE_ESCAPE:
@@ -1996,6 +2032,54 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 		}
 }
 
+void ProcessEvents_NoReaction(apk::Event& event) { // MOD:
+switch (event.type) {
+		case Common::EVENT_LBUTTONDOWN:
+			currentMouseButton |= CRS_MB_LEFT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_LBUTTONUP:
+			currentMouseButton &= ~CRS_MB_LEFT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_RBUTTONDOWN:
+			currentMouseButton |= CRS_MB_RIGHT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_RBUTTONUP:
+			currentMouseButton &= ~CRS_MB_RIGHT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_MOUSEMOVE:
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_KEYUP:
+			switch (event.kbd.keycode) {
+			case Common::KEYCODE_ESCAPE:
+				currentMouseButton &= ~CRS_MB_MIDDLE;
+				break;
+			default:
+				break;
+			}
+			break;
+		case Common::EVENT_KEYDOWN:
+			switch (event.kbd.keycode) {
+			case Common::KEYCODE_ESCAPE:
+				currentMouseButton |= CRS_MB_MIDDLE;
+				break;
+			default:
+				keyboardCode = event.kbd.keycode;
+				break;
+			}
+		default:
+			break;
+		}
+}
 
 void EventCb(void* ce, apk::Event& event) { // MOD:
 		bool abortFlag = true;
@@ -2079,6 +2163,10 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 			default:
 				break;
 			}
+			break;
+
+		case Common::EVENT_KEYINSTANT:
+				keyboardCode = event.kbd.keycode;
 			break;
 		case Common::EVENT_KEYDOWN:
 			switch (event.kbd.keycode) {

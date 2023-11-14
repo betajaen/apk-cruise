@@ -64,6 +64,8 @@ void convertGfxFromMode5(const uint8 *sourcePtr, int width, int height, uint8 *d
 void gfxModuleData_Init();
 void gfxModuleData_flipScreen();
 //void gfxModuleData_setPal(uint8 * ptr);
+void gfxModuleData_clearAll();
+void gfxModuleData_zeroPalette();
 void gfxModuleData_convertOldPalColor(uint16 oldColor, uint8 *pOutput);
 void gfxModuleData_setPalEntries(const byte *ptr, int start, int num);
 void gfxModuleData_setPal256(const byte *ptr);

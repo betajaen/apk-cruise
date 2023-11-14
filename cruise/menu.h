@@ -39,9 +39,16 @@ menuStruct *createMenu(int X, int Y, const char *menuName);
 void addSelectableMenuEntry(int var0, int var1, menuStruct * pMenu, int var2,
 							int color, const char *menuText);
 void updateMenuMouse(int mouseX, int mouseY, menuStruct * pMenu);
-int processMenu(menuStruct * pMenu);
+// MOD: int processMenu(menuStruct * pMenu);
 void freeMenu(menuStruct * pMenu);
-int playerMenu(int menuX, int menuY);
+// MOD: int playerMenu(int menuX, int menuY);
+int playerMenu_Start(int menuX, int menuY);
+void playerMenu_LoadGame(); // MOD:
+void playerMenu_SaveGame(); // MOD:
+void playerMenu_ExitGame(); // MOD:
+void playerMenu_ResetGame(); // MOD:
+void playerMenu_PauseGame(); // MOD:
+
 
 } // End of namespace Cruise
 

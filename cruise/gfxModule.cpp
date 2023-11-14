@@ -345,6 +345,15 @@ void gfxModuleData_Init() {
 	// MOD: memset(page10, 0, 320 * 200);
 }
 
+void gfxModuleData_clearAll() { // MOD:
+    apk::memset_aligned(page00, 0, 64000);
+    apk::memset_aligned(page10, 0, 64000);
+}
+
+void gfxModuleData_zeroPalette() { // MOD:
+    apk::gfx::clearPalette();
+}
+
 void gfxModuleData_hilight(uint32 x, uint32 y, uint32 w, uint32 h) {
     uint32 r = x + w;
     uint32 b = y + h;
