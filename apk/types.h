@@ -32,6 +32,7 @@
 #include "requester.h"
 #include "math.h"
 #include "stack.h"
+#include "text.h"
 
 namespace apk {
 
@@ -118,44 +119,7 @@ namespace apk {
     };
 
 
-    int strcmp(const char* lhs, const char* rhs);
-    void memcpy(void* dst, const void* src, APK_SIZE_TYPE length);
-    void memcpy_aligned(void* dst, const void* src, APK_SIZE_TYPE length);
-
-    uint32 strlen(const char* str);
-    void strcpy( char* dst, const char* src);
-    void strlcpy(char* dst, const char* src, uint32 length);
-
-    inline void strcpy_s(char* dst, uint32 length, const char* src) {
-        strlcpy(dst, src, length);
-    }
-
-    template<uint32 N>
-    inline void strcpy_s(char (&dst)[N], const char *src) {
-        strlcpy(dst, src, N);
-    }
-
-    inline void strncpy(char* dst, const char* src, uint32 length) {
-        strlcpy(dst, src, length);
-    }
-
-    const char* strchr(const char* str, char search);
-    const char* strrchr(const char* str, char search);
-
-    char* strchr(char* str, char search);
-    char* strrchr(char* str, char search);
-
-    char toupper(char);
-
-    void memset(void* dst, int val, APK_SIZE_TYPE length);
-    void memset_aligned(void* dst, uint32 val, APK_SIZE_TYPE length);
-    void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...);
     void printf(const char* fmt, ...);
-
-    void* malloc(APK_SIZE_TYPE length);
-    void* malloc_aligned(APK_SIZE_TYPE length);
-    void free(void* mem);
-    void free_aligned(void* mem);
 
     bool isQuitRequested();
 
