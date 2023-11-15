@@ -204,51 +204,22 @@ namespace apk {
         typedef void(*WindowEventFn)(void* user, Event& evt);
         typedef void(*WindowTimerFn)(void* user);
 
-#define MAX_STACK_SIZE 4
+        template<typename T>
+        struct UserCallback {
+            T fn;
+            void* data;
 
-        template<typename T, uint32 max_size>
-        struct CallbackStack {
+            UserCallback() = default;
 
-            T m_Callbacks[max_size];
-            void* m_Data[max_size];
-            int32 m_Top;
-
-            CallbackStack() {
-                for(uint32 i=0;i < max_size;i++) {
-                    m_Callbacks[i] = NULL;
-                    m_Data[i] = NULL;
-                }
-                m_Top = -1;
+            UserCallback(T fn_, void* data_)
+                : fn(fn_), data(data_) {
             }
 
-            void push(T cb, void* data) {
-                m_Top++;
-                m_Callbacks[m_Top] = cb;
-                m_Data[m_Top] = data;
-                printf("push : stack top is %ld\n", m_Top);
-            }
-
-            void pop() {
-                assert(m_Top >= 0);
-                m_Callbacks[m_Top] = NULL;
-                m_Data[m_Top] = NULL;
-                m_Top--;
-                printf("pop : stack top is %ld\n", m_Top);
-            }
-
-            T getCallback() const {
-                assert(m_Top >= 0);
-                return m_Callbacks[m_Top];
-            }
-
-            void* getData() const {
-                assert(m_Top >= 0);
-                return m_Data[m_Top];
-            }
         };
 
-        CallbackStack<WindowEventFn, 4> s_EventCallbacks;
-        CallbackStack<WindowTimerFn, 4> s_TimerCallbacks;
+        Stack<UserCallback<WindowEventFn>, 4> s_EventFns;
+        Stack<UserCallback<WindowTimerFn>, 4> s_TimerFns;
+
 
         void windowStartLoop(void* user, uint32 waitTime_usec) {
 
@@ -337,18 +308,16 @@ namespace apk {
 
                         ReplyMsg((struct Message*)msg);
                         if (evt.type != EVENT_NONE) {
-                            auto cb = s_EventCallbacks.getCallback();
-                            auto data = s_EventCallbacks.getData();
-                            cb(data, evt);
+                            const auto& cb = s_EventFns.top();
+                            cb.fn(cb.data, evt);
                         }
                     }
                 }
 
                 if (signal & timerBit) {
                     if (mTimer.isReady()) {
-                        auto cb = s_TimerCallbacks.getCallback();
-                        auto data = s_TimerCallbacks.getData();
-                        cb(data);
+                        const auto& cb = s_TimerFns.top();
+                        cb.fn(cb.data);
                         mTimer.start(waitTime_usec);
                     }
                 }
@@ -359,19 +328,18 @@ namespace apk {
         }
 
         void pushWindowEventCallback(WindowEventFn cb, void* data) {
-            s_EventCallbacks.push(cb, data);
+            s_EventFns.push_back(UserCallback<WindowEventFn>(cb, data));
         }
         void pushWindowTimerCallback(WindowTimerFn cb, void* data) {
-            s_TimerCallbacks.push(cb, data);
+            s_TimerFns.push_back(UserCallback<WindowTimerFn>(cb, data));
         }
 
         void popWindowEventCallback() {
-            s_EventCallbacks.pop();
+            s_EventFns.pop_back();
         }
         void popWindowTimerCallback() {
-            s_TimerCallbacks.pop();
+            s_TimerFns.pop_back();
         }
 
     }
 }
-#pragma clang diagnostic pop
