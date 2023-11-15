@@ -19,12 +19,14 @@
 
 #pragma once
 
-#include "pod.h"
+#include "debug.h"
 
 namespace apk {
 
-    void requester_okay(const char* title, const char* text);
-    int32 requester_yesno(const char* title, const char* text);
-    int32 requester_options(const char* title, const char* text, const char* options);
+    void printf(const char* fmt, ...);
+    void debug(int, const char* fmt, ...);
+    void debug(const char* str, ...);
+    void warning(const char* fmt, ...);
+    void error(const char* fmt, ...);
 
 }

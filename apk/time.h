@@ -23,8 +23,7 @@
 
 namespace apk {
 
-    void requester_okay(const char* title, const char* text);
-    int32 requester_yesno(const char* title, const char* text);
-    int32 requester_options(const char* title, const char* text, const char* options);
+    void delayMs(uint32 ms);
+    uint32 getMs();
 
 }

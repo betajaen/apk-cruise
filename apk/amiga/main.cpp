@@ -41,10 +41,6 @@ namespace apk {
 
     static ULONG ticks = 0;
 
-    bool isQuitRequested() {
-        return false;
-    }
-
     void delayMs(uint32 ms) {
         ticks += ms;
     }

@@ -342,4 +342,9 @@ namespace apk {
         }
 
     }
+
+    bool isQuitRequested() {
+        return gfx::mWindowLoopStop;
+    }
+
 }
