@@ -147,47 +147,162 @@ namespace apk {
         }
     };
 
-    class Serializer {
+    class InSerializer {
+        ReadFile m_File;
     public:
-        Serializer(void*, void* f) {
+         InSerializer() {
         }
-        bool err() {
+
+        ~InSerializer() {
+            finalize();
+        }
+
+        bool open(const char* path) {
+            return m_File.open(path);
+        }
+
+        bool isLoading() const {
+            return true;
+        }
+
+        bool isSaving() const {
             return false;
         }
-        bool isSaving() {
-            return false;
+
+        void syncBytes(void* data, uint32 length) {
+            m_File.read(data, length);
         }
-        bool isLoading() {
-            return false;
+
+        void syncValue(bool& v) {
+             m_File.read(&v, sizeof(v));
         }
-        void syncBytes(void* data, uint32 length) {}
-        void syncAsByte(uint8 byte) {}
-        void syncAsSint16LE(int16 v) {}
-        void syncAsSint32LE(int32 v) {}
-        void syncAsSint16BE(int16 v) {}
-        void syncAsSint32BE(int32 v) {}
-        void syncAsUint16LE(int16 v) {}
-        void syncAsUint32LE(int32 v) {}
-        void syncAsUint16BE(int16 v) {}
-        void syncAsUint32BE(int32 v) {}
+
+        void syncValue(uint8& v) {
+             m_File.read(&v, sizeof(v));
+        }
+
+        template<typename T>
+        void syncAsByte(T& v) {
+             uint8 tmp;
+             m_File.read(&tmp, sizeof(tmp));
+             v = (T) tmp;
+         }
+
+        template<typename T>
+        void syncValue(T& v) {
+             m_File.read(&v, sizeof(v));
+        }
+
+        template<typename T>
+        void syncAsSint16LE(T& v) {
+             int16 tmp;
+             m_File.read(&tmp, sizeof(tmp));
+             v = (T) endian::pod<int16, endian::Little, endian::Native>(tmp);
+        }
+
+        template<typename T>
+        void syncAsSint32LE(T& v) {
+             int32 tmp;
+             m_File.read(&tmp, sizeof(tmp));
+             v = (T) endian::pod<int32, endian::Little, endian::Native>(tmp);
+        }
+
+
+        template<typename T>
+        void syncAsUint16LE(T& v) {
+             uint16 tmp;
+             m_File.read(&tmp, sizeof(tmp));
+             v = (T) endian::pod<uint16, endian::Little, endian::Native>(tmp);
+        }
+
+        template<typename T>
+        void syncAsUint32LE(T& v) {
+             uint32 tmp;
+             m_File.read(&tmp, sizeof(tmp));
+             v = (T) endian::pod<uint32, endian::Little, endian::Native>(tmp);
+        }
+
+
         void finalize() {
+            m_File.close();
         }
     };
 
-    typedef Serializer InSaveFile;
-    typedef Serializer OutSaveFile;
-
-    class SaveFileManager {
+    class OutSerializer {
+        AppendFile m_File;
     public:
-        InSaveFile* openForLoading(const char*) {
-            return NULL;
+        OutSerializer() {
         }
-        OutSaveFile* openForSaving(const char*) {
-            return NULL;
+
+        ~OutSerializer() {
+            finalize();
         }
-        void removeSavefile(const char*) {
+
+        bool open(const char* path) {
+            return m_File.open(path);
+        }
+
+        bool isLoading() const {
+            return false;
+        }
+
+        bool isSaving() const {
+            return true;
+        }
+
+        void syncBytes(void* data, uint32 length) {
+            m_File.write(data, length);
+        }
+
+        template<typename T>
+        void syncAsByte(T& v) {
+             uint8 tmp = (uint8) v;
+             m_File.write(&tmp, sizeof(tmp));
+        }
+
+        void syncValue(uint8& v) {
+             m_File.write(&v, sizeof(v));
+        }
+
+        void syncValue(bool& v) {
+             m_File.write(&v, sizeof(v));
+        }
+
+        template<typename T>
+        void syncValue(T& v) {
+             m_File.write(&v, sizeof(v));
+        }
+
+
+        template<typename T>
+        void syncAsSint16LE(T& v) {
+             int16 tmp = endian::pod<int16, endian::Native, endian::Little>((int16) v);
+             m_File.write(&tmp, sizeof(tmp));
+        }
+
+        template<typename T>
+        void syncAsSint32LE(T& v) {
+             int32 tmp = endian::pod<int16, endian::Native, endian::Little>((int32) v);
+             m_File.write(&tmp, sizeof(tmp));
+        }
+
+        template<typename T>
+        void syncAsUint16LE(T& v) {
+             uint16 tmp = endian::pod<uint16, endian::Native, endian::Little>((uint16) v);
+             m_File.write(&tmp, sizeof(tmp));
+        }
+
+        template<typename T>
+        void syncAsUint32LE(T& v) {
+             uint32 tmp = endian::pod<uint32, endian::Native, endian::Little>((uint32) v);
+             m_File.write(&tmp, sizeof(tmp));
+        }
+
+        void finalize() {
+            m_File.close();
         }
     };
+
 
     class OSystem {
     public:
@@ -195,7 +310,6 @@ namespace apk {
         ConfigManager m_configMgr;
         PaletteManager m_paletteMgr;
         CursorManager m_cursorMgr;
-        SaveFileManager m_saveFileMgr;
 
         void delayMillis(uint32 ms) {
             apk::delayMs(ms);
@@ -211,10 +325,6 @@ namespace apk {
 
         CursorManager* getCursorManager() {
             return &m_cursorMgr;
-        }
-
-        SaveFileManager* getSavefileManager() {
-            return &m_saveFileMgr;
         }
 
         int32 getMillis() {
@@ -255,7 +365,8 @@ namespace apk {
         void musicLoop(int) {}
         int getVolume() { return 0; }
         void setVolume(int) {}
-        void doSync(Serializer&) {}
+        template<typename T>
+        void doSync(T&) {}
     };
 
     class Engine {

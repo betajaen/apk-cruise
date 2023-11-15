@@ -23,6 +23,9 @@
 #include "cruise/cruise.h"
 #include "cruise/vars.h"
 
+// MOD:
+#define SAVE_FILENAME "savegame"
+
 // MOD: #include "common/serializer.h"
 // MOD: #include "common/savefile.h"
 // MOD: #include "common/system.h"
@@ -42,8 +45,9 @@ struct overlayRestoreTemporary {
 
 overlayRestoreTemporary ovlRestoreData[90];
 
-WARN_UNUSED_RESULT bool readSavegameHeader(Common::InSaveFile *in, CruiseSavegameHeader &header, bool skipThumbnail) {
 #if 0 // MOD:
+WARN_UNUSED_RESULT bool readSavegameHeader(Common::InSaveFile *in, CruiseSavegameHeader &header, bool skipThumbnail) {
+
 	char saveIdentBuffer[6];
 
 	// Validate the header Id
@@ -65,12 +69,12 @@ WARN_UNUSED_RESULT bool readSavegameHeader(Common::InSaveFile *in, CruiseSavegam
 	if (!Graphics::loadThumbnail(*in, header.thumbnail, skipThumbnail)) {
 		return false;
 	}
-#endif
 	return true;
 }
+#endif
 
-void writeSavegameHeader(Common::OutSaveFile *out, CruiseSavegameHeader &header) {
 #if 0 // MOD:
+void writeSavegameHeader(Common::OutSaveFile *out, CruiseSavegameHeader &header) {
 	// Write out a savegame header
 	char saveIdentBuffer[6];
 	Common::strcpy_s(saveIdentBuffer, "SVMCR");
@@ -87,15 +91,17 @@ void writeSavegameHeader(Common::OutSaveFile *out, CruiseSavegameHeader &header)
 	Graphics::saveThumbnail(*out, *thumb);
 	thumb->free();
 	delete thumb;
-#endif
 }
+#endif
 
-static void syncPalette(Common::Serializer &s, uint8 *p) {
+template<typename T> // MOD:
+static void syncPalette(T& s, uint8 *p) { // MOD: static void syncPalette(Common::Serializer &s, uint8 *p) {
 	// This is different from the original, where palette entries are 2 bytes each
 	s.syncBytes(p, NBCOLORS * 3);
 }
 
-static void syncBasicInfo(Common::Serializer &s) {
+template<typename T>
+static void syncBasicInfo(T& s) {// MOD: static void syncBasicInfo(Common::Serializer &s) {
 	s.syncAsSint16LE(activeMouse);
 	s.syncAsSint16LE(userEnabled);
 	s.syncAsSint16LE(dialogueEnabled);
@@ -145,7 +151,8 @@ static void syncBasicInfo(Common::Serializer &s) {
 	s.syncAsSint16LE(protectionCode);
 }
 
-static void syncBackgroundTable(Common::Serializer &s) {
+template<typename T>
+static void syncBackgroundTable(T& s) { // MOD: static void syncBackgroundTable(Common::Serializer &s) {
 	// restore backgroundTable
 	for (int i = 0; i < 8; i++) {
 		if (s.isSaving() && (strlen(backgroundTable[i].name) > 8))
@@ -156,14 +163,16 @@ static void syncBackgroundTable(Common::Serializer &s) {
 	}
 }
 
-static void syncPalScreen(Common::Serializer &s) {
+template<typename T> // MOD:
+static void syncPalScreen(T& s) { // MOD: static void syncPalScreen(Common::Serializer &s) {
 	for (int i = 0; i < NBSCREENS; ++i) {
 		for (int j = 0; j < NBCOLORS; ++j)
 			s.syncAsUint16LE(palScreen[i][j]);
 	}
 }
 
-static void syncSoundList(Common::Serializer &s) {
+template<typename T> // MOD:
+static void syncSoundList(T& s) { // static void syncSoundList(Common::Serializer &s) {
 	for (int i = 0; i < 4; ++i) {
 		SoundEntry &se = soundList[i];
 		s.syncAsSint16LE(se.frameNum);
@@ -172,7 +181,8 @@ static void syncSoundList(Common::Serializer &s) {
 	}
 }
 
-static void syncFilesDatabase(Common::Serializer &s) {
+template<typename T> // MOD:
+static void syncFilesDatabase(T& s) { // MOD: static void syncFilesDatabase(Common::Serializer &s) {
 	uint8 dummyVal = 0;
 	uint32 tmp;
 
@@ -211,7 +221,8 @@ static void syncFilesDatabase(Common::Serializer &s) {
 	}
 }
 
-static void syncPreloadData(Common::Serializer &s) {
+template<typename T>
+static void syncPreloadData(T& s) { // MOD: static void syncPreloadData(Common::Serializer &s) {
 	uint8 dummyByte = 0;
 	uint32 dummyLong = 0;
 
@@ -229,7 +240,8 @@ static void syncPreloadData(Common::Serializer &s) {
 	}
 }
 
-static void syncOverlays1(Common::Serializer &s) {
+template<typename T> // MOD:
+static void syncOverlays1(T& s) { // MOD: static void syncOverlays1(Common::Serializer &s) {
 	uint8 dummyByte = 0;
 	uint32 dummyLong = 0;
 
@@ -249,7 +261,8 @@ static void syncOverlays1(Common::Serializer &s) {
 	}
 }
 
-static void syncOverlays2(Common::Serializer &s) {
+template<typename T>
+static void syncOverlays2(T& s) { // MOD: static void syncOverlays2(Common::Serializer &s) {
 
 	for (int i = 1; i < numOfLoadedOverlay; i++) {
 
@@ -311,7 +324,8 @@ static void syncOverlays2(Common::Serializer &s) {
 	}
 }
 
-void syncScript(Common::Serializer &s, scriptInstanceStruct *entry) {
+template<typename T>
+void syncScript(T& s, scriptInstanceStruct *entry) { // MOD: void syncScript(Common::Serializer &s, scriptInstanceStruct *entry) {
 	int numScripts = 0;
 	uint32 dummyLong = 0;
 	uint16 dummyWord = 0;
@@ -363,7 +377,8 @@ void syncScript(Common::Serializer &s, scriptInstanceStruct *entry) {
 	}
 }
 
-static void syncCell(Common::Serializer &s) {
+template<typename T>
+static void syncCell(T& s) { // MOD: static void syncCell(Common::Serializer &s) {
 	int chunkCount = 0;
 	cellStruct *t, *p;
 	uint16 dummyWord = 0;
@@ -424,7 +439,8 @@ static void syncCell(Common::Serializer &s) {
 	}
 }
 
-static void syncIncrust(Common::Serializer &s) {
+template<typename T> // MOD:
+static void syncIncrust(T& s) { // static void syncIncrust(Common::Serializer &s) {
 	int numEntries = 0;
 	backgroundIncrustStruct *pl, *pl1;
 	uint8 dummyByte = 0;
@@ -490,7 +506,8 @@ static void syncIncrust(Common::Serializer &s) {
 	}
 }
 
-static void syncActors(Common::Serializer &s) {
+template<typename T>
+static void syncActors(T& s) { // MOD: static void syncActors(Common::Serializer &s) {
 	int numEntries = 0;
 	actorStruct *ptr;
 	uint16 dummyLong = 0;
@@ -541,7 +558,8 @@ static void syncActors(Common::Serializer &s) {
 	}
 }
 
-static void syncSongs(Common::Serializer &s) {
+template<typename T> // MOD:
+static void syncSongs(T& s) { // static void syncSongs(Common::Serializer &s) {
 	int size = 0;
 
 	if (songLoaded) {
@@ -557,7 +575,8 @@ static void syncSongs(Common::Serializer &s) {
 	}
 }
 
-static void syncPerso(Common::Serializer &s, persoStruct &p) {
+template<typename T> // MOD:
+static void syncPerso(T& s, persoStruct &p) { // MOD: static void syncPerso(Common::Serializer &s, persoStruct &p) {
 	s.syncAsSint16LE(p.inc_droite);
 	s.syncAsSint16LE(p.inc_droite0);
 	s.syncAsSint16LE(p.inc_chemin);
@@ -578,7 +597,8 @@ static void syncPerso(Common::Serializer &s, persoStruct &p) {
 	s.syncAsSint16LE(p.inc_jo0);
 }
 
-static void syncCT(Common::Serializer &s) {
+template<typename T> // MOD:
+static void syncCT(T& s) { // MOD: static void syncCT(Common::Serializer &s) {
 	int v = (_vm->_polyStruct) ? 1 : 0;
 	s.syncAsSint32LE(v);
 	if (s.isLoading())
@@ -611,7 +631,8 @@ static void syncCT(Common::Serializer &s) {
 	}
 }
 
-static void DoSync(Common::Serializer &s) {
+template<typename T> // MOD:
+static void DoSync(T& s) { // MOD: static void DoSync(Common::Serializer &s) {
 	syncBasicInfo(s);
 	_vm->sound().doSync(s);
 
@@ -783,6 +804,24 @@ void initVars() {
 }
 
 Common::Error saveSavegameData(int saveGameIdx, const char* saveName) { // MOD: Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName) {
+#if 1 // MOD:
+
+	apk::OutSerializer f;
+	bool rv = f.open(SAVE_FILENAME);
+
+    if (rv == false) {
+        requester_okay("Cruise for a Corpse", "Could not create save game file.");
+        return Common::kWritingFailed;
+    }
+
+	DoSync(f);
+	f.finalize();
+
+    requester_okay("Cruise for a Corpse", "Saved?");
+
+	return Common::kNoError;
+
+#else
 	const char *filename = _vm->getSavegameFile(saveGameIdx);
 	Common::SaveFileManager *saveMan = g_system->getSavefileManager();
 	Common::OutSaveFile *f = saveMan->openForSaving(filename);
@@ -807,9 +846,34 @@ Common::Error saveSavegameData(int saveGameIdx, const char* saveName) { // MOD: 
 		delete f;
 		return Common::kNoError;
 	}
+#endif
 }
 
 Common::Error loadSavegameData(int saveGameIdx) {
+#if 1 // MOD:
+
+
+	// MOD: Common::String saveName;
+	cellStruct *currentcellHead;
+
+	apk::InSerializer f;
+	bool rv = f.open(SAVE_FILENAME);
+
+    if (rv == false) {
+        requester_okay("Cruise for a Corpse", "Could not load save game file.");
+        return Common::kReadingFailed;
+    }
+
+	printInfoBlackBox("Loading in progress...");
+
+	initVars();
+	_vm->sound().stopMusic();
+
+	DoSync(f);
+	f.finalize();
+
+#else
+
 	// MOD: Common::String saveName;
 	cellStruct *currentcellHead;
 
@@ -839,6 +903,7 @@ Common::Error loadSavegameData(int saveGameIdx) {
 	DoSync(s);
 
 	delete f;
+#endif
 
 	// Post processing
 

@@ -255,12 +255,14 @@ void playerMenu_TimerCb(void* data) {
 }
 
 void playerMenu_LoadGame() {
-    apk::requester_okay("Load Game?", "Load Game!??");
+    //apk::requester_okay("Load Game?", "Load Game!??");
+	Common::Error rv = loadSavegameData(0);
+	debug("load rv = %ld", rv);
 }
 
 void playerMenu_SaveGame() {
     //apk::requester_okay("Save Game?", "Save Game!??");
-    Common::Error rv = saveSavegameData(0, "save.bin");
+    Common::Error rv = saveSavegameData(0, "savegame");
     debug("save rv = %ld", rv);
 }
 

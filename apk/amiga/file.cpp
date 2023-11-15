@@ -162,6 +162,10 @@ namespace apk {
             return false;
         }
 
+        m_impl = new FileImpl();
+        m_impl->fh = fh;
+        m_impl->size = 0;
+
         return true;
     }
 
