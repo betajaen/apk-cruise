@@ -58,12 +58,15 @@ namespace apk {
 
 #if defined (__AMIGA__)
 typedef unsigned int APK_SIZE_TYPE;
+typedef int APK_SSIZE_TYPE;
 #else
 typedef size_t APK_SIZE_TYPE;
+typedef ptrdiff_t APK_SSIZE_TYPE;
 #endif
 
 namespace apk {
     typedef APK_SIZE_TYPE size_t;
+    typedef APK_SSIZE_TYPE ssize_t;
 }
 
 
