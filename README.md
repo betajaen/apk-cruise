@@ -25,47 +25,46 @@ The following files must be placed in the `data/dos` or `data/amiga` drawers, wh
 
 ## Port Status
 
-### Amiga
-
-* [X] Input (MOUSE ONLY)
+* Input
+  * [X] Mouse
+  * [X] Hot Keys
+  * [ ] Text Input
 * [ ] Sound
 * [ ] Music
-* [X Graphics via graphics.library (ECS/AGA)
-* [X] Graphics via Real-time Graphics (RTG)
-* [ ] Saved Games
-* [IN PROGRESS] Amiga 32 colour game support
-* [X] DOS 256 colour game support
-* [ ] Mixed Amiga/DOS game support
-* [IN PROGRESS] Port: Amiga OS 3.x
-* [ ] Controls enhancements
-* [ ] Installer
+* Graphics
+  * [X] Graphics via graphics.library (ECS/AGA)
+  * [X] Graphics via Real-time Graphics (RTG)
+  * [ ] Graphics via SDL2
+* Saved Games
+  * [X] Quick Load/Save
+  * [ ] Load/Save via Requester
+* Game Editions  
+  * [X] Amiga 32 colour game support
+  * [X] DOS 256 colour game support
+  * [ ] Mixed Amiga/DOS game support
+* Port
+  * [ ] Amiga OS 3.x
+  * [ ] SDL2
+* [X] Controls enhancements
+* [ ] Amiga Installer
 
-#### Observations
-
-None.
-
-### SDL 2.0
-
-* [x] Makefiles
-* [x] Input
-* [ ] Sound
-* [ ] Music
-* [x] Graphics via SDL
-* [ ] Saved Games
-* [x] Amiga 32 colour game support
-* [x] DOS 256 colour game support
-* [ ] Mixed Amiga/DOS support
-* [x] Port: MacOS
-* [ ] Windows
-* [ ] Linux
-* [ ] Controls enhancements
-* [ ] Installer
 
 #### Observations
 
 DOS: Game can be played normally. Some string errors have been observed. Some walkboxes errors have been noticed. Palette errors occur in opening cutscene.
 
 Amiga: Plays opening scene normally. Some palette errors occur similar to SDL2. Game runs to study. Basic input is implemented. Game and Input performance is based upon frame-rate thus laggy in complicated scenes.
+
+## Game Differences
+
+The Game uses enhanced controls, these replace the ones described in the manual.
+
+* Hot Keys
+  * `ESC` - Quit Game
+  * `F5` - Quick Save
+  * `F9` - Quick Load
+  * `F8` - Restart Game
+  * `Space` - Pause Game
 
 ## ScummVM differences
 
