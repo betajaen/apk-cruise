@@ -31,6 +31,7 @@
 #include "input.h"
 #include "requester.h"
 #include "math.h"
+#include "stack.h"
 
 namespace apk {
 
