@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "apk/types.h"
+#include "apk/apk.h"
 #include "apk/gfx.h"
 
 #define Common apk

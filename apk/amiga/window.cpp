@@ -19,7 +19,7 @@
  *
  */
 
-#include "apk/types.h"
+#include "apk/apk.h"
 
 #include <proto/exec.h>
 #include <proto/dos.h>

@@ -20,7 +20,7 @@
 
 #include <stdio.h>
 #include <SDL2/SDL.h>
-#include "apk/types.h"
+#include "apk/apk.h"
 #include "apk/gfx.h"
 
 namespace apk {

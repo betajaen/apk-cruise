@@ -17,7 +17,7 @@
  *
  */
 
-#include "apk/types.h"
+#include "apk/apk.h"
 #include "apk/assert.h"
 
 #include <proto/exec.h>

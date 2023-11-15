@@ -17,7 +17,7 @@
  *
  */
 
-#include "apk/types.h"
+#include "apk/apk.h"
 #include "apk/file.h"
 #include "stdio.h"
 

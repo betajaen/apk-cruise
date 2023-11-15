@@ -17,7 +17,7 @@
  *
  */
 
-#include "apk/types.h"
+#include "apk/apk.h"
 
 namespace apk {
     void* malloc(APK_SIZE_TYPE size);
