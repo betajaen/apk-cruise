@@ -49,11 +49,18 @@ The following files must be placed in the `data/dos` or `data/amiga` drawers, wh
 * [ ] Amiga Installer
 
 
-#### Observations
+## State of the Game
 
-DOS: Game can be played normally. Some string errors have been observed. Some walkboxes errors have been noticed. Palette errors occur in opening cutscene.
+### Amiga
 
-Amiga: Plays opening scene normally. Some palette errors occur similar to SDL2. Game runs to study. Basic input is implemented. Game and Input performance is based upon frame-rate thus laggy in complicated scenes.
+* Was able to play the entire game from start to finish with no errors.
+* Some palette errors during cut scene, or switching screens.
+* Some walkboxes errors have been noticed.
+* No Music/Audio
+
+### SDL2
+
+* Currently does not compile due to differences in API.
 
 ## Game Differences
 
