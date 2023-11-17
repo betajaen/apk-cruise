@@ -38,8 +38,8 @@ struct CruiseSavegameHeader {
 };
 #endif
 
-Common::Error saveSavegameData(int saveGameIdx, const char* saveName); // MOD: Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName);
-Common::Error loadSavegameData(int saveGameIdx);
+Common::Error saveSavegameData(const char* path); // MOD: Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName);
+Common::Error loadSavegameData(const char* path); // MOD: Common::Error loadSavegameData(int saveGameIdx);
 #if 0 // MOD:
 WARN_UNUSED_RESULT bool readSavegameHeader(Common::InSaveFile *in, CruiseSavegameHeader &header, bool skipThumbnail = true);
 #endif

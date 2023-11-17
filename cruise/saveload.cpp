@@ -23,9 +23,6 @@
 #include "cruise/cruise.h"
 #include "cruise/vars.h"
 
-// MOD:
-#define SAVE_FILENAME "savegame"
-
 // MOD: #include "common/serializer.h"
 // MOD: #include "common/savefile.h"
 // MOD: #include "common/system.h"
@@ -803,11 +800,11 @@ void initVars() {
 	PCFadeFlag = false;
 }
 
-Common::Error saveSavegameData(int saveGameIdx, const char* saveName) { // MOD: Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName) {
+Common::Error saveSavegameData(const char* path) { // MOD: Common::Error saveSavegameData(int saveGameIdx, const Common::String &saveName) {
 #if 1 // MOD:
 
 	apk::OutSerializer f;
-	bool rv = f.open(SAVE_FILENAME);
+	bool rv = f.open(path);
 
     if (rv == false) {
         requester_okay("Cruise for a Corpse", "Could not create save game file.");
@@ -849,7 +846,7 @@ Common::Error saveSavegameData(int saveGameIdx, const char* saveName) { // MOD: 
 #endif
 }
 
-Common::Error loadSavegameData(int saveGameIdx) {
+Common::Error loadSavegameData(const char* path) { // MOD: Common::Error loadSavegameData(int saveGameIdx) {
 #if 1 // MOD:
 
 
@@ -857,7 +854,7 @@ Common::Error loadSavegameData(int saveGameIdx) {
 	cellStruct *currentcellHead;
 
 	apk::InSerializer f;
-	bool rv = f.open(SAVE_FILENAME);
+	bool rv = f.open(path);
 
     if (rv == false) {
         requester_okay("Cruise for a Corpse", "Could not load save game file.");

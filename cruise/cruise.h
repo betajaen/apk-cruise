@@ -94,14 +94,14 @@ public:
 	virtual void pauseEngine(bool pause);
 	bool isPaused() const override  { return _gamePauseToken.isPaused; }
     const char *langString(LangStringId langId) { return _langStrings[langId]; } // MOD: const char *langString(LangStringId langId) { return _langStrings[(int)langId].c_str(); }
-	static const char *getSavegameFile(int saveGameIdx);
-	Common::Error loadGameState(int slot) override;
+	// MOD: static const char *getSavegameFile(int saveGameIdx);
+	// MOD: Common::Error loadGameState(int slot) override;
 	bool canLoadGameStateCurrently() override;
 	// MOD: Common::Error saveGameState(int slot, const Common::String &desc, bool isAutosave = false) override;
-    Common::Error saveGameState(int slot, const char* desc, bool isAutosave = false) override;
+    // MOD: Common::Error saveGameState(int slot, const char* desc, bool isAutosave = false) override;
 	bool canSaveGameStateCurrently() override;
 	// MOD: Common::String getSaveStateName(int slot) const override { return getSavegameFile(slot); }
-    const char* getSaveStateName(int slot) const override { return getSavegameFile(slot); }
+    // MOD: const char* getSaveStateName(int slot) const override { return getSavegameFile(slot); }
 	void syncSoundSettings() override;
 
 	const CRUISEGameDescription *_gameDescription;

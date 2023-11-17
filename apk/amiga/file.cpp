@@ -56,7 +56,13 @@ namespace apk {
         close();
 
         char diskPath[256] = { 0 };
-        sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+
+        if (strchr(path, ':') == NULL) {
+            sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+        }
+        else {
+            sprintf_s(diskPath, sizeof(diskPath), "%s", path);
+        }
 
         ULONG fh = Open(diskPath, MODE_OLDFILE);
         if (fh == 0UL) {
@@ -83,7 +89,12 @@ namespace apk {
     bool ReadFile::exists(const char* path) {
 
         char diskPath[256] = { 0 };
-        sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+        if (strchr(path, ':') == NULL) {
+            sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+        }
+        else {
+            sprintf_s(diskPath, sizeof(diskPath), "%s", path);
+        }
 
         ULONG fh = Open(diskPath, MODE_OLDFILE);
 
@@ -155,7 +166,12 @@ namespace apk {
         close();
 
         char diskPath[256] = { 0 };
-        sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+        if (strchr(path, ':') == NULL) {
+            sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+        }
+        else {
+            sprintf_s(diskPath, sizeof(diskPath), "%s", path);
+        }
 
         ULONG fh = Open(diskPath, MODE_NEWFILE);
         if (fh == 0UL) {

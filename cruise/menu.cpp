@@ -254,15 +254,15 @@ void playerMenu_TimerCb(void* data) {
 
 }
 
-void playerMenu_LoadGame() {
+void playerMenu_LoadGame(const char* path) {
     //apk::requester_okay("Load Game?", "Load Game!??");
-	Common::Error rv = loadSavegameData(0);
+	Common::Error rv = loadSavegameData(path);
 	debug("load rv = %ld", rv);
 }
 
-void playerMenu_SaveGame() {
+void playerMenu_SaveGame(const char* path) {
     //apk::requester_okay("Save Game?", "Save Game!??");
-    Common::Error rv = saveSavegameData(0, "savegame");
+    Common::Error rv = saveSavegameData(path);
     debug("save rv = %ld", rv);
 }
 

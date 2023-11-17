@@ -22,6 +22,7 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/intuition.h>
+#include <proto/asl.h>
 
 #include <dos/dos.h>
 #include <workbench/workbench.h>
@@ -29,6 +30,59 @@
 #include <inline/dos.h>
 
 namespace apk {
+
+    static char fname[255];
+
+    const char* normalizePath(const char* drawer, const char* file) {
+        strcpy_s(fname, sizeof(fname), drawer);
+        AddPart(fname, file, sizeof(fname));
+        return fname;
+    }
+
+    const char* requester_load(const char* title, const char* drawer, const char* pattern) {
+        struct FileRequester *request;
+
+        request = (struct FileRequester *)AllocAslRequestTags(ASL_FileRequest,
+          ASL_Hail, (ULONG) title,
+            ASLFR_InitialDrawer, (ULONG) drawer,
+            ASLFR_InitialPattern, (ULONG) pattern,
+            TAG_DONE);
+
+        int rv = AslRequestTags(request, TAG_DONE);
+
+        if (rv == FALSE) {
+            FreeAslRequest(request);
+            return NULL;
+        }
+
+        normalizePath(request->fr_Drawer, request->fr_File);
+
+        FreeAslRequest(request);
+        return fname;
+    }
+
+    const char* requester_save(const char* title, const char* drawer, const char* pattern) {
+        struct FileRequester *request;
+
+        request = (struct FileRequester *)AllocAslRequestTags(ASL_FileRequest,
+          ASL_Hail, (ULONG) title, TAG_DONE);
+
+        int rv = AslRequestTags(request,
+            ASLFR_InitialDrawer, (ULONG) drawer,
+            ASLFR_InitialPattern, (ULONG) pattern,
+            ASLFR_Flags1, FRF_DOSAVEMODE,
+            TAG_DONE);
+
+        if (rv == FALSE) {
+            FreeAslRequest(request);
+            return NULL;
+        }
+
+        normalizePath(request->fr_Drawer, request->fr_File);
+
+        FreeAslRequest(request);
+        return fname;
+    }
 
     void requester_okay(const char* title, const char* text) {
         EasyStruct str;

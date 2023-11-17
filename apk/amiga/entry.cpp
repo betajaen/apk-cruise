@@ -21,6 +21,7 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/intuition.h>
+#include <proto/asl.h>
 
 #include <dos/dos.h>
 #include <workbench/workbench.h>
@@ -35,6 +36,7 @@ extern char  *__commandline;
 struct DosLibrary* DOSBase = NULL;
 struct IntuitionBase* IntuitionBase = NULL;
 struct GfxBase* GfxBase = NULL;
+struct Library * AslBase = NULL;
 extern struct WBStartup* _WBenchMsg;
 
 extern int apk_main();
@@ -42,7 +44,7 @@ extern int apk_main();
 int main(void) {
     int rv;
 
-	if ((DOSBase = (struct DosLibrary*)OpenLibrary("dos.library", 33)) == NULL) {
+	if ((DOSBase = (struct DosLibrary*)OpenLibrary("dos.library", 37)) == NULL) {
 		return RETURN_FAIL;
 	}
 
@@ -73,12 +75,19 @@ int main(void) {
 		return RETURN_FAIL;
 	}
 
-	if ((IntuitionBase = (struct IntuitionBase*)OpenLibrary("intuition.library", 33)) == NULL) {
+	if ((IntuitionBase = (struct IntuitionBase*)OpenLibrary("intuition.library", 37)) == NULL) {
 		CloseLibrary((struct Library*)DOSBase);
 		return RETURN_FAIL;
 	}
 
-	if ((GfxBase = (struct GfxBase*)OpenLibrary("graphics.library", 33)) == NULL) {
+	if ((GfxBase = (struct GfxBase*)OpenLibrary("graphics.library", 37)) == NULL) {
+		CloseLibrary((struct Library*)IntuitionBase);
+		CloseLibrary((struct Library*)DOSBase);
+		return RETURN_FAIL;
+	}
+
+	if ((AslBase = OpenLibrary("asl.library", 37)) == NULL) {
+		CloseLibrary((struct Library*)GfxBase);
 		CloseLibrary((struct Library*)IntuitionBase);
 		CloseLibrary((struct Library*)DOSBase);
 		return RETURN_FAIL;
@@ -100,6 +109,7 @@ int main(void) {
 		PutStr("Thanks for playing!\n");
 	}
 
+	CloseLibrary((struct Library*)AslBase);
 	CloseLibrary((struct Library*)GfxBase);
 	CloseLibrary((struct Library*)IntuitionBase);
 	CloseLibrary((struct Library*)DOSBase);

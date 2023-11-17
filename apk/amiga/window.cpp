@@ -273,7 +273,8 @@ namespace apk {
 
                                 evt.type = EVENT_KEYINSTANT;
                                 evt.kbd.keycode = msg->Code;
-                                printf("[D] Raw Key = %ld, Qualifier = %ld\n", msg->Code, msg->Qualifier);
+                                evt.kbd.shift = (msg->Qualifier & IEQUALIFIER_LSHIFT || msg->Qualifier & IEQUALIFIER_RSHIFT);
+                                printf("[D] Raw Key = %ld, Shift = %ld\n", evt.kbd.keycode, evt.kbd.shift);
                             }
                             break;
                             case IDCMP_MOUSEMOVE: {

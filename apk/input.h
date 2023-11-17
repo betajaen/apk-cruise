@@ -46,6 +46,7 @@ namespace apk {
         } mouse;
         struct Keyboard {
             int32 keycode;
+            bool shift;
             bool hasFlags(int32) {
                 return false;
             }

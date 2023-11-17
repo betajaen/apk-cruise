@@ -228,28 +228,28 @@ void CruiseEngine::pauseEngine(bool pause) {
 	gfxModuleData_addDirtyTileRect(64, 100, 256, 117, RECT_TYPE_ANY);
 }
 
-Common::Error CruiseEngine::loadGameState(int slot) {
-	return loadSavegameData(slot);
-}
+// MOD: Common::Error CruiseEngine::loadGameState(int slot) {
+// MOD: 	return loadSavegameData(slot);
+// MOD: }
 
 bool CruiseEngine::canLoadGameStateCurrently() {
 	return playerMenuEnabled != 0;
 }
 
 // MOD: Common::Error CruiseEngine::saveGameState(int slot, const Common::String &desc, bool isAutosave) {
-Common::Error CruiseEngine::saveGameState(int slot, const char* desc, bool isAutosave) {
-	return saveSavegameData(slot, desc);
-}
+// MOD: Common::Error CruiseEngine::saveGameState(int slot, const char* desc, bool isAutosave) {
+// MOD: 	return saveSavegameData(slot, desc);
+// MOD: }
 
 bool CruiseEngine::canSaveGameStateCurrently() {
 	return (playerMenuEnabled != 0) && (userEnabled != 0);
 }
 
-const char *CruiseEngine::getSavegameFile(int saveGameIdx) {
-	static char buffer[20];
-	Common::sprintf_s(buffer, sizeof(buffer), "cruise.s%02d", saveGameIdx); // MOD: Common::sprintf_s(buffer, "cruise.s%02d", saveGameIdx);
-	return buffer;
-}
+// MOD: const char *CruiseEngine::getSavegameFile(int saveGameIdx) {
+// MOD: 	static char buffer[20];
+// MOD: 	Common::sprintf_s(buffer, sizeof(buffer), "cruise.s%02d", saveGameIdx); // MOD: Common::sprintf_s(buffer, "cruise.s%02d", saveGameIdx);
+// MOD: 	return buffer;
+// MOD: }
 
 void CruiseEngine::syncSoundSettings() {
 	Engine::syncSoundSettings();

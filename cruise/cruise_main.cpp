@@ -766,6 +766,7 @@ int findObject(int mouseX, int mouseY, int *outObjOvl, int *outObjIdx) {
 }
 
 Common::KeyCode keyboardCode = Common::KEYCODE_INVALID;
+bool keyboardShift = false;
 
 void freeStuff2() {
 	warning("implement freeStuff2");
@@ -1456,26 +1457,50 @@ int CruiseEngine::processInput() {
 
 	if (keyboardCode == Common::KEYCODE_SPACE) { // MOD:
 		keyboardCode = Common::KEYCODE_INVALID;
+        keyboardShift = false;
 		playerMenu_PauseGame();
 	}
 
-	if (keyboardCode == Common::KEYCODE_F8) { // MOD:
+	if (keyboardCode == Common::KEYCODE_F8 && keyboardShift == true) { // MOD:
 		keyboardCode = Common::KEYCODE_INVALID;
+        keyboardShift = false;
 		playerMenu_ResetGame();
 	}
 
 	if (keyboardCode == Common::KEYCODE_F5) { // MOD:
+        if (keyboardShift) {
+		    const char* path = requester_save("Save Game", "PROGDIR:", "#?.save");
+		    printf("Save Path is %s\n", path);
+            if (path != NULL) {
+                playerMenu_SaveGame(path);
+            }
+        }
+        else {
+            playerMenu_SaveGame("PROGDIR:quick.save");
+        }
 		keyboardCode = Common::KEYCODE_INVALID;
-		playerMenu_SaveGame();
+        keyboardShift = false;
 	}
 
 	if (keyboardCode == Common::KEYCODE_F9) { // MOD:
+
+        if (keyboardShift) {
+		    const char* path = requester_load("Load Game", "PROGDIR:", "#?.save");
+		    printf("Load Path is %s\n", path);
+            if (path != NULL) {
+                playerMenu_LoadGame(path);
+            }
+        }
+        else {
+            playerMenu_LoadGame("PROGDIR:quick.save");
+        }
 		keyboardCode = Common::KEYCODE_INVALID;
-		playerMenu_LoadGame();
+        keyboardShift = false;
 	}
 
 	if (keyboardCode == Common::KEYCODE_ESCAPE) { // MOD:
 		keyboardCode = Common::KEYCODE_INVALID;
+        keyboardShift = false;
 		playerMenu_ExitGame();
 	}
 
@@ -1788,7 +1813,7 @@ bool manageEvents() {
 		break;
 		case Common::EVENT_KEYINSTANT: // MOD:
 		    keyboardCode = event.kbd.keycode;
-            requester_okay("keyboard", "keyboard");
+            keyboardShift = event.kbd.shift;
         break;
 		case Common::EVENT_KEYUP:
 			switch (event.kbd.keycode) {
@@ -2167,6 +2192,7 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 
 		case Common::EVENT_KEYINSTANT:
 				keyboardCode = event.kbd.keycode;
+                keyboardShift = event.kbd.shift;
 			break;
 		case Common::EVENT_KEYDOWN:
 			switch (event.kbd.keycode) {

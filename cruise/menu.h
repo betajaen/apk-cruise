@@ -43,8 +43,8 @@ void updateMenuMouse(int mouseX, int mouseY, menuStruct * pMenu);
 void freeMenu(menuStruct * pMenu);
 // MOD: int playerMenu(int menuX, int menuY);
 int playerMenu_Start(int menuX, int menuY);
-void playerMenu_LoadGame(); // MOD:
-void playerMenu_SaveGame(); // MOD:
+void playerMenu_LoadGame(const char* path); // MOD:
+void playerMenu_SaveGame(const char* path); // MOD:
 void playerMenu_ExitGame(); // MOD:
 void playerMenu_ResetGame(); // MOD:
 void playerMenu_PauseGame(); // MOD:

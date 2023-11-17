@@ -37,7 +37,7 @@ The following files must be placed in the `data/dos` or `data/amiga` drawers, wh
   * [ ] Graphics via SDL2
 * Saved Games
   * [X] Quick Load/Save
-  * [ ] Load/Save via Requester
+  * [X] Load/Save via Requester
 * Game Editions  
   * [X] Amiga 32 colour game support
   * [X] DOS 256 colour game support
@@ -59,12 +59,18 @@ Amiga: Plays opening scene normally. Some palette errors occur similar to SDL2. 
 
 The Game uses enhanced controls, these replace the ones described in the manual.
 
-* Hot Keys
-  * `ESC` - Quit Game
-  * `F5` - Quick Save
-  * `F9` - Quick Load
-  * `F8` - Restart Game
-  * `Space` - Pause Game
+### Enhanced Controls
+
+| Key              | Option                 |
+|------------------|------------------------|
+| `Esc`            | Quick Game Immediately |
+| `Space`          | Pause Game             |
+| `Shift` and `F9` | Restart Game   |
+| `F5`             | Quick Save |
+| `Shift` and `F5` | Save to File |
+| `F9`             | Quick Load |
+| `Shift` and `F9` | Load from File |
+
 
 ## ScummVM differences
 
