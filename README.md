@@ -8,7 +8,7 @@ This port is based upon the ScummVM 2.8 (or later) implementation of the ['Cruis
 
 This requires the original game data files to play which can be either the DOS or Amiga versions. This project does not contain any of the original game data files.
 
-The following files must be placed in the `data/dos` or `data/amiga` drawers, which can be found from your Cruise for a Corpse disks.
+The following files must be placed in the same drawer as the executable, which can be found from your Cruise for a Corpse disks.
 
 * `D1`
 * `D2`
