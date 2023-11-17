@@ -5,8 +5,12 @@
 *.dSYM
 *.rom
 *.hdf
+*.uaem
 
 
 install/cruise
-install/data
-*.uaem
+install/d*
+install/cruise.*
+install/system.*
+install/*.save
+install/vol.*
