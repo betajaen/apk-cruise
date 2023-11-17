@@ -19,10 +19,10 @@ ifeq ($(PLATFORM), sdl2)
 	LDFLAGS  :=
 endif
 
-AMIGA_OBJ       := apk/amiga/entry.cpp apk/amiga/compat.cpp apk/amiga/main.cpp  apk/amiga/memory.cpp apk/amiga/debug.cpp apk/amiga/file.cpp apk/amiga/requester.cpp apk/amiga/window.cpp
+AMIGA_OBJ       := apk/amiga/entry.cpp apk/amiga/compat.cpp apk/amiga/main.cpp apk/amiga/memory.cpp apk/amiga/debug.cpp apk/amiga/file.cpp apk/amiga/requester.cpp apk/amiga/window.cpp
 AMIGA_CC		:= /opt/amiga/bin/m68k-amigaos-gcc
 AMIGA_DELETE	:= rm -f
-AMIGA_CXXFLAGS  := -std=c++17 -m68020 -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
+AMIGA_CXXFLAGS  := -g -std=c++17 -m68020 -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
 AMIGA_LDFLAGS   := -noixemul -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
 AMIGA_RUN 		:= 	fs-uae \
 					--model=A1200 \
@@ -32,6 +32,8 @@ AMIGA_RUN 		:= 	fs-uae \
 					--hard_drive_0=./install/amigaos-3.2-a1200.hdf \
 					--hard_drive_1=./install/ \
 					--hard_drive_1_label="Cruise" \
+					--hard_drive_2=./tests/amiga \
+					--hard_drive_2_label="Saves" \
 					--floppy_drive_volume=0 \
 					--floppy_drive_volume_empty=0 \
 					--smoothing=0 \
