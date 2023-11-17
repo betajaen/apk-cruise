@@ -56,6 +56,8 @@ The following files must be placed in the `data/dos` or `data/amiga` drawers, wh
 * Was able to play the entire game from start to finish with no errors.
 * Some palette errors during cut scene, or switching screens.
 * Some walkboxes errors have been noticed.
+* Performance problems with heavy sprites and/or polygons.
+* Crashing when compiled with optimisations.
 * No Music/Audio
 
 ### SDL2
