@@ -31,7 +31,7 @@ namespace apk {
     void memcpy(void* dst, const void* src, APK_SIZE_TYPE length);
     void memcpy_aligned(void* dst, const void* src, APK_SIZE_TYPE length);
 
-    void memset(void* dst, int val, APK_SIZE_TYPE length);
+    void memset(void* dst, uint32 val, APK_SIZE_TYPE length);
     void memset_aligned(void* dst, uint32 val, APK_SIZE_TYPE length);
 
     class MemoryBuffer {
