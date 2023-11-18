@@ -33,7 +33,8 @@ The following files must be placed in the same drawer as the executable, which c
 * Graphics
   * [X] Graphics via graphics.library (ECS/AGA)
   * [X] Graphics via Real-time Graphics (RTG)
-  * [ ] Graphics via SDL2
+  * [X] Graphics via SDL2
+  * [ ] Optimized Graphics
 * Saved Games
   * [X] Quick Load/Save
   * [X] Load/Save via Requester
@@ -42,8 +43,8 @@ The following files must be placed in the same drawer as the executable, which c
   * [X] DOS 256 colour game support
   * [ ] Mixed Amiga/DOS game support
 * Port
-  * [ ] Amiga OS 3.x
-  * [ ] SDL2
+  * [X] Amiga OS 3.x
+  * [X] SDL2
 * [X] Controls enhancements
 * [ ] Amiga Installer
 
