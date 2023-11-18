@@ -1,5 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnreachableCode"
 /* Amiga Port Kit (APK)
  *
  * (c) Robin Southern - github.com/betajaen
