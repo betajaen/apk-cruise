@@ -1476,7 +1476,7 @@ int CruiseEngine::processInput() {
             }
         }
         else {
-            playerMenu_SaveGame("PROGDIR:quick.save");
+            playerMenu_SaveGame("quick.save");
         }
 		keyboardCode = Common::KEYCODE_INVALID;
         keyboardShift = false;
@@ -1492,7 +1492,7 @@ int CruiseEngine::processInput() {
             }
         }
         else {
-            playerMenu_LoadGame("PROGDIR:quick.save");
+            playerMenu_LoadGame("quick.save");
         }
 		keyboardCode = Common::KEYCODE_INVALID;
         keyboardShift = false;
