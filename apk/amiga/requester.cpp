@@ -33,14 +33,27 @@ namespace apk {
 
     static char fname[255];
 
-    const char* normalizePath(const char* drawer, const char* file) {
+    const char* normalizePath(const char* drawer, const char* file, const char* extension) {
         strcpy_s(fname, sizeof(fname), drawer);
         AddPart(fname, file, sizeof(fname));
+
+        if (string_endswith(fname, extension) == false) {
+            sprintf_s(fname, sizeof(fname), "%s%s", fname, extension);
+        }
+
         return fname;
     }
 
-    const char* requester_load(const char* title, const char* drawer, const char* pattern) {
+    const char* requester_load(const char* title, const char* drawer, const char* extension) {
         struct FileRequester *request;
+        char pattern[24];
+
+        if (extension != NULL) {
+            sprintf_s(pattern, sizeof(pattern), "#?%s", extension);
+        }
+        else {
+            strcpy_s(pattern, sizeof(pattern), "#?");
+        }
 
         request = (struct FileRequester *)AllocAslRequestTags(ASL_FileRequest,
           ASL_Hail, (ULONG) title,
@@ -55,30 +68,40 @@ namespace apk {
             return NULL;
         }
 
-        normalizePath(request->fr_Drawer, request->fr_File);
+
+
+        normalizePath(request->fr_Drawer, request->fr_File, extension);
 
         FreeAslRequest(request);
         return fname;
     }
 
-    const char* requester_save(const char* title, const char* drawer, const char* pattern) {
+    const char* requester_save(const char* title, const char* drawer, const char* extension) {
         struct FileRequester *request;
+        char pattern[24];
+
+        if (extension != NULL) {
+            sprintf_s(pattern, sizeof(pattern), "#?.%s", extension);
+        }
+        else {
+            strcpy_s(pattern, sizeof(pattern), "#?");
+        }
 
         request = (struct FileRequester *)AllocAslRequestTags(ASL_FileRequest,
-          ASL_Hail, (ULONG) title, TAG_DONE);
-
-        int rv = AslRequestTags(request,
+          ASL_Hail, (ULONG) title,
             ASLFR_InitialDrawer, (ULONG) drawer,
             ASLFR_InitialPattern, (ULONG) pattern,
             ASLFR_Flags1, FRF_DOSAVEMODE,
-            TAG_DONE);
+          TAG_DONE);
+
+        int rv = AslRequestTags(request, TAG_DONE);
 
         if (rv == FALSE) {
             FreeAslRequest(request);
             return NULL;
         }
 
-        normalizePath(request->fr_Drawer, request->fr_File);
+        normalizePath(request->fr_Drawer, request->fr_File, extension);
 
         FreeAslRequest(request);
         return fname;

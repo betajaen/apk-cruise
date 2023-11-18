@@ -115,6 +115,16 @@ namespace apk {
         return ( *p1 > *p2 ) - ( *p2  > *p1 );
     }
 
+    int strncmp(const char* lhs, const char* rhs, APK_SIZE_TYPE rhsLength) {
+
+        const unsigned char *p1 = ( const unsigned char * ) lhs;
+        const unsigned char *p2 = ( const unsigned char * ) rhs;
+
+        while ( *p1 && *p1 == *p2 && rhsLength) ++p1, ++p2, --rhsLength;
+
+        return ( *p1 > *p2 ) - ( *p2  > *p1 );
+    }
+
     uint32 strlen(const char* str) {
         uint32 length = 0;
         while(*str++ != '\0') {
@@ -160,6 +170,28 @@ namespace apk {
             c = c - 'a' + 'A';
         }
         return c;
+    }
+
+    bool string_startswith(const char* str, const char* prefix) {
+        APK_SIZE_TYPE strLen = strlen(str);
+        APK_SIZE_TYPE prefixLen = strlen(prefix);
+
+        if (prefixLen > strLen) {
+            return false;
+        }
+
+        return strncmp(str, prefix, prefixLen) == 0;
+    }
+
+    bool string_endswith(const char* str, const char* suffix) {
+        APK_SIZE_TYPE strLen = strlen(str);
+        APK_SIZE_TYPE suffixLen = strlen(suffix);
+
+        if (suffixLen > strLen) {
+            return false;
+        }
+
+        return strncmp(str + (strLen - suffixLen), suffix, suffixLen) == 0;
     }
 
 }

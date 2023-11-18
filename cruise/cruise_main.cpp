@@ -1469,7 +1469,7 @@ int CruiseEngine::processInput() {
 
 	if (keyboardCode == Common::KEYCODE_F5) { // MOD:
         if (keyboardShift) {
-		    const char* path = requester_save("Save Game", "PROGDIR:", "#?.save");
+		    const char* path = requester_save("Save Game", "PROGDIR:", ".save");
 		    printf("Save Path is %s\n", path);
             if (path != NULL) {
                 playerMenu_SaveGame(path);
@@ -1485,7 +1485,7 @@ int CruiseEngine::processInput() {
 	if (keyboardCode == Common::KEYCODE_F9) { // MOD:
 
         if (keyboardShift) {
-		    const char* path = requester_load("Load Game", "PROGDIR:", "#?.save");
+		    const char* path = requester_load("Load Game", "PROGDIR:", ".save");
 		    printf("Load Path is %s\n", path);
             if (path != NULL) {
                 playerMenu_LoadGame(path);

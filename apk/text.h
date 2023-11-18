@@ -54,4 +54,6 @@ namespace apk {
 
     void sprintf_s(char* dst, APK_SIZE_TYPE dst_length, const char* fmt, ...);
 
+    bool string_startswith(const char* str, const char* suffix);
+    bool string_endswith(const char* str, const char* suffix);
 }

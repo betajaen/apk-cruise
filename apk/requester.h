@@ -23,8 +23,8 @@
 
 namespace apk {
 
-    const char* requester_load(const char* title, const char* drawer, const char* pattern);
-    const char* requester_save(const char* title, const char* drawer, const char* pattern);
+    const char* requester_load(const char* title, const char* drawer, const char* extension);
+    const char* requester_save(const char* title, const char* drawer, const char* extension);
     void requester_okay(const char* title, const char* text);
     int32 requester_yesno(const char* title, const char* text);
     int32 requester_options(const char* title, const char* text, const char* options);
