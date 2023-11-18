@@ -28,7 +28,6 @@ The following files must be placed in the same drawer as the executable, which c
 * Input
   * [X] Mouse
   * [X] Hot Keys
-  * [ ] Text Input
 * [ ] Sound
 * [ ] Music
 * Graphics
