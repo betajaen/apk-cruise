@@ -60,26 +60,26 @@ namespace apk {
     constexpr int32 ES_ESP= 4;
 
     constexpr int32 KBD_CTRL = 0;
-    constexpr int32 KEYCODE_INVALID = -1;
-    constexpr int32 KEYCODE_x = 0x32;
-    constexpr int32 KEYCODE_p = 0x19;
-    constexpr int32 KEYCODE_f = 0x23;
+    constexpr int32 KEYCODE_INVALID = APKK_INVALID;
+    constexpr int32 KEYCODE_x = APKK_X;
+    constexpr int32 KEYCODE_p = APKK_P;
+    constexpr int32 KEYCODE_f = APKK_F;
 
-    constexpr int32 KEYCODE_F1 = 0x50;
-    constexpr int32 KEYCODE_F2 = 0x51;
-    constexpr int32 KEYCODE_F3 = 0x52;
-    constexpr int32 KEYCODE_F4 = 0x53;
-    constexpr int32 KEYCODE_F5 = 0x54;
-    constexpr int32 KEYCODE_F6 = 0x55;
-    constexpr int32 KEYCODE_F7 = 0x56;
-    constexpr int32 KEYCODE_F8 = 0x57;
-    constexpr int32 KEYCODE_F9 = 0x58;
-    constexpr int32 KEYCODE_F10 = 0x59;
+    constexpr int32 KEYCODE_F1 = APKK_F1;
+    constexpr int32 KEYCODE_F2 = APKK_F2;
+    constexpr int32 KEYCODE_F3 = APKK_F3;
+    constexpr int32 KEYCODE_F4 = APKK_F4;
+    constexpr int32 KEYCODE_F5 = APKK_F5;
+    constexpr int32 KEYCODE_F6 = APKK_F6;
+    constexpr int32 KEYCODE_F7 = APKK_F7;
+    constexpr int32 KEYCODE_F8 = APKK_F8;
+    constexpr int32 KEYCODE_F9 = APKK_F9;
+    constexpr int32 KEYCODE_F10 = APKK_F10;
 
-    constexpr int32 KEYCODE_SPACE = 0x40;
-    constexpr int32 KEYCODE_KP_PLUS = 0x5E;
-    constexpr int32 KEYCODE_KP_MINUS = 0x4A;
-    constexpr int32 KEYCODE_ESCAPE = 0x45;
+    constexpr int32 KEYCODE_SPACE = APKK_SPACE;
+    constexpr int32 KEYCODE_KP_PLUS = APKK_NP_PLUS;
+    constexpr int32 KEYCODE_KP_MINUS = APKK_NP_MINUS;
+    constexpr int32 KEYCODE_ESCAPE = APKK_ESCAPE;
 
 
     typedef int32 KeyCode;

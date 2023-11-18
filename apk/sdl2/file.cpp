@@ -57,7 +57,7 @@ namespace apk {
 
         close();
 
-        sprintf_s(diskPath, sizeof(diskPath), "data/dos/%s", path);
+        sprintf_s(diskPath, sizeof(diskPath), "%s", path);
 
         FILE* fh = fopen(diskPath, "r");
 
@@ -86,7 +86,7 @@ namespace apk {
     bool ReadFile::exists(const char* path) {
         char diskPath[256] = { 0 };
 
-        sprintf_s(diskPath, sizeof(diskPath), "data/dos/%s", path);
+        sprintf_s(diskPath, sizeof(diskPath), "%s", path);
         FILE* fh = fopen(diskPath, "r");
 
         if (fh == NULL) {
@@ -142,5 +142,60 @@ namespace apk {
         read(&value, sizeof(value));
         return endian::pod<uint32, endian::Big>(value);
     }
+
+
+    AppendFile::AppendFile() {
+        m_impl = NULL;
+    }
+
+    AppendFile::~AppendFile() {
+        close();
+    }
+
+    bool AppendFile::close() {
+        if (m_impl) {
+            fclose(m_impl->fh);
+            delete m_impl;
+            m_impl = NULL;
+
+            return true;
+        }
+        return false;
+    }
+
+    bool AppendFile::isOpen() const {
+        return m_impl;
+    }
+
+    bool AppendFile::open(const char* path) {
+        char diskPath[256] = { 0 };
+
+        close();
+
+        sprintf_s(diskPath, sizeof(diskPath), "%s", path);
+
+        FILE* fh = fopen(diskPath, "r");
+
+        if (fh == NULL) {
+            error("Could not open '%s' for appending!\n", diskPath);
+            return false;
+        }
+
+        m_impl = new FileImpl();
+        m_impl->fh = fh;
+
+        fseek(m_impl->fh, 0, SEEK_END);
+        m_impl->size = ftell(m_impl->fh);
+        fseek(m_impl->fh, 0, SEEK_SET);
+
+        return true;
+    }
+
+    uint32 AppendFile::write(void* data, uint32 size) {
+        assert(m_impl);
+        uint32 rv = fwrite(data, size, 1, m_impl->fh);
+        return rv;
+    }
+
 
 }

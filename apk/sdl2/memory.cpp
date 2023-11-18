@@ -28,19 +28,31 @@
 namespace apk {
 
     void* malloc(APK_SIZE_TYPE size) {
-        return ::malloc(size);
+        void* mem = ::malloc(size);
+        if (mem) {
+            ::memset(mem, 0, size);
+        }
+        return mem;
     }
 
     void* malloc_aligned(APK_SIZE_TYPE size) {
-        return ::malloc(size);
+        void* mem = ::malloc(size);
+        if (mem) {
+            ::memset(mem, 0, size);
+        }
+        return mem;
     }
 
     void free(void* mem) {
-        return ::free(mem);
+        if (mem) {
+            return ::free(mem);
+        }
     }
 
     void free_aligned(void* mem) {
-        return ::free(mem);
+        if (mem) {
+            return ::free(mem);
+        }
     }
 
     void memcpy(void* dst, const void* src, APK_SIZE_TYPE length) {
@@ -51,17 +63,12 @@ namespace apk {
         ::memcpy(dst, src, length);
     }
 
-    void memset(void* dst, int val, APK_SIZE_TYPE length) {
+    void memset(void* dst, uint32 val, APK_SIZE_TYPE length) {
         ::memset(dst, val, length);
     }
 
-    void memset_aligned(void* dst, int val, APK_SIZE_TYPE length) {
-        //::memset(dst, val, length);
-        uint32* d = (uint32*) dst;
-        length >>= 2;
-        while(length--) {
-            *d++ = val;
-        }
+    void memset_aligned(void* dst, uint32 val, APK_SIZE_TYPE length) {
+        ::memset(dst, val, length);
     }
 
     const char* strchr(const char* str, char c) {
@@ -107,4 +114,25 @@ namespace apk {
         return ::toupper(c);
     }
 
+    bool string_startswith(const char* str, const char* prefix) {
+        APK_SIZE_TYPE strLen = strlen(str);
+        APK_SIZE_TYPE prefixLen = strlen(prefix);
+
+        if (prefixLen > strLen) {
+            return false;
+        }
+
+        return strncmp(str, prefix, prefixLen) == 0;
+    }
+
+    bool string_endswith(const char* str, const char* suffix) {
+        APK_SIZE_TYPE strLen = strlen(str);
+        APK_SIZE_TYPE suffixLen = strlen(suffix);
+
+        if (suffixLen > strLen) {
+            return false;
+        }
+
+        return strncmp(str + (strLen - suffixLen), suffix, suffixLen) == 0;
+    }
 }

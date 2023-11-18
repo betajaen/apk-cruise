@@ -127,29 +127,5 @@ namespace apk {
         return true;
     }
 
-    void requester_okay(const char* title, const char* text) {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, title, text, NULL);
-    }
-
-    int32 requester_yesno(const char* title, const char* text) {
-
-        SDL_MessageBoxButtonData buttons[] = {
-            { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
-            { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" },
-        };
-
-        SDL_MessageBoxData data;
-        data.title = title;
-        data.message = text;
-        data.buttons = buttons;
-        data.numbuttons = 2;
-        data.flags = SDL_MESSAGEBOX_INFORMATION;
-        data.window = NULL;
-        data.colorScheme = NULL;
-
-        int rv;
-        SDL_ShowMessageBox(&data, &rv);
-        return rv;
-    }
 
 }
