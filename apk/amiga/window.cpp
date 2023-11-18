@@ -219,7 +219,7 @@ namespace apk {
         Stack<UserCallback<WindowTimerFn>, 4> s_TimerFns;
 
 
-        void windowStartLoop(void* user, uint32 waitTime_usec) {
+        void windowStartLoop(uint32 waitTime_usec) {
 
             struct IntuiMessage* msg;
 

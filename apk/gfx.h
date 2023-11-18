@@ -30,7 +30,7 @@ namespace apk {
 
         bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth);
         void destroyScreen();
-        void windowStartLoop(void* user, uint32 waitTime_usec);
+        void windowStartLoop(uint32 waitTime_usec);
         void windowStopLoop();
         void pushWindowEventCallback(WindowEventFn, void*);
         void pushWindowTimerCallback(WindowTimerFn, void*);

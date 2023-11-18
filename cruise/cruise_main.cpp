@@ -2226,7 +2226,7 @@ void CruiseEngine::mainLoop() { // MOD:
     mainLoop_Start();
 	apk::gfx::pushWindowEventCallback(EventCb, this);
 	apk::gfx::pushWindowTimerCallback(TimerCb, this);
-	apk::gfx::windowStartLoop(this, (1000000 / 30));
+	apk::gfx::windowStartLoop((1000000 / 30));
 	apk::gfx::popWindowEventCallback();
 	apk::gfx::popWindowTimerCallback();
     mainLoop_Stop();
