@@ -55,7 +55,7 @@ namespace apk {
         CopyMemQuick(src, dst, length);
     }
 
-    void memset(void* dst, int val, APK_SIZE_TYPE length) {
+    void memset(void* dst, uint32 val, APK_SIZE_TYPE length) {
         if (dst == NULL) {
             return;
         }
