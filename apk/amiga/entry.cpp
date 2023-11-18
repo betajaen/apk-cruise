@@ -95,6 +95,7 @@ int main(void) {
 
 	rv = apk_main();
 
+#if 0
 	if (_WBenchMsg) {
 		EasyStruct str;
 		str.es_StructSize = sizeof(EasyStruct);
@@ -108,6 +109,7 @@ int main(void) {
 	else {
 		PutStr("Thanks for playing!\n");
 	}
+#endif
 
 	CloseLibrary((struct Library*)AslBase);
 	CloseLibrary((struct Library*)GfxBase);
