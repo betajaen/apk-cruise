@@ -56,7 +56,6 @@ namespace apk {
         static bool mWindowLoopStop = FALSE;
         static struct timeval _time0;
 
-
         class SystemTimer {
 
             struct MsgPort* _msgPort;

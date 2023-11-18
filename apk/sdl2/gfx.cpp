@@ -24,7 +24,6 @@ namespace apk {
 
     extern bool s_FastMode;
     extern uint32 s_FastModeTime;
-    extern Array<Event> s_Event;
     extern bool s_quitRequested;
     SDL_Window* s_screen = NULL;
     constexpr int32 kScreenScale = 3;
@@ -562,84 +561,5 @@ namespace apk {
     }
 
 }
-
-#if 0
-    void fetchEvents() {
-        SDL_Event evt;
-        while(SDL_PollEvent(&evt)) {
-            switch(evt.type) {
-                case SDL_QUIT: {
-                    s_quitRequested = true;
-                    Event evt;
-                    evt.type = EVENT_QUIT;
-                    s_Event.push_back(evt);
-                }
-                break;
-                case SDL_MOUSEMOTION:
-                {
-                    int32 mouseX, mouseY;
-                    SDL_GetMouseState(&mouseX, &mouseY);
-                    mouseX /= kScreenScale;
-                    mouseY /= kScreenScale;
-                    Event evt;
-                    evt.type = EVENT_MOUSEMOVE;
-                    evt.mouse.x = mouseX;
-                    evt.mouse.y = mouseY;
-                    s_Event.push_back(evt);
-                }
-                break;
-                case SDL_KEYUP:
-                {
-                    if (evt.key.keysym.scancode == SDL_SCANCODE_1) {
-                        Event evt;
-                        evt.type = EVENT_FAST_MODE;
-                        s_Event.push_back(evt);
-                    }
-                    else if (evt.key.keysym.scancode == SDL_SCANCODE_2) {
-                        Event evt;
-                        evt.type = EVENT_SKIP_PROTECTION;
-                        s_Event.push_back(evt);
-                    }
-                    else if (evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-                        Event evt;
-                        evt.type = EVENT_PAUSE;
-                        s_Event.push_back(evt);
-                    }
-                }
-                break;
-                case SDL_MOUSEBUTTONDOWN:
-                case SDL_MOUSEBUTTONUP: {
-                    if (evt.type == SDL_MOUSEBUTTONDOWN) {
-                        if (evt.button.button == SDL_BUTTON_LEFT) {
-                            Event evt;
-                            evt.type = EVENT_LBUTTONDOWN;
-                            s_Event.push_back(evt);
-                        }
-                        if (evt.button.button == SDL_BUTTON_RIGHT) {
-                            Event evt;
-                            evt.type = EVENT_RBUTTONDOWN;
-                            s_Event.push_back(evt);
-                        }
-                    }
-                    else if (evt.type == SDL_MOUSEBUTTONUP) {
-                        if (evt.button.button == SDL_BUTTON_LEFT) {
-                            Event evt;
-                            evt.type = EVENT_LBUTTONUP;
-                            s_Event.push_back(evt);
-                        }
-                        if (evt.button.button == SDL_BUTTON_RIGHT) {
-                            Event evt;
-                            evt.type = EVENT_RBUTTONUP;
-                            s_Event.push_back(evt);
-                        }
-                    }
-                    // printf("Mouse=%d,%d LMB=%d RMB=%d\n", s_ScreenMouseX, s_ScreenMouseY, s_LMBMouse, s_RMBMouse);
-                }
-                break;
-            }
-        }
-    }
-#endif
-
 }
 

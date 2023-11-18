@@ -183,7 +183,4 @@ namespace apk {
         } kbd;
     };
 
-    void fetchEvents();
-    bool pollEvents(Event& evt);
-
 }

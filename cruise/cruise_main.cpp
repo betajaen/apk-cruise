@@ -1744,6 +1744,7 @@ bool bFastMode = false;
 bool bSkipProtection = false;
 
 bool manageEvents() {
+#if 0 // MOD:
 	Common::Event event;
 
 	Common::EventManager * eventMan = g_system->getEventManager();
@@ -1846,7 +1847,7 @@ bool manageEvents() {
 		if (abortFlag)
 			return true;
 	}
-
+#endif
 	return false;
 }
 

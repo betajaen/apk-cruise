@@ -27,7 +27,6 @@ namespace apk {
 
     bool s_FastMode = true;
     uint32 s_FastModeTime = 0;
-    Array<Event> s_Event;
     bool s_quitRequested = true;
 
     void gameMain();
@@ -117,15 +116,5 @@ namespace apk {
         ::printf("\n[ASSERT!] %s:%d\n", file, line);
         SDL_assert(false);
     }
-
-    bool pollEvents(Event& evt) {
-        if (s_Event.size() == 0) {
-            return false;
-        }
-        evt = s_Event[s_Event.size()-1];
-        s_Event.pop_back();
-        return true;
-    }
-
 
 }

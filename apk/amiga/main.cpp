@@ -23,7 +23,6 @@
 namespace apk {
     bool s_FastMode = true;
     uint32 s_FastModeTime = 0;
-    Array<Event> s_Event;
     bool s_quitRequested = true;
 
     void gameMain();
