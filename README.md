@@ -48,7 +48,7 @@ The following files must be placed in the same drawer as the executable, which c
 * [ ] Amiga Installer
 
 
-## State of the Game
+## State of the Game and Observations
 
 ### Amiga
 
@@ -61,7 +61,11 @@ The following files must be placed in the same drawer as the executable, which c
 
 ### SDL2
 
-* Currently does not compile due to differences in API.
+* Was able to play most of the game using pre-saved games as full playthrough has not been tested yet.
+* Some palette errors during cut scene, or switching screens.
+* Some walkboxes errors have been noticed.
+* Performance problems with heavy sprites and/or polygons.
+* No Music/Audio
 
 ## Game Differences
 
