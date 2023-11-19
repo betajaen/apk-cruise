@@ -10,6 +10,8 @@
 #define PACKED_STRUCT __attribute__((__packed__))
 #define WARN_UNUSED_RESULT
 
+#define CRUISE_OPTIMIZE_DRAW_SPRITE 0
+
 namespace Graphics {
     typedef void* Surface;
 }

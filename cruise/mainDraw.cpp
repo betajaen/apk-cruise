@@ -1201,10 +1201,196 @@ void drawMessage(const gfxEntryStruct *pGfxPtr, int globalX, int globalY, int wi
 	}
 }
 
-unsigned char* sWorkBuffer = NULL;
-uint32 sWorkBufferSize = 0;
+uint8* sWorkBuffer = NULL; // MOD:
+uint32 sWorkBufferSize = 0; // MOD:
+
+uint8* ensureSpriteMask(uint32 workBufferSize) {
+	if (sWorkBuffer == NULL || workBufferSize > sWorkBufferSize) { // MOD:
+
+		if (sWorkBuffer != NULL) {
+			apk::free(sWorkBuffer);
+		}
+		sWorkBuffer = (unsigned char*) malloc(workBufferSize);
+        sWorkBufferSize = workBufferSize;
+        printf("work buf %ld\n", sWorkBufferSize);
+	}
+	return sWorkBuffer;
+}
+
+uint8* sScreenMask = NULL;
+
+void ensureScreenMask() {
+	if (sScreenMask == NULL) {
+		sScreenMask = (unsigned char*)malloc_aligned(320*200);
+	}
+}
+
+static void setScreenMask(int32 x, int32 y) {
+	assert(sScreenMask);
+	sScreenMask[x + mul_320(y)] = 0x00;
+}
+
+static void unsetScreenMask(int32 x, int32 y) {
+	assert(sScreenMask);
+	sScreenMask[x + mul_320(y)] = 0x00;
+}
+
+static void clearScreenMask() {
+	assert(sScreenMask);
+	apk::memset_aligned(sScreenMask, 0xFFffFFff, 320*200);
+}
+
+static void debug_drawBar(uint8* output, int x0, int y0, int x1, int y1, uint8 colour) { // MOD:
+	for(int32 j=y0;j < y1;j++) {
+        uint32 srcIdx = mul_320(j);
+        for(int32 i=x0;i < x1;i++) {
+			output[srcIdx + i] = colour;
+        }
+    }
+}
+static void debug_drawBarChecker(uint8* output, int x0, int y0, int x1, int y1, uint8 colour, uint8 colour2) { // MOD:
+    uint8 t[2] { colour, colour2 };
+    uint8 tidx = 0;
+	for(int32 j=y0;j < y1;j++) {
+        uint32 srcIdx = mul_320(j);
+        for(int32 i=x0;i < x1;i++) {
+			output[srcIdx + i] = t[tidx];
+            tidx ^= 1;
+        }
+        tidx ^=1;
+    }
+}
+static void debug_drawBarVLines(uint8* output, int x0, int y0, int x1, int y1, uint8 colour, uint8 colour2) { // MOD:
+    uint8 t[2] { colour, colour2 };
+    uint8 tidx = 0;
+	for(int32 j=y0;j < y1;j++) {
+        uint32 srcIdx = mul_320(j);
+        for(int32 i=x0;i < x1;i++) {
+			output[srcIdx + i] = t[tidx];
+            tidx ^= 1;
+        }
+    }
+}
+
+static void debug_drawBarHLines(uint8* output, int x0, int y0, int x1, int y1, uint8 colour, uint8 colour2) { // MOD:
+    uint8 t[2] { colour, colour2 };
+    uint8 tidx = 0;
+	for(int32 j=y0;j < y1;j++) {
+        uint32 srcIdx = mul_320(j);
+        for(int32 i=x0;i < x1;i++) {
+			output[srcIdx + i] = t[tidx];
+        }
+        tidx ^= 1;
+    }
+}
 
 void drawSprite(int width, int height, cellStruct *currentObjPtr, const uint8 *dataIn, int ys, int xs, uint8 *output, const uint8 *dataBuf) {
+#if CRUISE_OPTIMIZE_DRAW_SPRITE // MOD:
+
+    int32 x0 = MAX(0, xs);
+    int32 y0 = MAX(0, ys);
+    int32 x1 = MIN(x0 + width, 320);
+    int32 y1 = MIN(y0 + height, 200);
+	int32 workCount = 0;
+	cellStruct* plWork = currentObjPtr;
+	
+	// NOTES BY ROBIN:
+	//
+	// Original Behaviour Observation:
+	// 	- Sprites are drawn with occumpying masks, which are bit based (presumably to save on memory).
+	//  - Sprites may have multiple masks, or none at all.
+	//  - The sprite is copied into the work mask each-time.
+	//  - A temporary work buffer is created where each mask is AND'd onto based upon the screen mask and the sprite mask
+	//  - When the sprite is drawn onto the screen each pixel is consulted using this work buffer if it can draw or not.
+	//  - Heavy use of if-statements.
+	//  - When a sprite does not have a mask, then colour 0 is transparent.
+	//  - No prevention of checking of pixels out bounds
+	//  - Some sprites are too wide and either masks are used to trim the excess or overdraw is used to hide the excess pixels.
+	//
+	// Newer Behaviour:
+	//	Cases:
+	//  	1. If there is no mask, the sprite is drawn as-is. 0 appears to be the transparent colour.
+	//  	2. If there is one mask, then the sprite is drawn as-is without a work buffer, based upon the screen mask and mask
+	//  	3. If there are more than one mask, then behaviour is similar to the original. Work buffer is created, and masks
+	//     are AND'd onto. This is is then consulted when writing the sprite to the screen.
+	// 	Optimizations
+	//  	A. Use of AND is preferred over if-statements.
+	//  	B. Only pixels within bounds are checked.
+	//  	C. Work buffer is only used if necessary
+	//      D. Reduced memory reads and writes.
+
+	while (plWork) {
+		if (plWork->type == OBJ_TYPE_BGMASK && plWork->freeze == 0) {
+			int maskX, maskY, maskWidth, maskHeight, maskFrame, maskStride;
+			objectParamsQuery params;
+
+			getMultipleObjectParam(plWork->overlay, plWork->idx, &params);
+
+			maskX = params.X;
+			maskY = params.Y;
+			maskFrame = params.fileIdx;
+
+			const auto& maskData = filesDatabase[maskFrame];
+			const auto& subData = maskData.subData;
+
+			if (subData.resourceType == OBJ_TYPE_BGMASK || subData.resourceType == OBJ_TYPE_SPRITE) {
+				if (workCount == 0 && plWork->next == NULL) { // Case 2.		
+					workCount++;
+
+					/*
+					bool testMask(int x, int y, unsigned char* pData, int stride) {
+						unsigned char* ptr = y * stride + x / 8 + pData;
+
+						unsigned char bitToTest = 0x80 >> (x & 7);
+
+						if ((*ptr) & bitToTest)
+							return true;
+						return false;
+					}
+					*/
+
+					/*
+					for (int y = 0; y < maskHeight; y++) {
+						for (int x = 0; x < maskWidth*8; x++) {
+							if (testMask(x, y, pMask, maskWidth)) {
+								int destX = maskX + x;
+								int destY = maskY + y;
+
+								if ((destX >= 0) && (destX < wbWidth*8) && (destY >= 0) && (destY < wbHeight))
+									clearMaskBit(destX, destY, workBuf, wbWidth);
+							}
+						}
+					}
+					*/
+
+					debug_drawBarHLines(output, x0, y0, x1, y1, 1, 99);
+
+					break;
+				}
+				else { // Case 3.
+					debug_drawBarVLines(output, x0, y0, x1, y1, 200, 100);
+					workCount++;
+				}
+			}
+		}
+		plWork = plWork->next;
+	}
+	
+	
+	if (currentObjPtr == NULL || workCount == 0) { // Case 1
+		for(int32 j=y0;j < y1;j++) {
+			uint32 srcIdx = mul_320(j);
+			uint32 dstIdx = ((j - ys) * width) + (x0 - xs);
+			for(int32 i=x0;i < x1;i++) {
+				uint8 colour = dataIn[dstIdx++];
+				if (colour > 0) {
+					output[srcIdx + i] = colour;
+				}
+			}
+		}
+	}
+
+#else
 	int x = 0;
 	int y = 0;
 
@@ -1273,6 +1459,7 @@ void drawSprite(int width, int height, cellStruct *currentObjPtr, const uint8 *d
 	}
 
 	// MOD: MemFree(workBuf);
+#endif
 }
 
 #ifdef _DEBUG
