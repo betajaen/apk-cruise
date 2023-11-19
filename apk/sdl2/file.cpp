@@ -174,7 +174,7 @@ namespace apk {
 
         sprintf_s(diskPath, sizeof(diskPath), "%s", path);
 
-        FILE* fh = fopen(diskPath, "r");
+        FILE* fh = fopen(diskPath, "w");
 
         if (fh == NULL) {
             error("Could not open '%s' for appending!\n", diskPath);
