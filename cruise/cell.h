@@ -57,9 +57,13 @@ struct cellStruct {
 	int16 animCounter;
 	int16 animLoop;
 	gfxEntryStruct *gfxPtr;
+	int32 pool_index;
 };
 
 extern cellStruct cellHead;
+
+cellStruct* createCell(); // MOD:
+void destroyCell(cellStruct*); // MOD:
 
 void resetPtr(cellStruct * ptr);
 cellStruct *addCell(cellStruct *pHead, int16 overlayIdx, int16 objIdx, int16 type, int16 backgroundPlane, int16 scriptOverlay, int16 scriptNumber, int16 scriptType);

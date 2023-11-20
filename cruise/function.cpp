@@ -302,7 +302,7 @@ void freeObjectList(cellStruct *pListHead) {
 		if (pCurrent->freeze == 0) {
 			if (pCurrent->gfxPtr)
 				freeGfx(pCurrent->gfxPtr);
-			MemFree(pCurrent);
+			destroyCell(pCurrent); // MOD: MemFree(pCurrent);
 		}
 
 		var_2 = 1;

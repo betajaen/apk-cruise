@@ -26,6 +26,15 @@
 namespace Cruise {
 
 cellStruct cellHead;
+Pool<cellStruct, 40> s_cellPool;
+
+cellStruct* createCell() {
+	return s_cellPool.create();
+}
+
+void destroyCell(cellStruct* cs) {
+	s_cellPool.destroy(cs);
+}
 
 void resetPtr(cellStruct *ptr) {
 	ptr->next = nullptr;
@@ -80,7 +89,7 @@ cellStruct *addCell(cellStruct *pHead, int16 overlayIdx, int16 objIdx, int16 typ
 
 	currentHead = currentHead2;
 
-	newElement = (cellStruct *) mallocAndZero(sizeof(cellStruct));
+	newElement = createCell(); // MOD: newElement = (cellStruct *) mallocAndZero(sizeof(cellStruct));
 
 	if (!newElement)
 		return nullptr;
@@ -134,8 +143,9 @@ void createTextObject(cellStruct *pObject, int overlayIdx, int messageIdx, int x
 		si = si->next;
 	}
 
-	pNewElement = (cellStruct *) MemAlloc(sizeof(cellStruct));
-	memset(pNewElement, 0, sizeof(cellStruct));
+	// MOD: pNewElement = (cellStruct *) MemAlloc(sizeof(cellStruct));
+	// MOD: memset(pNewElement, 0, sizeof(cellStruct));
+	pNewElement = createCell();
 
 	pNewElement->next = pObject->next;
 	pObject->next = pNewElement;
@@ -208,7 +218,7 @@ void removeCell(cellStruct *objPtr, int ovlNumber, int objectIdx, int objType, i
 			// Free the entry
 			if (si->gfxPtr)
 				freeGfx(si->gfxPtr);
-			MemFree(si);
+			destroyCell(si); // MOD: MemFree(si);
 
 			currentObj = dx;
 		} else {
