@@ -35,6 +35,7 @@
 #include "text.h"
 #include "time.h"
 #include "debug.h"
+#include "pool.h"
 
 namespace apk {
 
