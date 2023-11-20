@@ -26,6 +26,16 @@ namespace Cruise {
 
 backgroundIncrustStruct backgroundIncrustHead;
 
+Pool<backgroundIncrustStruct, 20> s_backgroundIncrust_Pool;
+
+backgroundIncrustStruct* createBackgroundIncrust() { // MOD:
+	return s_backgroundIncrust_Pool.create();
+}
+
+void destroyBackgroundIncrust(backgroundIncrustStruct* backgroundIncrust) { // MOD:
+	s_backgroundIncrust_Pool.destroy(backgroundIncrust);
+}
+
 void resetBackgroundIncrustList(backgroundIncrustStruct *pHead) {
 	pHead->next = nullptr;
 	pHead->prev = nullptr;
@@ -113,7 +123,7 @@ backgroundIncrustStruct *addBackgroundIncrust(int16 overlayIdx,	int16 objectIdx,
 		currentHead2 = currentHead->next;
 	}
 
-	backgroundIncrustStruct *newElement = (backgroundIncrustStruct *)mallocAndZero(sizeof(backgroundIncrustStruct));
+	backgroundIncrustStruct *newElement =  createBackgroundIncrust(); // MOD: backgroundIncrustStruct *newElement = (backgroundIncrustStruct *)mallocAndZero(sizeof(backgroundIncrustStruct));
 
 	if (!newElement)
 		return nullptr;
@@ -224,7 +234,7 @@ void freeBackgroundIncrustList(backgroundIncrustStruct *pHead) {
 		if (pCurrent->ptr)
 			MemFree(pCurrent->ptr);
 
-		MemFree(pCurrent);
+		destroyBackgroundIncrust(pCurrent); // MOD: MemFree(pCurrent);
 		pCurrent = pNext;
 	}
 
@@ -267,7 +277,7 @@ void removeBackgroundIncrust(int overlay, int idx, backgroundIncrustStruct * pHe
 			if (pCurrent->ptr)
 				MemFree(pCurrent->ptr);
 
-			MemFree(pCurrent);
+			destroyBackgroundIncrust(pCurrent); // MOD: MemFree(pCurrent);
 			pCurrent = pNext;
 		} else {
 			pCurrentHead = pCurrent;

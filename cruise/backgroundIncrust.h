@@ -46,9 +46,13 @@ struct backgroundIncrustStruct {
 	int16 savedY;
 	char name[13];
 	uint16 spriteId;
+	int32 pool_index;
 };
 
 extern backgroundIncrustStruct backgroundIncrustHead;
+
+backgroundIncrustStruct* createBackgroundIncrust(); // MOD:
+void destroyBackgroundIncrust(backgroundIncrustStruct*); // MOD:
 
 void resetBackgroundIncrustList(backgroundIncrustStruct * pHead);
 backgroundIncrustStruct *addBackgroundIncrust(int16 overlayIdx, int16 param2, backgroundIncrustStruct * pHead, int16 scriptNumber, int16 scriptOverlay, int16 backgroundIdx, int16 param4);

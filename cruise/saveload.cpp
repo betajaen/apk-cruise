@@ -22,6 +22,7 @@
 #include "cruise/cruise_main.h"
 #include "cruise/cruise.h"
 #include "cruise/vars.h"
+#include "cruise/backgroundIncrust.h" // MOD:
 
 // MOD: #include "common/serializer.h"
 // MOD: #include "common/savefile.h"
@@ -458,8 +459,11 @@ static void syncIncrust(T& s) { // static void syncIncrust(Common::Serializer &s
 	pl1 = &backgroundIncrustHead;
 
 	for (int i = 0; i < numEntries; ++i) {
-		backgroundIncrustStruct *t = s.isSaving() ? pl :
-			(backgroundIncrustStruct *)mallocAndZero(sizeof(backgroundIncrustStruct));
+		
+		backgroundIncrustStruct *t = s.isSaving() ? pl : (createBackgroundIncrust());
+
+		// MOD: backgroundIncrustStruct *t = s.isSaving() ? pl :
+		// MOD:	(backgroundIncrustStruct *)mallocAndZero(sizeof(backgroundIncrustStruct));
 
 		s.syncAsUint32LE(dummyLong);
 
