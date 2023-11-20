@@ -33,14 +33,17 @@ struct autoCellStruct {
 	short int type;
 	short int newValue;
 	cellStruct *pCell;
+	int32 pool_index; // MOD:
 };
 
 autoCellStruct autoCellHead;
 
+static apk::Pool<autoCellStruct, 8> s_AutoCell_Pool; // MOD:
+
 void addAutoCell(int overlayIdx, int idx, int type, int newVal, cellStruct *pObject) {
 	autoCellStruct *pNewEntry;
 
-	pNewEntry = apk_new autoCellStruct; // MOD: pNewEntry = new autoCellStruct;
+	pNewEntry = s_AutoCell_Pool.create(); // MOD: pNewEntry = new autoCellStruct;
 
 	pNewEntry->next = autoCellHead.next;
 	autoCellHead.next = pNewEntry;
@@ -72,7 +75,7 @@ void freeAutoCell() {
 			pCurrent->pCell->animCounter = params.state2 - 1;
 		}
 
-		apk_delete(pCurrent); // MOD: delete pCurrent;
+		s_AutoCell_Pool.destroyQuick(pCurrent); // MOD: delete pCurrent;
 
 		pCurrent = next;
 	}
