@@ -31,6 +31,8 @@ namespace apk {
     public:
         Pool()
         {
+            memset(m_data, 0, sizeof(m_data));
+            
             for(uint32 i=0;i < N;i++) {
                 m_data[i].pool_index = -1;
             }
