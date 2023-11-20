@@ -1,5 +1,7 @@
 .DS_Store
 .idea
+.vs
+
 *.o
 *.out
 *.dSYM
@@ -7,7 +9,6 @@
 *.hdf
 *.uaem
 
-.vs
 install/cruise
 install/d*
 install/cruise.*
