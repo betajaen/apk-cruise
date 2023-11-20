@@ -7,7 +7,7 @@
 *.hdf
 *.uaem
 
-
+.vs
 install/cruise
 install/d*
 install/cruise.*
