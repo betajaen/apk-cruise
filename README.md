@@ -25,29 +25,43 @@ The following files must be placed in the same drawer as the executable, which c
 
 ## Port Status
 
-* Input
+### Input
   * [X] Mouse
   * [X] Hot Keys
-* [ ] Sound
-* [ ] Music
-* Graphics
-  * [X] Graphics via graphics.library (ECS/AGA)
-  * [X] Graphics via Real-time Graphics (RTG)
+
+### Audio
+  * [ ] Sound Effects
+  * [ ] Music
+
+### Graphics
+  * [X] Graphics via graphics.library
+  * [X] Graphics via Real-time Graphics
   * [X] Graphics via SDL2
   * [ ] Optimized Graphics
-* Saved Games
+  * [ ] Planar Support
+  * [ ] Mouse Cursor images
+  
+### Save Games
   * [X] Quick Load/Save
   * [X] Load/Save via Requester
-* Game Editions  
-  * [X] Amiga 32 colour game support
-  * [X] DOS 256 colour game support
-  * [ ] Mixed Amiga/DOS game support
-* Port
-  * [X] Amiga OS 3.x
-  * [X] SDL2
-* [X] Controls enhancements
-* [ ] Amiga Installer
 
+### Game Editions
+  * [X] DOS 256
+  * [ ] Amiga
+  * [ ] DOS with Amiga music
+
+### Ports
+  * [X] Amiga OS 3.x on 68k
+  * [X] SDL2
+
+### Enhancements
+  * [X] Controls
+  * [ ] Reduced Memory usage
+
+### Installer
+  * [ ] Amiga Installer
+  * [ ] MacOS Disk Image
+  * [ ] Windows Setup
 
 ## State of the Game and Observations
 
