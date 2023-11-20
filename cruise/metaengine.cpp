@@ -123,7 +123,7 @@ SaveStateDescriptor CruiseMetaEngine::querySaveMetaInfos(const char *target, int
 }
 
 Common::Error CruiseMetaEngine::createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const {
-	*engine = new Cruise::CruiseEngine(syst, (const Cruise::CRUISEGameDescription *)desc);
+	*engine = apk_new Cruise::CruiseEngine(syst, (const Cruise::CRUISEGameDescription *)desc);
 	return Common::kNoError;
 }
 

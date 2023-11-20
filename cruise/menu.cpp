@@ -209,10 +209,12 @@ int processMenu(menuStruct *pMenu) {
 #endif
 
 static void handleSaveLoad(bool saveFlag) {
+	#if 0 // MOD:
 	if (saveFlag)
 		_vm->saveGameDialog();
 	else
 		_vm->loadGameDialog();
+	#endif
 }
 
 static int playerMenu_Stop(menuStruct* pMenu, int mouseButton);

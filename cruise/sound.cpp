@@ -312,7 +312,7 @@ AdLibSoundDriver::AdLibSoundDriver(Audio::Mixer *mixer)
 }
 
 AdLibSoundDriver::~AdLibSoundDriver() {
-	delete _opl;
+	apk_delete(_opl); // MOD: delete _opl;
 }
 
 void AdLibSoundDriver::syncSounds() {
@@ -769,14 +769,14 @@ void PCSoundFxPlayer::doSync(Common::Serializer &s) {
 PCSound::PCSound(Audio::Mixer *mixer, CruiseEngine *vm) {
 	_vm = vm;
 	_mixer = mixer;
-	_soundDriver = new AdLibSoundDriverADL(_mixer);
-	_player = new PCSoundFxPlayer(_soundDriver);
+	_soundDriver = apk_new AdLibSoundDriverADL(_mixer); // MOD: _soundDriver = new AdLibSoundDriverADL(_mixer);
+	_player = apk_new PCSoundFxPlayer(_soundDriver); // MOD: _player = new PCSoundFxPlayer(_soundDriver);
 	_genVolume = 0;
 }
 
 PCSound::~PCSound() {
-	delete _player;
-	delete _soundDriver;
+	apk_delete(_player); // MOD: delete _player;
+	apk_delete(_soundDriver); // MOD: delete _soundDriver;
 }
 
 void PCSound::loadMusic(const char *name) {

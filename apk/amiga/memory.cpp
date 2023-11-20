@@ -27,23 +27,14 @@ static const ULONG LenChar = 0x52934e75;
 
 namespace apk {
 
-    void* malloc(APK_SIZE_TYPE size) {
+    void* _apk_allocate(APK_SIZE_TYPE size, const char* comment) {
+        size += size & 3; // align up.
         return AllocVec(size, MEMF_CLEAR);
     }
 
-    void* malloc_aligned(APK_SIZE_TYPE size) {
-        return AllocVec(size, MEMF_CLEAR); // AllocVec is always longword aligned.
-    }
-
-    void free(void* mem) {
+    void _apk_deallocate(void* mem, const char* comment) {
         if (mem != NULL) {
             FreeVec(mem);
-        }
-    }
-
-    void free_aligned(void* mem) {
-        if (mem != NULL) {
-            FreeVec(mem);  // AllocVec is always longword aligned.
         }
     }
 

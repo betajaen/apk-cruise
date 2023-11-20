@@ -179,7 +179,7 @@ int loadOverlay(const char *scriptName) {
 	unpackedSize = volumePtrToFileDescriptor[fileIdx].extSize + 2;
 
 	// This memory block will be later passed to a MemoryReadStream, which will dispose of it
-	unpackedBuffer = (byte *)malloc(unpackedSize);
+	unpackedBuffer = (byte *)MemAlloc(unpackedSize);
 	if (!unpackedBuffer) {
 		return (-2);
 	}
@@ -528,7 +528,7 @@ int loadOverlay(const char *scriptName) {
 		unpackedSize = volumePtrToFileDescriptor[fileIdx].extSize + 2;
 
 		// This memory block will be later passed to a MemoryReadStream, which will dispose of it
-		unpackedBuffer = (byte *)malloc(unpackedSize);
+		unpackedBuffer = (byte *)MemAlloc(unpackedSize);
 		if (!unpackedBuffer) {
 			return (-2);
 		}

@@ -287,12 +287,12 @@ namespace apk {
         }
 
         Node _createNode(const T& value) {
-            return new WrappedListNode<T>(value);
+            return apk_new WrappedListNode<T>(value);
         }
 
         void _destroyNode(Node node) {
             if (node) {
-                delete node;
+                apk_delete(node);
             }
         }
 
@@ -317,7 +317,7 @@ namespace apk {
             while(n) {
                 Node t = n;
                 n = n->next;
-                delete t;
+                apk_delete(t);
             }
             head = NULL;
             tail = NULL;

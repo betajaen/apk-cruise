@@ -1875,9 +1875,10 @@ void CruiseEngine::mainLoop_Start() { // MOD:
 
 	_playerDontAskQuit = false;
 
+#if 0 // MOD:
 	if (ConfMan.hasKey("save_slot"))
 		loadGameState(ConfMan.getInt("save_slot"));
-
+#endif
 }
 
 void CruiseEngine::mainLoop_Stop() { // MOD:

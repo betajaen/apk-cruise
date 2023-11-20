@@ -31,9 +31,6 @@ namespace apk {
         _vm->run();
     }
 
-    void Engine::initGraphics(apk::int32 w, apk::int32 h) {
-    }
-
 }
 
 namespace Cruise {

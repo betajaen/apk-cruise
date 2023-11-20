@@ -20,13 +20,9 @@
 #pragma once
 
 #include "pod.h"
+#include "compat.h"
 
 namespace apk {
-
-    void* malloc(APK_SIZE_TYPE length);
-    void* malloc_aligned(APK_SIZE_TYPE length);
-    void free(void* mem);
-    void free_aligned(void* mem);
 
     void memcpy(void* dst, const void* src, APK_SIZE_TYPE length);
     void memcpy_aligned(void* dst, const void* src, APK_SIZE_TYPE length);

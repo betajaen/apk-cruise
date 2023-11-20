@@ -40,7 +40,7 @@ namespace apk {
     bool ReadFile::close() {
         if (m_impl) {
             fclose(m_impl->fh);
-            delete m_impl;
+            apk_delete(m_impl);
             m_impl = NULL;
 
             return true;
@@ -66,7 +66,7 @@ namespace apk {
             return false;
         }
 
-        m_impl = new FileImpl();
+        m_impl = apk_new FileImpl();
         m_impl->fh = fh;
 
         fseek(m_impl->fh, 0, SEEK_END);
@@ -155,7 +155,7 @@ namespace apk {
     bool AppendFile::close() {
         if (m_impl) {
             fclose(m_impl->fh);
-            delete m_impl;
+            apk_delete(m_impl);
             m_impl = NULL;
 
             return true;
@@ -181,7 +181,7 @@ namespace apk {
             return false;
         }
 
-        m_impl = new FileImpl();
+        m_impl = apk_new FileImpl();
         m_impl->fh = fh;
 
         fseek(m_impl->fh, 0, SEEK_END);

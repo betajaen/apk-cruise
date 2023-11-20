@@ -112,10 +112,10 @@ void resetActorPtr(actorStruct *ptr);
 void removeAllScripts(scriptInstanceStruct *ptrHandle);
 void ProcessEvents_NoReaction(apk::Event& evt); // MOD:
 
-#if 1
-#define mallocAndZero(size)  ::apk::malloc(size)
-#define MemAlloc(size) ::apk::malloc(size)
-#define MemFree(v) ::apk::free(v)
+#if 1 // MOD:
+#define mallocAndZero(size)  apk_allocate(size)
+#define MemAlloc(size) apk_allocate(size)
+#define MemFree(v) apk_deallocate(v)
 #else
 void MemoryList();
 void *MemoryAlloc(uint32 size, bool clearFlag, int32 lineNum, const char *fname);

@@ -18,23 +18,10 @@
  */
 
 #include "apk/apk.h"
-#include "stdio.h"
 
-namespace apk {
-    void* malloc(APK_SIZE_TYPE size);
-    void free(void* mem);
-}
-
-void* __attribute__((weak)) operator new(APK_SIZE_TYPE n, void* p) {
+void* APK_ATTR_WEAK operator new(APK_SIZE_TYPE size, void* p) {
     return p;
 }
-
-void* __attribute__((weak)) operator new(APK_SIZE_TYPE n)
-{
-    return apk::malloc(n);
-}
-
-void __attribute__((weak)) operator delete(void* p)
-{
-    apk::free(p);
+void* APK_ATTR_WEAK operator new(APK_SIZE_TYPE size, const char* comment) {
+    return ::apk::_apk_allocate(size, comment);
 }

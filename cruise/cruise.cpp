@@ -40,11 +40,11 @@ namespace Cruise {
 CruiseEngine *_vm;
 
 CruiseEngine::CruiseEngine(OSystem * syst, const CRUISEGameDescription *gameDesc)
-	: Engine(syst), _gameDescription(gameDesc), _rnd("cruise") {
+	: _gameDescription(gameDesc), _rnd("cruise") { // MOD: : Engine(syst), _gameDescription(gameDesc), _rnd("cruise") {
 
 	_vm = this;
-	setDebugger(NULL); // MOD: new Debugger());
-	_sound = new PCSound(); // MOD: _sound = new PCSound(_mixer, this);
+	// MOD: setDebugger(NULL); // MOD: new Debugger());
+	_sound = apk_new PCSound(); // MOD: _sound = new PCSound(_mixer, this);
 
 	PCFadeFlag = false;
 	_preLoad = false;
@@ -63,7 +63,7 @@ CruiseEngine::CruiseEngine(OSystem * syst, const CRUISEGameDescription *gameDesc
 extern void listMemory();
 
 CruiseEngine::~CruiseEngine() {
-	delete _sound;
+	apk_delete(_sound); // MOD: delete _sound;
 
 	freeSystem();
 #if 0 // MOD:
@@ -206,6 +206,7 @@ bool CruiseEngine::loadLanguageStrings() {
 }
 
 void CruiseEngine::pauseEngine(bool pause) {
+	#if 0 // MOD:
 	if (pause) {
 		debug("Paused"); // MOD:
 		_gamePauseToken = Engine::pauseEngine();
@@ -226,6 +227,7 @@ void CruiseEngine::pauseEngine(bool pause) {
 
 	// MOD: gfxModuleData_addDirtyRect(Common::Rect(64, 100, 256, 117));
 	gfxModuleData_addDirtyTileRect(64, 100, 256, 117, RECT_TYPE_ANY);
+	#endif
 }
 
 // MOD: Common::Error CruiseEngine::loadGameState(int slot) {
@@ -252,9 +254,11 @@ bool CruiseEngine::canSaveGameStateCurrently() {
 // MOD: }
 
 void CruiseEngine::syncSoundSettings() {
+	#if 0 // MOD:
 	Engine::syncSoundSettings();
 
 	_sound->syncSounds();
+	#endif
 }
 
 } // End of namespace Cruise

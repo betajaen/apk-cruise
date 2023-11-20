@@ -371,64 +371,6 @@ namespace apk {
         void doSync(T&) {}
     };
 
-    class Engine {
-    public:
-        Audio::Mixer* _mixer;
-        Engine(OSystem*) { _mixer = new Audio::Mixer ();}
-        virtual ~Engine() { delete _mixer; }
-        virtual Error run() { return 0; }
-        void setDebugger(void*) {}
-        virtual PauseToken pauseEngine() { return PauseToken(); }
-        virtual bool hasFeature(EngineFeature f) const {
-            return false;
-        }
-        virtual Error loadGameState(int slot) {
-            return 0;
-        }
-        virtual Error saveGameState(int slot) {
-            return 0;
-        }
-        virtual Error saveGameState(int slot, const char* desc, bool isAutoSave = false) {
-            return 0;
-        }
-        virtual bool canLoadGameStateCurrently() {
-            return false;
-        }
-        virtual bool canSaveGameStateCurrently() {
-            return false;
-        }
-        virtual const char* getSaveStateName(int slot) const {
-            return "NOSAVENAME";
-        }
-
-        virtual void syncSoundSettings() {
-        }
-
-        void initGraphics(int32 w, int32 h);
-
-        bool shouldQuit() {
-            return apk::isQuitRequested();
-        }
-
-        void saveGameDialog() {
-        }
-
-        void loadGameDialog() {
-        }
-
-        inline Common::Language getLanguage() const {
-            return EN_ANY;
-        }
-
-        inline Common::Platform getPlatform() const {
-            return 0;
-        }
-
-        virtual bool isPaused() const {
-            return false;
-        }
-    };
-
     class RandomSource {
     public:
         int seed = 3458345;
@@ -460,7 +402,7 @@ namespace apk {
             if (m_dispose) {
                 byte* data = m_buf.getData();
                 if (data) {
-                    free(data);
+                    apk_deallocate(data);
                 }
             }
         }

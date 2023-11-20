@@ -161,10 +161,10 @@ gfxModuleDataStruct gfxModuleData = {
 };
 
 void gfxModuleData_deleteFrameBuffers() {
-    apk::free_aligned(page00); page00 = NULL;
-    apk::free_aligned(page10); page00 = NULL;
+    MemFree(page00); page00 = NULL;
+    MemFree(page10); page00 = NULL;
 #if ENABLE_TILE_RENDERER == 1
-    apk::free_aligned(sDrawTiles); sDrawTiles = NULL;
+    MemFree(sDrawTiles); sDrawTiles = NULL;
 #endif
 }
 
@@ -333,12 +333,12 @@ void gfxCopyRect(const uint8 *sourceBuffer, int width, int height, byte *dest, i
 }
 
 void gfxModuleData_Init() {
-    page00 = (uint8*) apk::malloc_aligned(64000); // MOD:
-    page10 = (uint8*) apk::malloc_aligned(64000); // MOD:
+    page00 = (uint8*) MemAlloc(64000); // MOD:
+    page10 = (uint8*) MemAlloc(64000); // MOD:
 	gfxModuleData.pPage00 = page00; // MOD:
 	gfxModuleData.pPage10 = page10; // MOD:
 #if ENABLE_TILE_RENDERER == 1
-    sDrawTiles = (uint8*) apk::malloc_aligned(sizeof(uint8) * MAX_TILES);
+    sDrawTiles = (uint8*) MemAlloc(sizeof(uint8) * MAX_TILES);
 #endif
 	// MOD: memset(globalScreen, 0, 320 * 200);
 	// MOD: memset(page00, 0, 320 * 200);

@@ -40,7 +40,7 @@ autoCellStruct autoCellHead;
 void addAutoCell(int overlayIdx, int idx, int type, int newVal, cellStruct *pObject) {
 	autoCellStruct *pNewEntry;
 
-	pNewEntry = new autoCellStruct;
+	pNewEntry = apk_new autoCellStruct; // MOD: pNewEntry = new autoCellStruct;
 
 	pNewEntry->next = autoCellHead.next;
 	autoCellHead.next = pNewEntry;
@@ -72,7 +72,7 @@ void freeAutoCell() {
 			pCurrent->pCell->animCounter = params.state2 - 1;
 		}
 
-		delete pCurrent;
+		apk_delete(pCurrent); // MOD: delete pCurrent;
 
 		pCurrent = next;
 	}
@@ -1208,9 +1208,9 @@ uint8* ensureSpriteMask(uint32 workBufferSize) {
 	if (sWorkBuffer == NULL || workBufferSize > sWorkBufferSize) { // MOD:
 
 		if (sWorkBuffer != NULL) {
-			apk::free(sWorkBuffer);
+			MemFree(sWorkBuffer);
 		}
-		sWorkBuffer = (unsigned char*) malloc(workBufferSize);
+		sWorkBuffer = (unsigned char*) MemAlloc(workBufferSize);
         sWorkBufferSize = workBufferSize;
         printf("work buf %ld\n", sWorkBufferSize);
 	}
@@ -1221,7 +1221,7 @@ uint8* sScreenMask = NULL;
 
 void ensureScreenMask() {
 	if (sScreenMask == NULL) {
-		sScreenMask = (unsigned char*)malloc_aligned(320*200);
+		sScreenMask = (unsigned char*)MemAlloc(320*200);
 	}
 }
 
@@ -1411,9 +1411,9 @@ void drawSprite(int width, int height, cellStruct *currentObjPtr, const uint8 *d
 	if (sWorkBuffer == NULL || workBufferSize > sWorkBufferSize) { // MOD:
 
 		if (sWorkBuffer != NULL) {
-			apk::free(sWorkBuffer);
+			MemFree(sWorkBuffer);
 		}
-		sWorkBuffer = (unsigned char*) malloc(workBufferSize);
+		sWorkBuffer = (unsigned char*) MemAlloc(workBufferSize);
         sWorkBufferSize = workBufferSize;
         printf("work buf %ld\n", sWorkBufferSize);
 	}

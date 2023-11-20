@@ -308,7 +308,7 @@ namespace apk {
         s_height = height;
         s_widthHeight = width * height;
 
-        s_virtualSurface = (byte*) malloc(s_widthHeight);
+        s_virtualSurface = (byte*) apk_allocate(s_widthHeight);
 
         for(int32 i=1;i < 256;i++) {
             s_virtualPalette[i].r = 255 - i;
@@ -324,7 +324,7 @@ namespace apk {
 
     void destroyScreen() {
         SDL_assert(s_virtualSurface);
-        free(s_virtualSurface);
+        apk_deallocate(s_virtualSurface);
         s_virtualSurface = NULL;
 
         SDL_assert(s_screen);

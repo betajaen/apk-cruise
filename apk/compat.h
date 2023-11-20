@@ -21,7 +21,27 @@
 
 #include "apk/pod.h"
 
-void* APK_ATTR_WEAK operator new(APK_SIZE_TYPE n, void* p);
-void* APK_ATTR_WEAK operator new(APK_SIZE_TYPE n);
-void APK_ATTR_WEAK operator delete(void* p);
-void APK_ATTR_WEAK operator delete(void* p, APK_SIZE_TYPE n);
+#define _apk_to_str(x) #x
+#define apk_to_str(x) _apk_to_str(x)
+
+namespace apk {
+    void* _apk_allocate(APK_SIZE_TYPE size, const char* comment);
+    void _apk_deallocate(void* mem, const char* comment);
+
+    template<typename T>
+    inline void _apk_delete(T*& mem, const char* comment) {
+        if (mem) {
+            mem->~T();
+            _apk_deallocate(mem, comment);
+            mem = NULL;
+        }
+    }
+}
+
+void* APK_ATTR_WEAK operator new(APK_SIZE_TYPE size, void* p);
+void* APK_ATTR_WEAK operator new(APK_SIZE_TYPE size, const char* comment);
+
+#define apk_new new(__FILE__ ":" apk_to_str(__LINE__))
+#define apk_delete(MEM) ::apk::_apk_delete(MEM, __FILE__ ":" apk_to_str(__LINE__))
+#define apk_allocate(SIZE) ::apk::_apk_allocate(SIZE, __FILE__ ":" apk_to_str(__LINE__))
+#define apk_deallocate(MEM) ::apk::_apk_deallocate(MEM, __FILE__ ":" apk_to_str(__LINE__))

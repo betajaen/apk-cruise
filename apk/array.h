@@ -25,8 +25,6 @@
 
 namespace apk {
 
-    void* malloc(APK_SIZE_TYPE numBytes);
-    void free(void* mem);
     void memcpy(void* dst, const void* src, APK_SIZE_TYPE size);
 
     template<typename T>
@@ -91,7 +89,7 @@ namespace apk {
                 for(uint32_t i=0; i < m_size;i++) {
                     m_data[i].~T();
                 }
-                free(m_data);
+                apk_deallocate(m_data);
                 m_capacity = 0;
                 m_size = 0;
                 m_data = NULL;
@@ -138,7 +136,7 @@ namespace apk {
                 return;
             }
 
-            T* tmp = (T*) malloc(sizeof(T) * newCapacity);
+            T* tmp = (T*) apk_allocate(sizeof(T) * newCapacity);
 
             if (m_size && m_data) {
                 APK_SIZE_TYPE amountToCopy = 0;
@@ -160,7 +158,7 @@ namespace apk {
                 for(uint32_t i=0; i < m_size;i++) {
                     m_data[i].~T();
                 }
-                free(m_data);
+                apk_deallocate(m_data);
             }
 
             m_data = tmp;

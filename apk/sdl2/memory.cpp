@@ -27,31 +27,71 @@
 
 namespace apk {
 
-    void* malloc(APK_SIZE_TYPE size) {
-        void* mem = ::malloc(size);
-        if (mem) {
-            ::memset(mem, 0, size);
-        }
-        return mem;
+#if 1
+
+    struct Header;
+    struct Footer;
+
+    struct Header {
+        uint32  magic;
+        uint32  size;
+        const char* comment;
+        Footer* footer;
+    };
+
+    struct Footer {
+        Header* header;
+    };
+
+    static const uint32 kMagic = 'A' << 24 | 'P' << 16 | 'K' << 8 | 'A';
+
+    static void* _allocMem(uint32 size, const char* comment) {
+        uint32 totalSize = sizeof(Header) + sizeof(Footer) + size + (sizeof(void*) == 8 ? (size & 7) : (size & 3));
+        uint8* bytes = (uint8*) ::malloc(totalSize);
+        assert(bytes);
+        ::memset(bytes, 0, totalSize);
+        Header* header = (Header*) bytes;
+        header->magic = kMagic;
+        header->comment = comment;
+        header->size = totalSize;
+        header->footer = (Footer*) (bytes + sizeof(Header) + size);
+        header->footer->header = header;
+        ::printf("[MEM] Allocate %s (%ld)\n", comment, totalSize);
+        return (void*) (bytes + sizeof(Header));
     }
 
-    void* malloc_aligned(APK_SIZE_TYPE size) {
-        void* mem = ::malloc(size);
-        if (mem) {
-            ::memset(mem, 0, size);
-        }
-        return mem;
+    static void _freeMem(void* mem, const char* comment) {
+        ::printf("[MEM] Free from %s (%p)\n", comment);
+        assert(mem);
+        Header* header = (((Header*) mem) - 1);
+        ::printf("[MEM] Free %s (%ld)\n", header->comment, header->size);
+        assert(header->magic == kMagic);
+        assert(header->footer->header == header);
+        byte* b = (byte*) header;
+        memset(b, 0xCD, header->size);
+        ::free(header);
     }
 
-    void free(void* mem) {
-        if (mem) {
-            return ::free(mem);
-        }
+#else
+
+    void* _allocMem(uint32 size, const char* comment) {
+        uint8* bytes = (uint8*) ::malloc(size);
+        ::memset(bytes, 0, size);
+        return (void*) bytes;
     }
 
-    void free_aligned(void* mem) {
+    void _freeMem(void* mem, const char* comment) {
+        ::free(mem);
+    }
+#endif
+
+    void* _apk_allocate(APK_SIZE_TYPE size, const char* comment) {
+        return _allocMem(size, comment);
+    }
+
+    void _apk_deallocate(void* mem, const char* comment) {
         if (mem) {
-            return ::free(mem);
+            _freeMem(mem,  comment);
         }
     }
 
