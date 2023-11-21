@@ -46,6 +46,28 @@ struct Device* TimerBase;
 #include <clib/exec_protos.h>
 #include <clib/alib_protos.h>
 
+__chip UWORD s_Cursor[] = {
+    0x0000, 0x0000,
+
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+    0x0000, 0x0000,
+
+    0x0000, 0x0000,
+};
 
 namespace apk {
 
@@ -169,7 +191,7 @@ namespace apk {
                 WA_CloseGadget, FALSE,
                 WA_DepthGadget, FALSE,
                 WA_RMBTrap, TRUE,
-                WA_IDCMP, IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_RAWKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEBUTTONS,
+                WA_IDCMP, IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_RAWKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEMOVE | IDCMP_MOUSEBUTTONS,
                 TAG_END
 		    );
 
@@ -179,6 +201,8 @@ namespace apk {
             }
 
 
+            SetPointer(mWindow, s_Cursor, 16, 16, -6, 0);
+
 
             return true;
         }
@@ -187,10 +211,46 @@ namespace apk {
 
 
             if (mWindow) {
+                ClearPointer(mWindow);
+
                 CloseWindow(mWindow);
                 mWindow = NULL;
             }
 
+
+        }
+
+        void setCursor(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY) {
+            CopyMem(image, s_Cursor + 2, size);
+            s_Cursor[2 + size] = 0;
+            s_Cursor[2 + size + 1] = 0;
+            SetPointer(mWindow, s_Cursor, height, width, offsetX, offsetY);
+        }
+
+        void setCursorChunky(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY) {
+            uint8 data[16 * 16];
+            uint32 planeOffset = (16 / 8) * 16;
+
+            uint32 dstIdx = 0;
+            uint8 bit = 0, bitIdx = 0;
+
+            for(uint16 j=0;j < height;j++) {
+                for(uint8 plane=0;plane < 2;plane++) {
+                    for(uint16 i=0;i < width;i++) {
+                        uint8 b = (image[i + (j * width)] >> plane) & 1;
+                        bit <<= 1;
+                        bit |= b;
+                        bitIdx++;
+                        if (bitIdx == 8) {
+                            data[dstIdx++] = bit;
+                            bit = 0;
+                            bitIdx = 0;
+                        }
+                    }
+                }
+            }
+
+            setCursor(data, dstIdx, 16,16, offsetX, offsetY);
 
         }
 
@@ -277,6 +337,10 @@ namespace apk {
                             case IDCMP_MOUSEMOVE: {
                                 mouseX = msg->MouseX;
                                 mouseY = msg->MouseY;
+
+                                evt.mouse.x = mouseX;
+                                evt.mouse.y = mouseY;
+                                evt.type = EVENT_MOUSEMOVE;
                             }
                             break;
                             case IDCMP_MOUSEBUTTONS: {

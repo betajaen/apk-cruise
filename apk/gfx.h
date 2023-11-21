@@ -45,6 +45,8 @@ namespace apk {
         void setRGB(uint8 index, uint8 r, uint8 g, uint8 b);
         void setRGB(uint8* pal, uint32 begin, uint32 end);
         void clearPalette();
+        void setCursor(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY);
+        void setCursorChunky(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY);
 
     }
 

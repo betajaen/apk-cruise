@@ -54,8 +54,37 @@ static const byte cursorPalette[] = {
 
 void changeCursor(CursorType eType) {
 	assert(eType >= 0 && eType < CURSOR_MAX);
-    currentCursor = eType; // MOD:
-    return; // MOD:
+
+#if 1 // MOD:
+	if (eType == 3)
+		return;
+
+    if (eType == currentCursor) {
+		return;
+	}
+	currentCursor = eType;
+
+	byte mouseCursor[16 * 16];
+	const MouseCursor *mc = &mouseCursors[eType];
+	const byte *src = mc->bitmap;
+	for (int i = 0; i < 32; ++i) {
+		int offs = i * 8;
+		for (byte mask = 0x80; mask != 0; mask >>= 1) {
+			if (src[0] & mask) {
+				mouseCursor[offs] = 2;
+			} else if (src[32] & mask) {
+				mouseCursor[offs] = 1;
+			} else {
+				mouseCursor[offs] = 0;
+			}
+			++offs;
+		}
+		++src;
+	}
+
+	apk::gfx::setCursorChunky((uint8*) mouseCursor, sizeof(mouseCursor), 16, 16, -mc->hotspotX, -mc->hotspotY);
+    return;
+#else	
 	if (currentCursor != eType) {
 		byte mouseCursor[16 * 16];
 		const MouseCursor *mc = &mouseCursors[eType];
@@ -78,6 +107,7 @@ void changeCursor(CursorType eType) {
 		CursorMan.replaceCursorPalette(cursorPalette, 0, 2);
 		currentCursor = eType;
 	}
+#endif
 }
 
 bool isMouseOn() {

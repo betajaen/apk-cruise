@@ -293,7 +293,7 @@ namespace apk {
         SDL_assert(s_screen == NULL);
 
         s_screen = SDL_CreateWindow(title,
-            SDL_WINDOWPOS_CENTERED,
+            2048,
             SDL_WINDOWPOS_CENTERED,
             width * kScreenScale,
             height * kScreenScale,
@@ -558,6 +558,14 @@ namespace apk {
     }
     void popWindowTimerCallback() {
         s_TimerFns.pop_back();
+    }
+
+    void setCursor(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY) {
+        // TODO
+    }
+
+    void setCursorChunky(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY) {
+        // TODO
     }
 
 }
