@@ -45,11 +45,15 @@ struct scriptInstanceStruct {
 	int16 var16;
 	int16 var18;
 	int16 var1A;
+	int16 pool_index;
 };
 
 extern scriptInstanceStruct relHead;
 extern scriptInstanceStruct procHead;
 extern scriptInstanceStruct *currentScriptPtr;
+
+scriptInstanceStruct* createScript();
+void destroyScript(scriptInstanceStruct* script);
 
 void setupFuncArray();
 int8 getByteFromScript();

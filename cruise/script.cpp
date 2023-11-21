@@ -31,6 +31,16 @@ scriptInstanceStruct procHead;
 
 scriptInstanceStruct *currentScriptPtr;
 
+Pool<scriptInstanceStruct, 16> s_ScriptPool; // MOD:
+
+scriptInstanceStruct* createScript() { // MOD:
+	return s_ScriptPool.create();
+}
+
+void destroyScript(scriptInstanceStruct* script) { // MOD:
+	s_ScriptPool.destroy(script);
+}
+
 int8 getByteFromScript() {
 	int8 var = *(int8 *)(currentData3DataPtr + currentScriptPtr->scriptOffset);
 	++currentScriptPtr->scriptOffset;
@@ -530,7 +540,7 @@ uint8 *attacheNewScriptToTail(scriptInstanceStruct *scriptHandlePtr, int16 overl
 	while (oldTail->nextScriptPtr)	// go to the end of the list
 		oldTail = oldTail->nextScriptPtr;
 
-	scriptInstanceStruct *tempPtr = (scriptInstanceStruct *)mallocAndZero(sizeof(scriptInstanceStruct));
+	scriptInstanceStruct* tempPtr = createScript(); // MOD: scriptInstanceStruct *tempPtr = (scriptInstanceStruct *)mallocAndZero(sizeof(scriptInstanceStruct));
 
 	if (!tempPtr)
 		return (nullptr);

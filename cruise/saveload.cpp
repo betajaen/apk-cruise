@@ -341,7 +341,7 @@ void syncScript(T& s, scriptInstanceStruct *entry) { // MOD: void syncScript(Com
 	scriptInstanceStruct *ptr = entry->nextScriptPtr;
 	for (int i = 0; i < numScripts; ++i) {
 		if (s.isLoading())
-			ptr = (scriptInstanceStruct *)mallocAndZero(sizeof(scriptInstanceStruct));
+			ptr = createScript(); // MOD: ptr = (scriptInstanceStruct *)mallocAndZero(sizeof(scriptInstanceStruct));
 
 		s.syncAsUint16LE(dummyWord);
 		s.syncAsSint16LE(ptr->ccr);

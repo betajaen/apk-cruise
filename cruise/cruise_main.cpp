@@ -588,7 +588,7 @@ int removeFinishedScripts(scriptInstanceStruct *ptrHandle) {
 			if (ptr->data)
 				MemFree(ptr->data);
 
-			MemFree(ptr);
+			destroyScript(ptr); // MOD: MemFree(ptr);
 
 			ptr = oldPtr->nextScriptPtr;
 		} else {
@@ -613,7 +613,7 @@ void removeAllScripts(scriptInstanceStruct *ptrHandle) {
 		if (ptr->data)
 			MemFree(ptr->data);
 
-		MemFree(ptr);
+		destroyScript(ptr); // MemFree(ptr);
 
 		ptr = oldPtr->nextScriptPtr;
 	} while (ptr);
