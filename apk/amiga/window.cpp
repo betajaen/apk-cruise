@@ -71,6 +71,9 @@ __chip UWORD s_Cursor[] = {
 
 namespace apk {
 
+    namespace bank {
+        void* getSpriteBankData(int32 bankNum, uint16 spriteNum, uint32* outSize, uint16* outWidth, uint16* outHeight, int16* offsetX, int16* offsetY);
+    }
 
     namespace gfx {
 
@@ -216,10 +219,19 @@ namespace apk {
                 CloseWindow(mWindow);
                 mWindow = NULL;
             }
-
-
         }
 
+        void setCursorFromBank(int32 bankNum, uint16 spriteNum) {
+            uint32 spriteSize;
+            uint16 width, height;
+            int16 offsetX, offsetY;
+            UWORD* spriteData = (UWORD*) bank::getSpriteBankData(bankNum, spriteNum, &spriteSize, &width, &height, &offsetX, &offsetY);
+
+            if (spriteData) {
+                SetPointer(mWindow, spriteData, height, width, offsetX, offsetY);
+            }
+        }
+        
         void setCursor(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY) {
             CopyMem(image, s_Cursor + 2, size);
             s_Cursor[2 + size] = 0;

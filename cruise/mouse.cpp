@@ -52,6 +52,36 @@ static const byte cursorPalette[] = {
 	0xff, 0xff, 0xff
 };
 
+static int32 s_MouseBank = -1;
+
+void initMouse() {
+	if (s_MouseBank == -1) {
+		byte mouseCursor[16 * 16];
+		s_MouseBank = apk::bank::createSpriteBank(16, 16, CURSOR_MAX);
+		for(uint i=0;i < CURSOR_MAX;i++) {
+
+			const MouseCursor *mc = &mouseCursors[i];
+			const byte *src = mc->bitmap;
+			for (int i = 0; i < 32; ++i) {
+				int offs = i * 8;
+				for (byte mask = 0x80; mask != 0; mask >>= 1) {
+					if (src[0] & mask) {
+						mouseCursor[offs] = 2;
+					} else if (src[32] & mask) {
+						mouseCursor[offs] = 1;
+					} else {
+						mouseCursor[offs] = 0;
+					}
+					++offs;
+				}
+				++src;
+			}
+			
+			apk::bank::setSpriteBankChunky(s_MouseBank, i, (uint8*) mouseCursor, 16*16, 2);
+		}
+	}
+}
+
 void changeCursor(CursorType eType) {
 	assert(eType >= 0 && eType < CURSOR_MAX);
 
@@ -62,8 +92,17 @@ void changeCursor(CursorType eType) {
     if (eType == currentCursor) {
 		return;
 	}
+
 	currentCursor = eType;
 
+	if (s_MouseBank == -1) {
+		initMouse();
+	}
+	else {
+		apk::gfx::setCursorFromBank(s_MouseBank, (uint16) currentCursor);
+	}
+
+	/*
 	byte mouseCursor[16 * 16];
 	const MouseCursor *mc = &mouseCursors[eType];
 	const byte *src = mc->bitmap;
@@ -83,6 +122,7 @@ void changeCursor(CursorType eType) {
 	}
 
 	apk::gfx::setCursorChunky((uint8*) mouseCursor, sizeof(mouseCursor), 16, 16, -mc->hotspotX, -mc->hotspotY);
+	*/
     return;
 #else	
 	if (currentCursor != eType) {
