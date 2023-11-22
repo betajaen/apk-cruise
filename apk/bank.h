@@ -30,6 +30,7 @@ namespace apk {
 
         void setSpriteBank(int32 bank, uint16 spriteNum, uint8* data);
         void setSpriteBankChunky(int32 bank, uint16 spriteNum, uint8* data, uint32 dataSize, uint8 numBitPlanes);
+        void setSpriteOffset(int32 bankNum, uint16 spriteNum, int16 offsetX, int16 offsetY);
 
         void* getSpriteBankImageData(int32 bank, uint16 spriteNum, uint32* outSize);
 

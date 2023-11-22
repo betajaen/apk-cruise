@@ -32,11 +32,10 @@ namespace apk {
         struct SpriteBank {
             uint16 m_Width;
             uint16 m_Height;
-            int16 m_OffsetX;
-            int16 m_OffsetY;
             uint16 m_NumSprites;
             uint32 m_SpriteDataSize;
             /* CHIP */ uint8* m_Data;
+            int16* m_OffsetXY;
         };
 
         SpriteBank s_SpriteBanks[MAX_SPRITE_BANKS] = { 0 };
@@ -51,12 +50,11 @@ namespace apk {
                 if (bank->m_Width == 0) {
                     bank->m_Width = width;
                     bank->m_Height = height;
-                    bank->m_OffsetX = 0;
-                    bank->m_OffsetY = 0;
                     bank->m_NumSprites = numSprites;
                     bank->m_SpriteDataSize = (sizeof(UWORD) * 4) + ((width / 8) * height) * SPRITE_BITPLANES;
                     uint32 allocationSize = bank->m_SpriteDataSize * numSprites;
                     bank->m_Data = (uint8*) AllocVec(allocationSize, MEMF_CHIP | MEMF_CLEAR);
+                    bank->m_OffsetXY = (int16*) AllocVec(sizeof(int16) * 2 * bank->m_NumSprites, MEMF_CLEAR);
 
                     return i;
                 }
@@ -71,12 +69,12 @@ namespace apk {
                 if (bank->m_Width != 0) {
                     bank->m_Width = 0;
                     bank->m_Height = 0;
-                    bank->m_OffsetX = 0;
-                    bank->m_OffsetY = 0;
                     bank->m_NumSprites = 0;
                     bank->m_SpriteDataSize = 0;
                     FreeVec(bank->m_Data);
                     bank->m_Data = NULL;
+                    FreeVec(bank->m_OffsetXY);
+                    bank->m_OffsetXY = NULL;
                 }
             }
         }
@@ -93,8 +91,8 @@ namespace apk {
                 *outSize = bank->m_SpriteDataSize;
                 *outWidth = bank->m_Width;
                 *outHeight = bank->m_Height;
-                *outOffsetX = bank->m_OffsetX;
-                *outOffsetY = bank->m_OffsetY;
+                *outOffsetX = bank->m_OffsetXY[spriteNum * 2 + 0];
+                *outOffsetY = bank->m_OffsetXY[spriteNum * 2 + 1];
                 return bank->m_Data + (bank->m_SpriteDataSize * (uint32) spriteNum);
             }
             
@@ -175,6 +173,19 @@ namespace apk {
                 return;    
             }   
             
+        }
+
+        void setSpriteOffset(int32 bankNum, uint16 spriteNum, int16 offsetX, int16 offsetY) {
+            if (bankNum > -1) {
+                assert(bankNum < MAX_SPRITE_BANKS);
+                SpriteBank* bank = &s_SpriteBanks[bankNum];
+                if (bank->m_Width == 0) {
+                    return;
+                }
+
+                bank->m_OffsetXY[spriteNum * 2 + 0] = offsetX;
+                bank->m_OffsetXY[spriteNum * 2 + 1] = offsetY;
+            }
         }
 
     }

@@ -78,6 +78,7 @@ void initMouse() {
 			}
 			
 			apk::bank::setSpriteBankChunky(s_MouseBank, i, (uint8*) mouseCursor, 16*16, 2);
+			apk::bank::setSpriteOffset(s_MouseBank, i, -mc->hotspotX, -mc->hotspotY);
 		}
 	}
 }
