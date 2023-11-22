@@ -1622,6 +1622,7 @@ void mainDraw(bool waitFl) {
 		if (backgroundChanged[masterScreen]) {
 			backgroundChanged[masterScreen] = false;
 			switchBackground(bgPtr);
+			switchPal = 1;
 		}
 	}
 
