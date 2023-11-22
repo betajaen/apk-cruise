@@ -194,6 +194,7 @@ namespace apk {
                 WA_CloseGadget, FALSE,
                 WA_DepthGadget, FALSE,
                 WA_RMBTrap, TRUE,
+                WA_Flags, WFLG_REPORTMOUSE,
                 WA_IDCMP, IDCMP_CLOSEWINDOW | IDCMP_VANILLAKEY | IDCMP_RAWKEY | IDCMP_IDCMPUPDATE | IDCMP_MOUSEMOVE | IDCMP_MOUSEBUTTONS,
                 TAG_END
 		    );
@@ -303,6 +304,7 @@ namespace apk {
 
             mWindowLoopStop = FALSE;
             uint32 mouseX = 0, mouseY = 0;
+            int32 reportedMouse = -1;
 
 		    while (mWindowLoopStop == false) {
 
@@ -349,15 +351,13 @@ namespace apk {
                             case IDCMP_MOUSEMOVE: {
                                 mouseX = msg->MouseX;
                                 mouseY = msg->MouseY;
-
-                                evt.mouse.x = mouseX;
-                                evt.mouse.y = mouseY;
-                                evt.type = EVENT_MOUSEMOVE;
+                                reportedMouse = 0;
                             }
                             break;
                             case IDCMP_MOUSEBUTTONS: {
                                 mouseX = msg->MouseX;
                                 mouseY = msg->MouseY;
+                                reportedMouse = 1;
 
                                 evt.mouse.x = mouseX;
                                 evt.mouse.y = mouseY;
@@ -384,14 +384,28 @@ namespace apk {
                         if (evt.type != EVENT_NONE) {
                             const auto& cb = s_EventFns.top();
                             cb.fn(cb.data, evt);
+                            if (reportedMouse == 1) {
+                                reportedMouse = -1;
+                            }
                         }
                     }
                 }
 
                 if (signal & timerBit) {
                     if (mTimer.isReady()) {
-                        const auto& cb = s_TimerFns.top();
-                        cb.fn(cb.data);
+                        
+                        if (reportedMouse == 0) {
+                            Event evt;
+                            evt.type = EVENT_MOUSEMOVE;
+                            evt.mouse.x = mouseX;
+                            evt.mouse.y = mouseY;
+                            const auto& wcb = s_EventFns.top();
+                            wcb.fn(wcb.data, evt);
+                            reportedMouse = -1;
+                        }
+
+                        const auto& tcb = s_TimerFns.top();
+                        tcb.fn(tcb.data);
                         mTimer.start(waitTime_usec);
                     }
                 }
