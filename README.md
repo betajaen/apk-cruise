@@ -37,9 +37,12 @@ The following files must be placed in the same drawer as the executable, which c
   * [X] Graphics via graphics.library
   * [X] Graphics via Real-time Graphics
   * [X] Graphics via SDL2
-  * [ ] Optimized Graphics
+  * [ ] Optimized Sprites
+  * [ ] Optimized Backgrounds
+  * [ ] Optimized Polygons
+  * [ ] Optimized Palette
   * [ ] Planar Support
-  * [ ] Mouse Cursor images
+  * [X] Mouse Cursor images
   
 ### Save Games
   * [X] Quick Load/Save
