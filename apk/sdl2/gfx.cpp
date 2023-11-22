@@ -415,7 +415,7 @@ namespace apk {
 
     static void surfaceCopy() {
         
-        blitVirtual(s_SpriteImage, s_mouseX, s_mouseY, s_SpriteWidth, s_SpriteHeight, 0);
+        blitVirtual(s_SpriteImage, s_mouseX + s_SpriteOffsetX, s_mouseY + s_SpriteOffsetY, s_SpriteWidth, s_SpriteHeight, 0);
         scaleCopy(s_screenSurface, s_virtualSurface, kScreenScale, s_VirtualWidth, s_VirtualHeight);
 
         SDL_UpdateWindowSurface(s_screen);
@@ -510,12 +510,24 @@ namespace apk {
         SDL_Event evt;
 
         uint32 mouseX = 0, mouseY = 0;
+        int32 reportedMouse = -1;
 
         while(stopLoop == false) {
             SDL_WaitEvent(&evt);
 
             if (evt.type == s_UserEventType) {
                     if (evt.user.code == USER_EVENT_TIMER) {
+                        
+                        if (reportedMouse == 0) {
+                            Event evt;
+                            evt.type = EVENT_MOUSEMOVE;
+                            evt.mouse.x = mouseX;
+                            evt.mouse.y = mouseY;
+                            const auto& wcb = s_EventFns.top();
+                            wcb.fn(wcb.data, evt);
+                            reportedMouse = -1;
+                        }
+
                         const auto& cb = s_TimerFns.top();
                         cb.fn(cb.data);
                     }
@@ -541,12 +553,11 @@ namespace apk {
                     break;
                     case SDL_MOUSEMOTION:
                     {
-                        Event e;
-                        e.type = EVENT_MOUSEMOVE;
-                        mouseX = evt.motion.x / kScreenScale;
-                        mouseY = evt.motion.y / kScreenScale;
+                        mouseX = evt.button.x / kScreenScale;
+                        mouseY = evt.button.y / kScreenScale;
                         s_mouseX = mouseX;
                         s_mouseY = mouseY;
+                        reportedMouse = 0;
                     }
                     break;
                     case SDL_MOUSEBUTTONUP:
@@ -558,6 +569,7 @@ namespace apk {
                         mouseY = evt.button.y / kScreenScale;
                         s_mouseX = mouseX;
                         s_mouseY = mouseY;
+                        reportedMouse = 1;
 
                         e.mouse.x = mouseX;
                         e.mouse.y = mouseY;
@@ -582,6 +594,10 @@ namespace apk {
                         if (e.type != EVENT_NONE) {
                             const auto& cb = s_EventFns.top();
                             cb.fn(cb.data, e);
+
+                            if (reportedMouse == 1) {
+                                reportedMouse = 0;
+                            }
                         }
                     }
                     break;
