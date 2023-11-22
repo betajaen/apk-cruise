@@ -31,7 +31,36 @@ namespace apk {
     byte* s_virtualSurface = NULL;
     SDL_Color s_virtualPalette[256] = { 0 };
     bool s_virtualPaletteDirty = false;
-    uint32 s_width = 0, s_height = 0, s_widthHeight = 0;
+    uint32 s_VirtualWidth = 0, s_VirtualHeight = 0, s_widthHeight = 0;
+    uint32 s_mouseX, s_mouseY;
+    uint8 s_SpriteImage[16*16] = { 0 };
+    int32 s_SpriteOffsetX = 0;
+    int32 s_SpriteOffsetY = 0;
+    uint32 s_SpriteWidth = 0;
+    uint32 s_SpriteHeight = 0;
+
+    static void blitVirtual(uint8* sprite, int32 spriteX, int32 spriteY, uint32 spriteWidth, uint32 spriteHeight, uint8 transparent) {
+        int32 x0 = MAX(0, spriteX);
+        int32 y0 = MAX(0, spriteY);
+        int32 x1 = MIN(x0 + spriteWidth, s_VirtualWidth);
+        int32 y1 = MIN(y0 + spriteHeight, s_VirtualHeight);
+
+		uint32 srcX0 = 0, srcY0 = 0;
+        for(int32 j=y0;j < y1;j++) {
+			uint32 dstIdx = (j * s_VirtualWidth);
+            uint32 srcIdx = (srcY0 * spriteWidth);
+            uint32 srcX0 = 0;
+			for(int32 i=x0;i < x1;i++) {
+				uint8 colour = sprite[srcIdx + srcX0];
+				if (colour != transparent) {
+					s_virtualSurface[dstIdx + i] = 17 + colour;
+				}
+                srcX0++;
+			}
+            srcY0++;
+		}
+
+    }
 
     static uint32 SDL2_To_AmigaKey(SDL_Keycode kc) {
 
@@ -304,8 +333,8 @@ namespace apk {
 
         s_screenSurface =SDL_GetWindowSurface(s_screen);
 
-        s_width = width;
-        s_height = height;
+        s_VirtualWidth = width;
+        s_VirtualHeight = height;
         s_widthHeight = width * height;
 
         s_virtualSurface = (byte*) apk_allocate(s_widthHeight);
@@ -319,10 +348,17 @@ namespace apk {
 
         memset(s_virtualSurface, 0, s_widthHeight);
 
+        memset(s_SpriteImage, 1, sizeof(s_SpriteImage));
+
+        SDL_ShowCursor(SDL_DISABLE);
+
         return true;
     }
 
     void destroyScreen() {
+
+        SDL_ShowCursor(SDL_ENABLE);
+
         SDL_assert(s_virtualSurface);
         apk_deallocate(s_virtualSurface);
         s_virtualSurface = NULL;
@@ -330,8 +366,8 @@ namespace apk {
         SDL_assert(s_screen);
         SDL_DestroyWindow(s_screen);
         s_screen = NULL;
-        s_width = 0;
-        s_height = 0;
+        s_VirtualWidth = 0;
+        s_VirtualHeight = 0;
     }
 
     static void scaleCopy(SDL_Surface* dst, byte* src, uint32 scale, uint32 w, uint32 h) {
@@ -374,9 +410,11 @@ namespace apk {
 
 
     static void surfaceCopy() {
-        scaleCopy(s_screenSurface, s_virtualSurface, kScreenScale, s_width, s_height);
-        SDL_UpdateWindowSurface(s_screen);
+        
+        blitVirtual(s_SpriteImage, s_mouseX, s_mouseY, s_SpriteWidth, s_SpriteHeight, 0);
+        scaleCopy(s_screenSurface, s_virtualSurface, kScreenScale, s_VirtualWidth, s_VirtualHeight);
 
+        SDL_UpdateWindowSurface(s_screen);
         if (s_FastMode) {
             s_FastModeTime++;
         }
@@ -497,6 +535,16 @@ namespace apk {
                         cb.fn(cb.data, e);
                     }
                     break;
+                    case SDL_MOUSEMOTION:
+                    {
+                        Event e;
+                        e.type = EVENT_MOUSEMOVE;
+                        mouseX = evt.motion.x / kScreenScale;
+                        mouseY = evt.motion.y / kScreenScale;
+                        s_mouseX = mouseX;
+                        s_mouseY = mouseY;
+                    }
+                    break;
                     case SDL_MOUSEBUTTONUP:
                     case SDL_MOUSEBUTTONDOWN:
                     {
@@ -504,6 +552,8 @@ namespace apk {
                         e.type = EVENT_NONE;
                         mouseX = evt.button.x / kScreenScale;
                         mouseY = evt.button.y / kScreenScale;
+                        s_mouseX = mouseX;
+                        s_mouseY = mouseY;
 
                         e.mouse.x = mouseX;
                         e.mouse.y = mouseY;
@@ -565,7 +615,12 @@ namespace apk {
     }
 
     void setCursorChunky(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY) {
-        // TODO
+        s_SpriteWidth = MIN(16, width);
+        s_SpriteHeight = MIN(16, height);
+        s_SpriteOffsetX = offsetX;
+        s_SpriteOffsetY = offsetY;
+        uint32 copySize = width * height;
+        memcpy(s_SpriteImage, image, copySize);    
     }
 
 }
