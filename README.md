@@ -49,8 +49,8 @@ The following files must be placed in the same drawer as the executable, which c
   * [X] Load/Save via Requester
 
 ### Game Editions
-  * [X] DOS 256
-  * [ ] Amiga
+  * [X] DOS (256 Colour)
+  * [ ] Amiga (32 Colour)
   * [ ] DOS with Amiga music
 
 ### Ports
@@ -95,11 +95,11 @@ The Game uses enhanced controls, these replace the ones described in the manual.
 |------------------|------------------------|
 | `Esc`            | Quick Game Immediately |
 | `Space`          | Pause Game             |
-| `Shift` and `F9` | Restart Game   |
-| `F5`             | Quick Save |
-| `Shift` and `F5` | Save to File |
-| `F9`             | Quick Load |
-| `Shift` and `F9` | Load from File |
+| `Shift` and `F9` | Restart Game           |
+| `F5`             | Quick Save             |
+| `Shift` and `F5` | Save to File           |
+| `F9`             | Quick Load             |
+| `Shift` and `F9` | Load from File         |
 
 
 ## ScummVM differences
