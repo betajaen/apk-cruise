@@ -1016,7 +1016,7 @@ Common::Error loadSavegameData(const char* path) { // MOD: Common::Error loadSav
 
 	// to finish
 
-	switchPal = 1;
+	switchPal = 1; // MOD:
 	changeCursor(CURSOR_NORMAL);
 	mainDraw(true);
 	flipScreen();
