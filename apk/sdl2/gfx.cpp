@@ -22,6 +22,10 @@
 
 namespace apk {
 
+    namespace bank {
+        void* getSpriteBankData(int32 bankNum, uint16 spriteNum, uint32* outSize, uint16* outWidth, uint16* outHeight, int16* offsetX, int16* offsetY);
+    }
+
     extern bool s_FastMode;
     extern uint32 s_FastModeTime;
     extern bool s_quitRequested;
@@ -610,6 +614,7 @@ namespace apk {
         s_TimerFns.pop_back();
     }
 
+    
     void setCursor(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY) {
         // TODO
     }
@@ -621,6 +626,17 @@ namespace apk {
         s_SpriteOffsetY = offsetY;
         uint32 copySize = width * height;
         memcpy(s_SpriteImage, image, copySize);    
+    }
+
+    void setCursorFromBank(int32 bankNum, uint16 spriteNum) {
+        uint32 spriteSize;
+        uint16 width, height;
+        int16 offsetX, offsetY;
+        void* spriteData = (void*) bank::getSpriteBankData(bankNum, spriteNum, &spriteSize, &width, &height, &offsetX, &offsetY);
+
+        if (spriteData) {
+            setCursorChunky((uint8*) spriteData, spriteSize, width, height, offsetX, offsetY);
+        }
     }
 
 }
