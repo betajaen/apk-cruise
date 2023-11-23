@@ -114,6 +114,7 @@ namespace apk {
 
     class PaletteManager {
     public:
+        bool ignoreUpdates = false;
         void setPalette(uint8* pal, uint32 start, uint32 end);
     };
 

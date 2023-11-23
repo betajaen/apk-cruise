@@ -54,7 +54,7 @@ void gfxModuleData_setPalColor(int idx, int r, int g, int b);
 void gfxModuleData_field_90();
 void gfxModuleData_gfxWaitVSync();
 void gfxModuleData_flip();
-void gfxModuleData_updatePalette();
+void gfxModuleData_updatePalette(bool force = false);
 void gfxModuleData_updateScreen();
 
 void gfxCopyRect(const uint8 *sourceBuffer, int width, int height, byte *dest, int x, int y, int color);

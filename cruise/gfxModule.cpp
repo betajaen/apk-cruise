@@ -44,6 +44,7 @@ int palDirtyMax = -1;
 
 bool _dirtyRectScreen = false;
 bool s_paletteIsDirty = false; // MOD:
+bool s_ignorePaletteUpdates = false; // MOD:
 
 // MOD:
 #define DEBUG_RECTS 0
@@ -670,7 +671,7 @@ static void mergeClipRects() {
 #endif
 }
 
-void gfxModuleData_updatePalette() {
+void gfxModuleData_updatePalette(bool force) {
 #if 0 // MOD:
 	byte paletteRGB[256 * 3];
 
@@ -686,7 +687,9 @@ void gfxModuleData_updatePalette() {
 		palDirtyMax = -1;
 	}
 #else
+	if (s_ignorePaletteUpdates == false || force) {
 		g_system->getPaletteManager()->setPalette((uint8*) lpalette, 0, 255);
+	}
 #endif
 }
 

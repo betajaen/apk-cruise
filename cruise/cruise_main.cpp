@@ -32,6 +32,10 @@
 
 namespace Cruise {
 
+extern bool isPaletteFading;
+void doFadePalette();
+
+
 enum RelationType {RT_REL = 30, RT_MSG = 50};
 
 static bool _playerDontAskQuit;
@@ -1895,6 +1899,8 @@ void CruiseEngine::mainLoop_Stop() { // MOD:
 }
 
 void CruiseEngine::mainLoop_Frame() { // MOD:
+
+
  		// Handle frame delay
 		uint32 currentTick = g_system->getMillis();
 
@@ -2217,6 +2223,12 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 }
 
 void TimerCb(void* ce) { // MOD:
+
+	if (isPaletteFading) {
+		doFadePalette();
+		return;
+	}
+	
 	CruiseEngine* c = (CruiseEngine*) ce;
 	c->mainLoop_Frame();
 	flipScreen();

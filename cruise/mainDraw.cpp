@@ -24,7 +24,12 @@
 // MOD: #include "common/endian.h"
 // MOD: #include "common/util.h"
 
+
 namespace Cruise {
+
+extern bool s_ignorePaletteUpdates;
+bool isPaletteFading = false; // MOD:
+int32 fadeIterator = 0; // MOD:
 
 struct autoCellStruct {
 	struct autoCellStruct *next;
@@ -96,6 +101,36 @@ void calcRGB(uint8* pColorSrc, uint8* pColorDst, int* offsetTable) {
 	}
 }
 
+void doFadePalette() { // MOD:
+
+	if (isPaletteFading == false) {
+		return;
+	}
+
+	for (long int j = 0; j < 256; j++) {
+		int offsetTable[3];
+		offsetTable[0] = -fadeIterator;
+		offsetTable[1] = -fadeIterator;
+		offsetTable[2] = -fadeIterator;
+		calcRGB(&palScreen[masterScreen][3*j], &workpal[3*j], offsetTable);
+	}
+
+	fadeIterator -= 32;
+	if (fadeIterator <= 0) {
+		isPaletteFading = false;
+		fadeIterator = -1;
+		fadeFlag = 0;
+		PCFadeFlag = false;
+		gfxModuleData_setPal256(&palScreen[masterScreen][0]);
+		s_ignorePaletteUpdates = false;
+	}
+	else {
+		gfxModuleData_setPal256(&workpal[0]);
+	}
+
+	gfxModuleData_updatePalette(true);
+}
+
 void fadeIn() {
 #if 0 // MOD:
 	// MOD: Robin - Removed Fade-in due to how this won't work with the event
@@ -114,40 +149,34 @@ void fadeIn() {
 		gfxModuleData_updateScreen();
 	}
 #endif
+	s_ignorePaletteUpdates = true;
+	isPaletteFading = true;
+	fadeIterator = 256;
 
-	for (long int j = 0; j < 256; j++) {
-		int offsetTable[3];
-		offsetTable[0] = 0;
-		offsetTable[1] = 0;
-		offsetTable[2] = 0;
-		calcRGB(&palScreen[masterScreen][3*j], &workpal[3*j], offsetTable);
-	}
-
+	memset(workpal, 0, sizeof(workpal));
 	gfxModuleData_setPal256(workpal);
-	gfxModuleData_updatePalette(); // MOD:
-
-	fadeFlag = 0;
-	PCFadeFlag = false;
+	gfxModuleData_updatePalette(true);
 }
 
 void flipScreen() {
+
+	SWAP(gfxModuleData.pPage00, gfxModuleData.pPage10);
+	
 	if (switchPal) {
 		for (unsigned long int i = 0; i < 256*3; i++) {
 			workpal[i] = palScreen[masterScreen][i];
 		}
 		switchPal = 0;
 		gfxModuleData_setPal256(workpal);
-		gfxModuleData_updatePalette(); // MOD:
+		gfxModuleData_updatePalette();
 	}
-
-	SWAP(gfxModuleData.pPage00, gfxModuleData.pPage10);
-
-	gfxModuleData_flipScreen();
 
 	if (doFade) {
 		fadeIn();
 		doFade = 0;
 	}
+	
+	gfxModuleData_flipScreen();
 }
 
 int spriteX1;
