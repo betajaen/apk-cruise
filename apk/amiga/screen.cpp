@@ -152,33 +152,21 @@ namespace apk { namespace gfx {
                 
                 sPaletteFadeTime += sPaletteFadeSteps;
 
-                /*  ROBIN. This is breaking for some reason.  I think the palette is correctly calculated but it's being corrupted on screen
-                    either it's too white, or colours are off.
-
-                    It works as a clamped delta which is added to the current palette (which can be changed at any time by the game), and this
-                    value is added to the final colour (sFadePalette). This seems to be the same method as calcRGB in mainDraw.cpp.
-                */
-
-                printf("Time = %ld, Dest = %ld, Dir = %ld, Steps = %ld\n", sPaletteFadeTime, sPaletteFadeDest, sPaletteFading, sPaletteFadeSteps);
-                
                 if (sPaletteFading == -1) {
                     if (sPaletteFadeTime > sPaletteFadeDest) {
                         LoadRGB32(&mScreen->ViewPort, sFadePalette);
-                        printf("Palette Fade -1");
                         return;
                     }
                 }
                 else {
                     if (sPaletteFadeTime < sPaletteFadeDest) {
                         LoadRGB32(&mScreen->ViewPort, sFadePalette);
-                        printf("Palette Fade +1");
                         return;
                     }
                 }
 
                 sPaletteFading = 0;
                 LoadRGB32(&mScreen->ViewPort, sPalette);
-                printf("Palette Fade 0");
 
             }
 
