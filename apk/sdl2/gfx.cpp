@@ -34,7 +34,14 @@ namespace apk {
     SDL_Surface* s_screenSurface = NULL;
     byte* s_virtualSurface = NULL;
     SDL_Color s_virtualPalette[256] = { 0 };
-    bool s_virtualPaletteDirty = false;
+    byte s_palette[256*3] = { 0 };
+    byte s_fadePalette[256*3] = { 0 };
+    bool s_paletteDirty = false;
+    static int32 sPaletteFading;
+    static int32 sPaletteFadeSteps;
+    static int32 sPaletteFadeTime;
+    static int32 sPaletteFadeDest;
+    static bool  sPaletteDirty = false;
     uint32 s_VirtualWidth = 0, s_VirtualHeight = 0, s_widthHeight = 0;
     uint32 s_mouseX, s_mouseY;
     uint8 s_SpriteImage[16*16] = { 0 };
@@ -342,14 +349,7 @@ namespace apk {
         s_widthHeight = width * height;
 
         s_virtualSurface = (byte*) apk_allocate(s_widthHeight);
-
-        for(int32 i=1;i < 256;i++) {
-            s_virtualPalette[i].r = 255 - i;
-            s_virtualPalette[i].g = 255 - i;
-            s_virtualPalette[i].b = 255 - i;
-            s_virtualPalette[i].a = 255 - i;
-        }
-
+        
         memset(s_virtualSurface, 0, s_widthHeight);
 
         memset(s_SpriteImage, 1, sizeof(s_SpriteImage));
@@ -437,8 +437,11 @@ namespace apk {
     }
 
     void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
-        s_virtualPalette[index] = { r, g, b, 255 };
-        s_virtualPaletteDirty = true;
+        s_palette[index*3 + 0] = r;
+        s_palette[index*3 + 1] = g;
+        s_palette[index*3 + 2] = b;
+        
+        s_paletteDirty = true;
     }
 
     void setRGB(uint8* pal, uint32 begin, uint32 end) {
@@ -461,12 +464,89 @@ namespace apk {
     }
 
     void clearPalette() {
-        s_virtualPalette[0] = { 0, 0, 0, 255 };
-        s_virtualPalette[1] = { 255, 255, 255, 255 };
-        for(uint32 i=2;i < 255;i++) {
-            s_virtualPalette[i] = { 0, 0, 0, 255 };
+        for(uint32 i=0;i < 255*3;i++) {
+            s_palette[i] = 0;
         }
-        s_virtualPaletteDirty = true;
+        s_paletteDirty = true;
+    }
+
+    void paletteFadeIn(uint32 steps) {
+        if (sPaletteFading == 0) {
+            sPaletteFadeSteps = (int32) CLIP((int32)steps, (int32)1, (int32)255);
+            sPaletteFadeTime = -255;
+            sPaletteFadeDest = 0;
+            sPaletteFading = 1;
+        }
+    }
+
+    void paletteFadeOut(uint32 steps) {
+        if (sPaletteFading == 0) {
+            sPaletteFadeSteps = -(int32) CLIP((int32)steps, (int32)1, (int32)255);
+            sPaletteFadeTime = 255;
+            sPaletteFadeDest = 0;
+            sPaletteFading = -1;
+        }
+    }
+
+    static void loadPalette(byte* palette) {
+        for(uint32 i=0;i < 256;i++) {
+            SDL_Color col;
+            col.r = *palette++;
+            col.g = *palette++;
+            col.b = *palette++;
+            col.a = 0xFF;
+            s_virtualPalette[i] = col;
+        }
+    }
+
+    bool paletteFunction() {
+
+        if (sPaletteFading == 0) {
+            if (s_paletteDirty) {
+                s_paletteDirty = false;
+                loadPalette(s_palette);
+            }
+        }
+        else {
+            s_paletteDirty = false;
+
+            uint8* src = s_palette;
+            uint8* dst = s_fadePalette;
+
+            for(uint32 i=0;i < 256*3;i++) {
+                int32 col = *src;
+                col += sPaletteFadeTime;
+                if (col < 0) {
+                    col = 0;
+                }
+                else if (col > 255) {
+                    col = 255;
+                }
+                *dst = col;
+                src++;
+                dst++;
+            }
+            
+            sPaletteFadeTime += sPaletteFadeSteps;
+
+            if (sPaletteFading == -1) {
+                if (sPaletteFadeTime > sPaletteFadeDest) {
+                    loadPalette(s_fadePalette);
+                    return;
+                }
+            }
+            else {
+                if (sPaletteFadeTime < sPaletteFadeDest) {
+                    loadPalette(s_fadePalette);
+                    return;
+                }
+            }
+
+            sPaletteFading = 0;
+            loadPalette(s_palette);
+
+        }
+
     }
 
     typedef void(*WindowEventFn)(void* user, Event& evt);
@@ -530,6 +610,8 @@ namespace apk {
 
                         const auto& cb = s_TimerFns.top();
                         cb.fn(cb.data);
+
+                        paletteFunction();
                     }
                     else if (evt.user.code == USER_EVENT_QUIT) {
                         stopLoop = true;
