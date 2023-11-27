@@ -48,6 +48,8 @@ namespace apk {
         void setCursorFromBank(int32 bankNum, uint16 spriteNum);
         void setCursor(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY);
         void setCursorChunky(uint8* image, uint32 size, uint32 width, uint32 height, int32 offsetX, int32 offsetY);
+        void paletteFadeIn(uint32 speed);
+        
 
     }
 

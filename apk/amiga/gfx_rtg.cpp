@@ -48,7 +48,6 @@ namespace apk {
 		struct ScreenBuffer* mScreenBuffer;
 		struct RastPort mRastPort;
 
-        static ULONG sPalette[2 + (256 * 3)] = { 0 };
 
         bool createWindow(struct Screen* screen, uint16 width, uint16 height, uint8 depth);
         void destroyWindow();
@@ -141,53 +140,7 @@ namespace apk {
             WritePixelArray(data, 0, 0, stride, &mRastPort, x, y, w, h, RECTFMT_LUT8);
         }
 
-        void writeRect(uint32 l, uint32 t, uint32 r, uint32 b, uint8 col) {
-          SetAPen(&mRastPort, col);
 
-          Move(&mRastPort, l, t);
-          Draw(&mRastPort, r, t);
-          Draw(&mRastPort, r, b);
-          Draw(&mRastPort, l, b);
-          Draw(&mRastPort, l, t);
-        }
-
-        void clearChunkyPixels(uint8 index) {
-            SetRast(&mRastPort, index);
-        }
-
-        void writePixel(uint32 x, uint32 y, uint8 col) {
-            SetAPen(&mRastPort, col);
-            WritePixel(&mRastPort, x, y);
-        }
-
-        void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
-            ULONG* dst = &sPalette[1 + index*3];
-            *dst++ = r << 24 | 0x00FFffFF;
-            *dst++ = g << 24 | 0x00FFffFF;
-            *dst++ = b << 24 | 0x00FFffFF;
-        }
-
-        void setRGB(uint8* pal, uint32 begin, uint32 end) {
-            ULONG* dst = &sPalette[1 + begin*3];
-            for(uint32 i=begin;i < end;i++) {
-                *dst++ = *pal++ << 24 | 0x00FFffFF;
-                *dst++ = *pal++ << 24 | 0x00FFffFF;
-                *dst++ = *pal++ << 24 | 0x00FFffFF;
-            }
-			LoadRGB32(&mScreen->ViewPort, &sPalette[0]);
-        }
-
-        void clearPalette() {
-
-            memset(sPalette, 0, sizeof(sPalette));
-
-            sPalette[0] = 256L << 16 | 0;
-            sPalette[1] = 0xFFffffff;
-            sPalette[2] = 0xFFffffff;
-            sPalette[3] = 0xFFffffff;
-
-            LoadRGB32(&mScreen->ViewPort, sPalette);
-        }
     }
 
 }

@@ -80,6 +80,12 @@ namespace apk {
 		struct Window* mWindow;
         static bool mWindowLoopStop = FALSE;
         static struct timeval _time0;
+        static bool isPaletteFading = FALSE;
+        static int32 paletteFadingDelta = 0;
+        static int32 paletteFadingTime = 0;
+
+        void paletteFunction();
+
 
         class SystemTimer {
 
@@ -407,6 +413,8 @@ namespace apk {
                         const auto& tcb = s_TimerFns.top();
                         tcb.fn(tcb.data);
                         mTimer.start(waitTime_usec);
+
+                        paletteFunction();
                     }
                 }
 
@@ -434,5 +442,7 @@ namespace apk {
     bool isQuitRequested() {
         return gfx::mWindowLoopStop;
     }
+
+    
 
 }

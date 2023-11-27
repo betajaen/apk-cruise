@@ -31,11 +31,7 @@
 #include "cruise/staticres.h"
 
 namespace Cruise {
-
-extern bool isPaletteFading;
-void doFadePalette();
-
-
+	
 enum RelationType {RT_REL = 30, RT_MSG = 50};
 
 static bool _playerDontAskQuit;
@@ -2222,18 +2218,11 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 		}
 }
 
-void TimerCb(void* ce) { // MOD:
-
-	if (isPaletteFading) {
-		doFadePalette();
-		return;
-	}
-	
+void TimerCb(void* ce) { // MOD:	
 	CruiseEngine* c = (CruiseEngine*) ce;
 	c->mainLoop_Frame();
 	flipScreen();
 	// ((CruiseEngine*)ce)->mainLoop_Frame();
-
 }
 
 void CruiseEngine::mainLoop() { // MOD:

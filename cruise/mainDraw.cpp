@@ -27,10 +27,6 @@
 
 namespace Cruise {
 
-extern bool s_ignorePaletteUpdates;
-bool isPaletteFading = false; // MOD:
-int32 fadeIterator = 0; // MOD:
-
 struct autoCellStruct {
 	struct autoCellStruct *next;
 	short int ovlIdx;
@@ -101,36 +97,6 @@ void calcRGB(uint8* pColorSrc, uint8* pColorDst, int* offsetTable) {
 	}
 }
 
-void doFadePalette() { // MOD:
-
-	if (isPaletteFading == false) {
-		return;
-	}
-
-	for (long int j = 0; j < 256; j++) {
-		int offsetTable[3];
-		offsetTable[0] = -fadeIterator;
-		offsetTable[1] = -fadeIterator;
-		offsetTable[2] = -fadeIterator;
-		calcRGB(&palScreen[masterScreen][3*j], &workpal[3*j], offsetTable);
-	}
-
-	fadeIterator -= 32;
-	if (fadeIterator <= 0) {
-		isPaletteFading = false;
-		fadeIterator = -1;
-		fadeFlag = 0;
-		PCFadeFlag = false;
-		gfxModuleData_setPal256(&palScreen[masterScreen][0]);
-		s_ignorePaletteUpdates = false;
-	}
-	else {
-		gfxModuleData_setPal256(&workpal[0]);
-	}
-
-	gfxModuleData_updatePalette(true);
-}
-
 void fadeIn() {
 #if 0 // MOD:
 	// MOD: Robin - Removed Fade-in due to how this won't work with the event
@@ -149,13 +115,7 @@ void fadeIn() {
 		gfxModuleData_updateScreen();
 	}
 #endif
-	s_ignorePaletteUpdates = true;
-	isPaletteFading = true;
-	fadeIterator = 256;
-
-	memset(workpal, 0, sizeof(workpal));
-	gfxModuleData_setPal256(workpal);
-	gfxModuleData_updatePalette(true);
+	apk::gfx::paletteFadeIn(48);
 }
 
 void flipScreen() {
