@@ -98,9 +98,9 @@ void calcRGB(uint8* pColorSrc, uint8* pColorDst, int* offsetTable) {
 }
 
 void fadeIn() {
-#if 0 // MOD:
-	// MOD: Robin - Removed Fade-in due to how this won't work with the event
-	//              driven code. TODO: Make this event-friendly.
+#if 1 // MOD:
+	apk::gfx::paletteFadeIn(48);
+#else
 	for (long int i = 256; i >= 0; i -= 32) {
 		for (long int j = 0; j < 256; j++) {
 			int offsetTable[3];
@@ -115,7 +115,6 @@ void fadeIn() {
 		gfxModuleData_updateScreen();
 	}
 #endif
-	apk::gfx::paletteFadeIn(48);
 }
 
 void flipScreen() {
