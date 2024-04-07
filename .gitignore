@@ -14,6 +14,7 @@
 *.¶.info
 
 install/cruise
+install/cruise_*
 install/d*
 install/cruise.*
 install/system.*
