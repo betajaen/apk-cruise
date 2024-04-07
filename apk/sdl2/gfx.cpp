@@ -50,6 +50,9 @@ namespace apk {
     uint32 s_SpriteWidth = 0;
     uint32 s_SpriteHeight = 0;
 
+    void gameBeginPause();
+    void gameEndPause();
+
     static void blitVirtual(uint8* sprite, int32 spriteX, int32 spriteY, uint32 spriteWidth, uint32 spriteHeight, uint8 transparent) {
         int32 x0 = MAX(0, spriteX);
         int32 y0 = MAX(0, spriteY);
@@ -66,6 +69,27 @@ namespace apk {
 				if (colour != transparent) {
 					s_virtualSurface[dstIdx + i] = 17 + colour;
 				}
+                srcX0++;
+			}
+            srcY0++;
+		}
+
+    }
+    
+    static void blitSprite(uint8* sprite, int32 spriteX, int32 spriteY, uint32 spriteWidth, uint32 spriteHeight) {
+        int32 x0 = MAX(0, spriteX);
+        int32 y0 = MAX(0, spriteY);
+        int32 x1 = MIN(x0 + spriteWidth, s_VirtualWidth);
+        int32 y1 = MIN(y0 + spriteHeight, s_VirtualHeight);
+
+		uint32 srcX0 = 0, srcY0 = 0;
+        for(int32 j=y0;j < y1;j++) {
+			uint32 dstIdx = (j * s_VirtualWidth);
+            uint32 srcIdx = (srcY0 * spriteWidth);
+            uint32 srcX0 = 0;
+			for(int32 i=x0;i < x1;i++) {
+				uint8 colour = sprite[srcIdx + srcX0];
+				s_virtualSurface[dstIdx + i] = colour;
                 srcX0++;
 			}
             srcY0++;
@@ -437,6 +461,41 @@ namespace apk {
         memset(s_virtualSurface, index, s_widthHeight);
     }
 
+    void fillRect(uint32 l, uint32 t, uint32 w, uint32 h, uint8 col) {
+        uint32 x0 = MAX(0U, l);
+        uint32 y0 = MAX(0U, t);
+        uint32 x1 = MIN(x0 + w, s_VirtualWidth);
+        uint32 y1 = MIN(y0 + h, s_VirtualHeight);
+
+        for(uint32 j=y0;j < y1;j++) {
+            for(uint32 i=x0;i < x1;i++) {
+                s_virtualSurface[i + j * s_VirtualWidth] = col;
+            }
+        }
+    }
+
+    void pasteIcon(uint8* img, uint32 x, uint32 y, uint32 w, uint32 h, uint8 transparent, uint8* pal) {
+        uint32 x0 = MAX(0U, x);
+        uint32 y0 = MAX(0U, y);
+        uint32 x1 = MIN(x0 + w, s_VirtualWidth);
+        uint32 y1 = MIN(y0 + h, s_VirtualHeight);
+
+		uint32 srcX0 = 0, srcY0 = 0;
+        for(int32 j=y0;j < y1;j++) {
+			uint32 dstIdx = (j * s_VirtualWidth);
+            uint32 srcIdx = (srcY0 * w);
+            uint32 srcX0 = 0;
+			for(int32 i=x0;i < x1;i++) {
+				uint8 colour = img[srcIdx + srcX0];
+                if (colour != transparent) {
+				    s_virtualSurface[dstIdx + i] = pal[colour];
+                }
+                srcX0++;
+			}
+            srcY0++;
+		}
+    }
+
     void setRGB(uint8 index, uint8 r, uint8 g, uint8 b) {
         s_palette[index*3 + 0] = r;
         s_palette[index*3 + 1] = g;
@@ -454,6 +513,10 @@ namespace apk {
         }
     }
 
+    void forceUpdateScreen() {
+        surfaceCopy();
+    }
+    
     void writeChunkyPixels(uint8* data) {
         blit(data, s_widthHeight);
         surfaceCopy();
@@ -592,9 +655,23 @@ namespace apk {
 
         uint32 mouseX = 0, mouseY = 0;
         int32 reportedMouse = -1;
+        bool isPaused = false;
 
         while(stopLoop == false) {
             SDL_WaitEvent(&evt);
+
+            if (isPaused) {
+                if (evt.type == SDL_KEYUP) {
+                    int32 kc = SDL2_To_AmigaKey(evt.key.keysym.sym);
+
+                    if (kc == APKK_SPACE) {
+                        isPaused = false;
+                        apk::gameEndPause();
+                        continue;
+                    }
+                }
+                continue;
+            }
 
             if (evt.type == s_UserEventType) {
                     if (evt.user.code == USER_EVENT_TIMER) {
@@ -625,10 +702,19 @@ namespace apk {
                     }
                     break;
                     case SDL_KEYUP: {
+                        int32 kc = SDL2_To_AmigaKey(evt.key.keysym.sym);
+
+                        if (kc == APKK_SPACE) {
+                            isPaused = true;
+                            apk::gameBeginPause();
+                            continue;
+                        }
+
                         Event e;
                         e.type = EVENT_KEYINSTANT;
                         e.kbd.keycode = SDL2_To_AmigaKey(evt.key.keysym.sym);
                         e.kbd.shift = evt.key.keysym.mod & KMOD_LSHIFT || evt.key.keysym.mod & KMOD_RSHIFT;
+
 
                         const auto& cb = s_EventFns.top();
                         cb.fn(cb.data, e);
@@ -737,6 +823,7 @@ namespace apk {
             setCursorChunky((uint8*) spriteData, spriteSize, width, height, offsetX, offsetY);
         }
     }
+
 
 }
 }

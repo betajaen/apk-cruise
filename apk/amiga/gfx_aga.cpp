@@ -132,6 +132,13 @@ namespace apk {
             WriteChunkyPixels(&mRastPort, x,y, x+w, y+h, data, stride);
         }
 
+        void pasteIcon(uint8* img, uint32 x, uint32 y, uint32 w, uint32 h, uint8 transparent, uint8* pal) {
+            WriteChunkyPixels(&mRastPort, x,y, x+w, y+h, img, w);
+        }
+
+        void forceUpdateScreen() {
+            /* Not needed on AGA */
+        }
     }
 
 }

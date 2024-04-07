@@ -30,6 +30,8 @@ namespace apk {
     bool s_quitRequested = true;
 
     void gameMain();
+    void gameBeginPause();
+    void gameEndPause();
 
     bool isQuitRequested() {
         return s_quitRequested;

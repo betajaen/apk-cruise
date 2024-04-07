@@ -140,6 +140,14 @@ namespace apk {
             WritePixelArray(data, 0, 0, stride, &mRastPort, x, y, w, h, RECTFMT_LUT8);
         }
 
+        void pasteIcon(uint8* img, uint32 x, uint32 y, uint32 w, uint32 h, uint8 transparent, uint8* pal) {
+            WritePixelArray(img, 0, 0, w, &mRastPort, x, y, w, h, RECTFMT_LUT8);
+        }
+
+        void forceUpdateScreen() {
+            /* Not needed on RTG */
+        }
+
 
     }
 

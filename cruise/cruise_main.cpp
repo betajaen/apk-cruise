@@ -34,6 +34,7 @@ namespace Cruise {
 	
 enum RelationType {RT_REL = 30, RT_MSG = 50};
 
+bool _gameIsPaused = false; // MOD:
 static bool _playerDontAskQuit;
 unsigned int timer = 0;
 
@@ -1459,6 +1460,7 @@ int CruiseEngine::processInput() {
 		keyboardCode = Common::KEYCODE_INVALID;
         keyboardShift = false;
 		playerMenu_PauseGame();
+		return false;
 	}
 
 	if (keyboardCode == Common::KEYCODE_F8 && keyboardShift == true) { // MOD:
@@ -1981,6 +1983,9 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 		if (_playerDontAskQuit)
 			return;
 
+		if (_gameIsPaused) // MOD:
+			return; // MOD:
+
 		if (enableUser) {
 			userEnabled = 1;
 			enableUser = 0;
@@ -2234,6 +2239,34 @@ void CruiseEngine::mainLoop() { // MOD:
 	apk::gfx::popWindowEventCallback();
 	apk::gfx::popWindowTimerCallback();
     mainLoop_Stop();
+}
+
+static uint8_t kPausedImg[] = {
+	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  
+	0,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  
+	0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  
+	0,  1,  0,  0,  1,  0,  1,  1,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  1,  1,  0,  0,  1,  1,  0,  0,  0,  1,  1,  1,  0,  
+	0,  1,  0,  0,  1,  0,  0,  0,  0,  1,  0,  1,  0,  0,  1,  0,  1,  0,  0,  0,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  
+	0,  1,  0,  0,  1,  0,  0,  1,  1,  1,  0,  1,  0,  0,  1,  0,  0,  1,  1,  0,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  
+	0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  0,  0,  0,  1,  0,  1,  1,  1,  1,  0,  1,  0,  0,  1,  0,  
+	0,  1,  1,  1,  0,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  0,  0,  0,  1,  0,  1,  0,  0,  0,  0,  1,  0,  0,  1,  0,  
+	0,  1,  0,  0,  0,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  0,  0,  0,  1,  0,  1,  0,  0,  0,  0,  1,  0,  0,  1,  0,  
+	0,  1,  0,  0,  0,  0,  0,  1,  1,  1,  0,  0,  1,  1,  0,  0,  1,  1,  1,  0,  0,  0,  1,  1,  1,  0,  0,  1,  1,  1,  0,  
+	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+};
+
+void gameBeginPause() {
+	uint8 pal1[2] = { 0, 1 };
+	uint8 pal2[2] = { 0, 0 };
+	
+	apk::gfx::pasteIcon(kPausedImg, 11, 11, 31, 11, 0, pal2);
+	apk::gfx::pasteIcon(kPausedImg, 10, 10, 31, 11, 0, pal1);
+
+	apk::gfx::forceUpdateScreen();
+}
+
+void gameEndPause() {
+	apk::gfx::forceUpdateScreen();
 }
 
 } // End of namespace Cruise
