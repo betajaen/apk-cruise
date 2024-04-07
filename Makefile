@@ -2,9 +2,11 @@ CC=gcc
 OPTIONS=
 
 PLATFORM = sdl2
+CPU=020
 PROGRAM_DIR = ./install/
 PROGRAM_NAME = cruise
-PROGRAM = $(PROGRAM_DIR)$(PROGRAM_NAME)
+PROGRAM = $(PROGRAM_DIR)$(PROGRAM_NAME)_$(PLATFORM)_$(CPU)
+ICON= $(PROGRAM).info
 
 CXXFLAGS := -I. -D__AMIGADATE__="\"$(DATESTR)\""
 LDFLAGS  :=
@@ -12,6 +14,15 @@ LDFLAGS  :=
 SDL2_RUN     := (cd $(PROGRAM_DIR) && $(PROGRAM_NAME))
 
 ifeq ($(PLATFORM), sdl2)
+    UNAME    := 'unknown'
+
+ifeq ($(OS),Windows_NT)
+    UNAME    := 'win32'
+else
+    UNAME    := $(shell uname -p | tr A-Z a-z)_$(shell uname -s | tr A-Z a-z)
+endif
+
+    PROGRAM  := $(PROGRAM_DIR)$(PROGRAM_NAME)_$(UNAME)_sdl
 	OBJ		 := apk/sdl2/main.cpp apk/sdl2/gfx.cpp apk/sdl2/memory.cpp apk/sdl2/bank.cpp apk/sdl2/file.cpp apk/sdl2/compat.cpp apk/sdl2/requester.cpp apk/sdl2/ext/tinyfiledialogs.cpp
 	CC		 := gcc
 	DELETE	 := rm -f
@@ -19,11 +30,12 @@ ifeq ($(PLATFORM), sdl2)
 	LDFLAGS  :=
 endif
 
+
 AMIGA_OBJ       := apk/amiga/entry.cpp apk/amiga/compat.cpp apk/amiga/main.cpp apk/amiga/memory.cpp apk/amiga/bank.cpp apk/amiga/debug.cpp apk/amiga/file.cpp apk/amiga/requester.cpp apk/amiga/window.cpp apk/amiga/screen.cpp
 AMIGA_CC		:= /opt/amiga/bin/m68k-amigaos-gcc
 AMIGA_DELETE	:= rm -f
-AMIGA_CXXFLAGS  := -g -std=c++17 -m68020 -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
-AMIGA_LDFLAGS   := -noixemul -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
+AMIGA_CXXFLAGS  := -std=c++17 -m68$(CPU) -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
+AMIGA_LDFLAGS   := -fbbb=- -noixemul -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
 AMIGA_RUN 		:= 	fs-uae \
 					--model=A1200 \
 					--cpu=68030 \
@@ -100,6 +112,7 @@ $(PROGRAM): $(OBJ)
 	$(DELETE) $(PROGRAM) || exit 1
 	if $(CC) $(CXXFLAGS) $(OBJ) -o $(PROGRAM) $(LDFLAGS); then \
 		echo "Compiled to $(PROGRAM)"; \
+        cp -f apk/amiga/program.info $(ICON); \
 	else \
 	  	echo "Compilation failed."; \
 	fi
