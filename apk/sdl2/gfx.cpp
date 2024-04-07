@@ -363,15 +363,16 @@ namespace apk {
 
         SDL_ShowCursor(SDL_ENABLE);
 
-        SDL_assert(s_virtualSurface);
-        apk_deallocate(s_virtualSurface);
-        s_virtualSurface = NULL;
+        if (s_virtualSurface != NULL) {
+            apk_deallocate(s_virtualSurface);
+            s_virtualSurface = NULL;
+        }
 
-        SDL_assert(s_screen);
-        SDL_DestroyWindow(s_screen);
-        s_screen = NULL;
-        s_VirtualWidth = 0;
-        s_VirtualHeight = 0;
+        if(s_screen != NULL) {
+            s_screen = NULL;
+            s_VirtualWidth = 0;
+            s_VirtualHeight = 0;
+        }
     }
 
     static void scaleCopy(SDL_Surface* dst, byte* src, uint32 scale, uint32 w, uint32 h) {
@@ -499,7 +500,7 @@ namespace apk {
         }
     }
 
-    bool paletteFunction() {
+    static void paletteFunction() {
 
         if (sPaletteFading == 0) {
             if (s_paletteDirty) {

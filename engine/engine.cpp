@@ -22,6 +22,7 @@ namespace Cruise {
 namespace apk {
 
     void gameMain() {
+
         if (apk::gfx::createScreen("Cruise for a Corpse", 320, 200, 8) == false) {
             return;
         }
