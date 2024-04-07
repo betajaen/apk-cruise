@@ -125,7 +125,7 @@ namespace apk {
         }
 
         void writeChunkyPixels(uint8* data) {
-            WriteChunkyPixels(&mRastPort, 0,0, 320-1, 240-1, data, 320);
+            WriteChunkyPixels(&mRastPort, 0,0, 320-1, 200-1, data, 320);
         }
 
         void writeChunkyPixelsBlit(uint8* data, uint32 x, uint32 y, uint32 w, uint32 h, uint32 stride) {
