@@ -20,3 +20,4 @@ install/cruise.*
 install/system.*
 install/*.save
 install/vol.*
+.syncfile
