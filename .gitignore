@@ -2,6 +2,7 @@
 .idea
 .vs
 .vscode
+.squirt_skip
 
 *.o
 *.out
@@ -9,6 +10,8 @@
 *.rom
 *.hdf
 *.uaem
+*.¶
+*.¶.info
 
 install/cruise
 install/d*
