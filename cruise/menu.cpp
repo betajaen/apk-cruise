@@ -271,7 +271,7 @@ void playerMenu_SaveGame(const char* path) {
 void playerMenu_ResetGame() {
     _vm->sound().fadeOutMusic();
     Op_FadeOut();
-    apk::gfx::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
+    apk::video::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
     gfxModuleData_clearAll();
     gfxModuleData_zeroPalette();
     initVars();
@@ -281,7 +281,7 @@ void playerMenu_ResetGame() {
 }
 
 void playerMenu_ExitGame() {
-    apk::gfx::windowStopLoop();
+    apk::video::windowStopLoop();
 }
 
 void playerMenu_PauseGame() {
@@ -315,8 +315,8 @@ int playerMenu_Start(int menuX, int menuY) { // MOD:
         playerMenu_si = 0;
 	    currentActiveMenu = 0;
 
-		apk::gfx::pushWindowEventCallback(playerMenu_EventCb, menuTable[0]);
-		apk::gfx::pushWindowTimerCallback(playerMenu_TimerCb, menuTable[0]);
+		apk::video::pushWindowEventCallback(playerMenu_EventCb, menuTable[0]);
+		apk::video::pushWindowTimerCallback(playerMenu_TimerCb, menuTable[0]);
 
 	}
 
@@ -326,8 +326,8 @@ int playerMenu_Start(int menuX, int menuY) { // MOD:
 static int playerMenu_Stop(menuStruct* pMenu, int mouseButton) { // MOD:
 
     int rc = 0;
-	apk::gfx::popWindowEventCallback();
-	apk::gfx::popWindowTimerCallback();
+	apk::video::popWindowEventCallback();
+	apk::video::popWindowTimerCallback();
 
 	currentActiveMenu = -1;
 
@@ -355,7 +355,7 @@ static int playerMenu_Stop(menuStruct* pMenu, int mouseButton) { // MOD:
 		case 6: // restart
 			_vm->sound().fadeOutMusic();
 			Op_FadeOut();
-			apk::gfx::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
+			apk::video::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
 			initVars();
 			_vm->initAllData();
 			changeCursor(CURSOR_NORMAL);

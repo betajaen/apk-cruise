@@ -352,7 +352,7 @@ void gfxModuleData_clearAll() { // MOD:
 }
 
 void gfxModuleData_zeroPalette() { // MOD:
-    apk::gfx::clearPalette();
+    apk::video::clearPalette();
 }
 
 void gfxModuleData_hilight(uint32 x, uint32 y, uint32 w, uint32 h) {
@@ -422,7 +422,7 @@ void gfxModuleData_flipScreen() {
 #if DEBUG_FRAME_TIME == 1
     sFrameNum++;
 #endif
-		apk::gfx::writeChunkyPixels(gfxModuleData.pPage00);
+		apk::video::writeChunkyPixels(gfxModuleData.pPage00);
 
 #if DEBUG_RECTS == 1
 		apk::gfx::writePixel(64 + (sFrameNum & 0xF), 2, sFrameNum & 0xF);

@@ -62,7 +62,7 @@ int main(void)
 
     apk::s_quitRequested = false;
     apk::gameMain();
-    apk::gfx::destroyScreen();
+    apk::video::destroyScreen();
 
     SDL_Quit();
 }

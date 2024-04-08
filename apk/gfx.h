@@ -23,7 +23,7 @@ namespace apk {
 
     struct Event;
 
-    namespace gfx {
+    namespace video {
 
         typedef void(*WindowEventFn)(void* user, Event& evt);
         typedef void(*WindowTimerFn)(void* user);

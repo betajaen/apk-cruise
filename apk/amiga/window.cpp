@@ -78,7 +78,7 @@ namespace apk {
         void* getSpriteBankData(int32 bankNum, uint16 spriteNum, uint32* outSize, uint16* outWidth, uint16* outHeight, int16* offsetX, int16* offsetY);
     }
 
-    namespace gfx {
+    namespace video {
 
 		struct Window* mWindow;
         static bool mWindowLoopStop = FALSE;
@@ -475,7 +475,7 @@ namespace apk {
     }
 
     bool isQuitRequested() {
-        return gfx::mWindowLoopStop;
+        return video::mWindowLoopStop;
     }
 
     

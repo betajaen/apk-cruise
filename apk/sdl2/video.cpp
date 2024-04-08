@@ -350,7 +350,7 @@ namespace apk {
         return -1;
     }
 
-    namespace gfx {
+    namespace video {
 
 
     bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {

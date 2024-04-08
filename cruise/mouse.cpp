@@ -100,7 +100,7 @@ void changeCursor(CursorType eType) {
 		initMouse();
 	}
 	else {
-		apk::gfx::setCursorFromBank(s_MouseBank, (uint16) currentCursor);
+		apk::video::setCursorFromBank(s_MouseBank, (uint16) currentCursor);
 	}
 
 	/*

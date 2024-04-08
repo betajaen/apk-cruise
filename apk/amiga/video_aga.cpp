@@ -22,13 +22,11 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/intuition.h>
-#include <proto/cybergraphics.h>
 #include <proto/graphics.h>
 #include <proto/datatypes.h>
 
 #include <intuition/intuition.h>
 #include <intuition/screens.h>
-#include <cybergraphx/cybergraphics.h>
 
 #include <graphics/gfx.h>
 #include <graphics/scale.h>
@@ -41,7 +39,7 @@ struct Library* CyberGfxBase = NULL;
 namespace apk {
 
 
-    namespace gfx {
+    namespace video {
 
 		struct Screen* mScreen;
 		extern struct Window* mWindow;
@@ -55,16 +53,12 @@ namespace apk {
 
         bool createScreen(const char* title, uint16 width, uint16 height, uint8 depth) {
 
-            CyberGfxBase = OpenLibrary("cybergraphics.library", 41);
-            if (!CyberGfxBase) {
-                requester_okay("Error!", "Cannot open cybergraphics.library V41.");
-                return false;
-            }
 
-            ULONG modeId = BestCModeIDTags(
-                CYBRBIDTG_NominalWidth, (ULONG) width,
-                CYBRBIDTG_NominalHeight, (ULONG) height,
-                CYBRBIDTG_Depth, (ULONG) depth,
+
+            ULONG modeId = BestModeID(
+                BIDTAG_NominalWidth, (ULONG) width,
+                BIDTAG_NominalHeight, (ULONG) height,
+                BIDTAG_Depth, (ULONG) depth,
                 TAG_DONE
 		    );
 
@@ -100,8 +94,10 @@ namespace apk {
 
             clearPalette();
 
+
             InitRastPort(&mRastPort);
             mRastPort.BitMap = mScreenBuffer->sb_BitMap;
+
 
             if (createWindow(mScreen, width, height, depth) == false)
                 return false;
@@ -123,32 +119,26 @@ namespace apk {
                 mScreen = NULL;
             }
 
-            if (CyberGfxBase) {
-                CloseLibrary(CyberGfxBase);
-            }
-
         }
 
         void flipScreen() {
         }
 
         void writeChunkyPixels(uint8* data) {
-            WritePixelArray(data, 0, 0, 320, &mRastPort, 0, 0, 320, 200, RECTFMT_LUT8);
+            WriteChunkyPixels(&mRastPort, 0,0, 320-1, 200-1, data, 320);
         }
 
         void writeChunkyPixelsBlit(uint8* data, uint32 x, uint32 y, uint32 w, uint32 h, uint32 stride) {
-            WritePixelArray(data, 0, 0, stride, &mRastPort, x, y, w, h, RECTFMT_LUT8);
+            WriteChunkyPixels(&mRastPort, x,y, x+w, y+h, data, stride);
         }
 
         void pasteIcon(uint8* img, uint32 x, uint32 y, uint32 w, uint32 h, uint8 transparent, uint8* pal) {
-            WritePixelArray(img, 0, 0, w, &mRastPort, x, y, w, h, RECTFMT_LUT8);
+            WriteChunkyPixels(&mRastPort, x,y, x+w, y+h, img, w);
         }
 
         void forceUpdateScreen() {
-            /* Not needed on RTG */
+            /* Not needed on AGA */
         }
-
-
     }
 
 }

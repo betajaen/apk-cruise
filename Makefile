@@ -23,7 +23,7 @@ else
 endif
 
     PROGRAM  := $(PROGRAM_DIR)$(PROGRAM_NAME)_$(UNAME)_sdl
-	OBJ		 := apk/sdl2/main.cpp apk/sdl2/gfx.cpp apk/sdl2/memory.cpp apk/sdl2/bank.cpp apk/sdl2/file.cpp apk/sdl2/compat.cpp apk/sdl2/requester.cpp apk/sdl2/ext/tinyfiledialogs.cpp
+	OBJ		 := apk/sdl2/main.cpp apk/sdl2/video.cpp apk/sdl2/memory.cpp apk/sdl2/bank.cpp apk/sdl2/file.cpp apk/sdl2/compat.cpp apk/sdl2/requester.cpp apk/sdl2/ext/tinyfiledialogs.cpp
 	CC		 := gcc
 	DELETE	 := rm -f
 	CXXFLAGS += -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -fno-exceptions -fno-rtti -fno-threadsafe-statics
@@ -60,7 +60,7 @@ AMIGA_RUN 		:= 	fs-uae \
 
 ifeq ($(PLATFORM), rtg)
 	OBJ		  += $(AMIGA_OBJ)
-	OBJ       += apk/amiga/gfx_rtg.cpp
+	OBJ       += apk/amiga/video_rtg.cpp
 	CC		  := $(AMIGA_CC)
 	DELETE	  := $(AMIGA_DELETE)
 	CXXFLAGS  += $(AMIGA_CXXFLAGS)
@@ -69,7 +69,7 @@ endif
 
 ifeq ($(PLATFORM), aga)
 	OBJ		  += $(AMIGA_OBJ)
-	OBJ       += apk/amiga/gfx_aga.cpp
+	OBJ       += apk/amiga/video_aga.cpp
 	CC		  := $(AMIGA_CC)
 	DELETE	  := $(AMIGA_DELETE)
 	CXXFLAGS  += $(AMIGA_CXXFLAGS)

@@ -23,7 +23,7 @@ namespace apk {
 
     void gameMain() {
 
-        if (apk::gfx::createScreen("Cruise for a Corpse", 320, 200, 8) == false) {
+        if (apk::video::createScreen("Cruise for a Corpse", 320, 200, 8) == false) {
             return;
         }
 
@@ -38,7 +38,7 @@ namespace Cruise {
 
     void PaletteManager::setPalette(uint8* pal, uint32 start, uint32 end) {
         if (!ignoreUpdates) {
-            apk::gfx::setRGB(pal, start, end);
+            apk::video::setRGB(pal, start, end);
         }
     }
 

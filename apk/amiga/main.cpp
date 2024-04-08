@@ -35,7 +35,7 @@ int apk_main() {
 
     apk::gameMain();
 
-    apk::gfx::destroyScreen();
+    apk::video::destroyScreen();
 }
 
 namespace apk {

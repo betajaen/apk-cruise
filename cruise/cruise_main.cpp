@@ -2232,12 +2232,12 @@ void TimerCb(void* ce) { // MOD:
 
 void CruiseEngine::mainLoop() { // MOD:
     mainLoop_Start();
-	apk::gfx::pushWindowEventCallback(EventCb, this);
-	apk::gfx::pushWindowTimerCallback(TimerCb, this);
-	apk::gfx::windowStartLoop(66667);
+	apk::video::pushWindowEventCallback(EventCb, this);
+	apk::video::pushWindowTimerCallback(TimerCb, this);
+	apk::video::windowStartLoop(66667);
                               //100000);
-	apk::gfx::popWindowEventCallback();
-	apk::gfx::popWindowTimerCallback();
+	apk::video::popWindowEventCallback();
+	apk::video::popWindowTimerCallback();
     mainLoop_Stop();
 }
 
@@ -2259,14 +2259,14 @@ void gameBeginPause() {
 	uint8 pal1[2] = { 0, 1 };
 	uint8 pal2[2] = { 0, 0 };
 	
-	apk::gfx::pasteIcon(kPausedImg, 11, 11, 31, 11, 0, pal2);
-	apk::gfx::pasteIcon(kPausedImg, 10, 10, 31, 11, 0, pal1);
+	apk::video::pasteIcon(kPausedImg, 11, 11, 31, 11, 0, pal2);
+	apk::video::pasteIcon(kPausedImg, 10, 10, 31, 11, 0, pal1);
 
-	apk::gfx::forceUpdateScreen();
+	apk::video::forceUpdateScreen();
 }
 
 void gameEndPause() {
-	apk::gfx::forceUpdateScreen();
+	apk::video::forceUpdateScreen();
 }
 
 } // End of namespace Cruise

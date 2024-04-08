@@ -34,7 +34,7 @@
 #include <intuition/intuition.h>
 #include <intuition/intuitionbase.h>
 
-namespace apk { namespace gfx {
+namespace apk { namespace video {
 
 		extern struct Screen* mScreen;
 		extern struct Window* mWindow;

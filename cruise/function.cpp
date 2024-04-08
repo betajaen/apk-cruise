@@ -650,7 +650,7 @@ int16 Op_FadeOut() {
 		gfxModuleData_flipScreen();
 	}
 
-	apk::gfx::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
+	apk::video::clearChunkyPixels(0); // MOD: memset(globalScreen, 0, 320 * 200);
 	flip();
 
 	fadeFlag = 1;
