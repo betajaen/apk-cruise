@@ -21,7 +21,13 @@ namespace Cruise {
 
 namespace apk {
 
+    bool s_RulesPassedCopyright;
+    bool s_RulesCanSaveLoad;
+
     void gameMain() {
+
+        s_RulesPassedCopyright = false;
+        s_RulesCanSaveLoad = false;
 
         if (apk::video::createScreen("Cruise for a Corpse", 320, 200, 8) == false) {
             return;

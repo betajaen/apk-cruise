@@ -27,6 +27,10 @@
 // MOD: #include "gui/saveload.h"
 // MOD: #include "common/system.h"
 
+namespace apk { // MOD:
+    extern bool s_RulesCanSaveLoad;
+}
+
 namespace Cruise {
 
 extern int currentMouseButton;
@@ -257,12 +261,18 @@ void playerMenu_TimerCb(void* data) {
 }
 
 void playerMenu_LoadGame(const char* path) {
+    if (apk::s_RulesCanSaveLoad == false)
+        return;
+
     //apk::requester_okay("Load Game?", "Load Game!??");
 	Common::Error rv = loadSavegameData(path);
 	debug("load rv = %ld", rv);
 }
 
 void playerMenu_SaveGame(const char* path) {
+    if (apk::s_RulesCanSaveLoad == false)
+        return;
+
     //apk::requester_okay("Save Game?", "Save Game!??");
     Common::Error rv = saveSavegameData(path);
     debug("save rv = %ld", rv);
@@ -278,6 +288,7 @@ void playerMenu_ResetGame() {
     _vm->initAllData();
     changeCursor(CURSOR_NORMAL);
     userEnabled = 0;
+    apk::s_RulesCanSaveLoad = false;
 }
 
 void playerMenu_ExitGame() {

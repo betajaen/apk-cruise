@@ -30,6 +30,11 @@
 #include "cruise/cell.h"
 #include "cruise/staticres.h"
 
+namespace apk { // MOD:
+    extern bool s_RulesPassedCopyright;
+    extern bool s_RulesCanSaveLoad;
+}
+
 namespace Cruise {
 	
 enum RelationType {RT_REL = 30, RT_MSG = 50};
@@ -2019,6 +2024,18 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 			removeFinishedScripts(&relHead);
 			removeFinishedScripts(&procHead);
 
+            if (bgChanged) {   // MOD:
+                debug_str(backgroundTable[0].name);
+                // I00.PI1
+
+                if (strcmp(backgroundTable[0].name, "I00.PI1") == 0) {
+                    if (apk::s_RulesCanSaveLoad == false) {
+                       apk::s_RulesPassedCopyright = true;
+                       apk::s_RulesCanSaveLoad = true;
+                    }
+                }
+            }
+
 			if (!bgChanged && backgroundChanged[masterScreen] &&
 					!strcmp(backgroundTable[0].name, "S06B.PI1")) {
 				bgChanged = true;
@@ -2223,7 +2240,163 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 		}
 }
 
+void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
+		bool abortFlag = true;
+
+		switch (event.type) {
+		case Common::EVENT_LBUTTONDOWN:
+			currentMouseButton |= CRS_MB_LEFT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_LBUTTONUP:
+			currentMouseButton &= ~CRS_MB_LEFT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_RBUTTONDOWN:
+			currentMouseButton |= CRS_MB_RIGHT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_RBUTTONUP:
+			currentMouseButton &= ~CRS_MB_RIGHT;
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			break;
+		case Common::EVENT_MOUSEMOVE:
+			currentMouseX = event.mouse.x;
+			currentMouseY = event.mouse.y;
+			abortFlag = false;
+			break;
+		case Common::EVENT_QUIT:
+		case Common::EVENT_RETURN_TO_LAUNCHER:
+			_playerDontAskQuit = true;
+			break;
+        case Common::EVENT_FAST_MODE:  // MOD:
+        {
+            bFastMode = !bFastMode;
+            debug("Fast Mode %d", bFastMode);
+        }
+        break;
+        case Common::EVENT_SKIP_PROTECTION: // MOD:
+        {
+            bSkipProtection = !bSkipProtection;
+            debug("Skip Protection %d", bSkipProtection);
+        }
+        break;
+		case Common::EVENT_PAUSE: // MOD:
+		{
+#if 0
+			keyboardCode = Common::KEYCODE_INVALID;
+			_vm->pauseEngine(true);
+			mouseOff();
+
+			bool pausedButtonDown = false;
+			bool endPause = false;
+			while (!_vm->shouldQuit() && endPause == false) {
+				eventMan->fetchEvents();
+				while(eventMan->pollEvent(event)) {
+					if (event.type == EVENT_PAUSE) {
+						endPause = true;
+						break;
+					}
+					else if (event.type == EVENT_QUIT) {
+						_playerDontAskQuit = true;
+						endPause = true;
+						break;
+					}
+				}
+				delayMs(10);
+			}
+			_vm->pauseEngine(false);
+			mouseOn();
+#endif
+		}
+		break;
+		case Common::EVENT_KEYUP:
+			switch (event.kbd.keycode) {
+			case Common::KEYCODE_ESCAPE:
+				currentMouseButton &= ~CRS_MB_MIDDLE;
+				break;
+			default:
+				break;
+			}
+			break;
+
+		case Common::EVENT_KEYINSTANT:
+				keyboardCode = event.kbd.keycode;
+                keyboardShift = event.kbd.shift;
+			break;
+		case Common::EVENT_KEYDOWN:
+			switch (event.kbd.keycode) {
+			case Common::KEYCODE_ESCAPE:
+				currentMouseButton |= CRS_MB_MIDDLE;
+				break;
+			default:
+				keyboardCode = event.kbd.keycode;
+				break;
+			}
+
+			if (event.kbd.hasFlags(Common::KBD_CTRL) && event.kbd.keycode == Common::KEYCODE_f) {
+				bFastMode = !bFastMode;
+				keyboardCode = Common::KEYCODE_INVALID;
+			}
+
+		default:
+			break;
+		}
+}
+
+static int resumeCounter = 0;
+
+void ResumeTimerCb(void* ce) {
+
+    if (resumeCounter++ >= 100) {
+
+        loadBackground("I00.PI1", 0);
+         memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
+        gfxModuleData_setPal256(palScreen[0]);
+        gfxModuleData_updatePalette(true);
+        gfxModuleData_flipScreen();
+
+        apk::video::popWindowTimerCallback();
+        apk::video::popWindowEventCallback();
+
+
+        resumeCounter = 0;
+        return;
+    }
+
+}
+
 void TimerCb(void* ce) { // MOD:	
+
+    if (s_RulesPassedCopyright) {
+        s_RulesPassedCopyright = false;
+
+        apk::video::pushWindowEventCallback(ResumeEventCb, NULL);
+        apk::video::pushWindowTimerCallback(ResumeTimerCb, NULL);
+
+        loadBackground("S27E.PI1", 0);
+        memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
+        gfxModuleData_setPal256(palScreen[0]);
+        gfxModuleData_updatePalette(true);
+        gfxModuleData_flipScreen();
+
+
+
+        return;
+        //int32 i = apk::requester_yesno("Cruise for a Corpse", "Resume Game?");
+        //if (i == 1) {
+        //    playerMenu_LoadGame("quick.save");
+        //    return;
+        //}
+    }
+
+    //if (s_RulesPassedCopyright)
+    //    return;
+
 	CruiseEngine* c = (CruiseEngine*) ce;
 	c->mainLoop_Frame();
 	flipScreen();
@@ -2231,6 +2404,7 @@ void TimerCb(void* ce) { // MOD:
 }
 
 void CruiseEngine::mainLoop() { // MOD:
+
     mainLoop_Start();
 	apk::video::pushWindowEventCallback(EventCb, this);
 	apk::video::pushWindowTimerCallback(TimerCb, this);
