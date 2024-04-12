@@ -93,9 +93,9 @@ namespace apk { namespace video {
             memset(sPalette, 0, sizeof(sPalette));
 
             sPalette[0] = 256L << 16 | 0;
-            sPalette[1] = 0xFFffffff;
-            sPalette[2] = 0xFFffffff;
-            sPalette[3] = 0xFFffffff;
+            sPalette[4] = 0xFFffffff;
+            sPalette[5] = 0xFFffffff;
+            sPalette[6] = 0xFFffffff;
 
             sPaletteDirty = TRUE;
         }
