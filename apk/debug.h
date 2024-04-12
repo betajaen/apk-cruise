@@ -29,4 +29,7 @@ namespace apk {
     void warning(const char* fmt, ...);
     void error(const char* fmt, ...);
 
+    void debug_num(uint32 num);
+    void debug_str(const char* str);
+
 }

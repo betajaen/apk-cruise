@@ -38,6 +38,9 @@
 
 struct Library* CyberGfxBase = NULL;
 
+static const ULONG PutChrProc = 0x16c04e75;  // move.b d0,(a3)+ ; rts
+
+
 namespace apk {
 
 
@@ -47,7 +50,7 @@ namespace apk {
 		extern struct Window* mWindow;
 		struct ScreenBuffer* mScreenBuffer;
 		struct RastPort mRastPort;
-
+        static char sDebugStr[41];
 
         bool createWindow(struct Screen* screen, uint16 width, uint16 height, uint8 depth);
         void destroyWindow();
@@ -73,6 +76,7 @@ namespace apk {
                 return 1;
             }
 
+            sDebugStr[0] = 0;
             mScreen = OpenScreenTags(NULL,
                 SA_DisplayID, modeId,
                 SA_Left, 0UL,
@@ -134,6 +138,11 @@ namespace apk {
 
         void writeChunkyPixels(uint8* data) {
             WritePixelArray(data, 0, 0, 320, &mRastPort, 0, 0, 320, 200, RECTFMT_LUT8);
+            if (sDebugStr[0] != 0) {
+               Move(&mRastPort, 10, 10);
+               SetAPen(&mRastPort, 1);
+               Text(&mRastPort, sDebugStr, strlen(sDebugStr));
+            }
         }
 
         void writeChunkyPixelsBlit(uint8* data, uint32 x, uint32 y, uint32 w, uint32 h, uint32 stride) {
@@ -148,6 +157,37 @@ namespace apk {
             /* Not needed on RTG */
         }
 
+        void debugNum(uint32 num) {
+            if (num == 0) {
+                sDebugStr[0] = 0;
+            }
+            else {
+                RawDoFmt("%lu", &num, (void(*)()) &PutChrProc, sDebugStr);
+            }
+        }
+
+        void debugStr(const char* str) {
+            if (str == NULL) {
+                sDebugStr[0] = 0;
+            }
+            else {
+                uint32 len = strlen(str);
+                if (len > sizeof(sDebugStr)-1)
+                    len = sizeof(sDebugStr)-1;
+                CopyMem(str, sDebugStr, len);
+                sDebugStr[len] = 0;
+            }
+        }
+
+
+    }
+
+    void debug_num(uint32 num) {
+        apk::video::debugNum(num);
+    }
+
+    void debug_str(const char* str) {
+        apk::video::debugStr(str);
 
     }
 
