@@ -62,6 +62,8 @@ namespace apk {
         s_RulesPassedCopyright = false;
         s_RulesCanSaveLoad = false;
 
+        fs::setProgramDir("Work:cruise/");
+
         if (hasDataFiles() == false) {
             requester_okay("Cruise for a Corpse", "Game data files could not be found in the game path.\n\nPlease ensure that all game files are available.\nSee documentation for further information.\n");
             return;

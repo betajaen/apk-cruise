@@ -22,6 +22,7 @@
 #include <proto/dos.h>
 #include <proto/intuition.h>
 #include <proto/asl.h>
+#include <proto/icon.h>
 
 #include <dos/dos.h>
 #include <workbench/workbench.h>
@@ -40,6 +41,10 @@ struct Library * AslBase = NULL;
 extern struct WBStartup* _WBenchMsg;
 
 extern int apk_main();
+
+namespace apk { namespace prefs {
+	extern struct DiskObject* sDiskObject;
+}}
 
 int main(void) {
     int rv;
@@ -92,6 +97,18 @@ int main(void) {
 		CloseLibrary((struct Library*)DOSBase);
 		return RETURN_FAIL;
 	}
+	
+	if ((IconBase = OpenLibrary("icon.library", 37)) == NULL) {
+		CloseLibrary((struct Library*)AslBase);
+		CloseLibrary((struct Library*)GfxBase);
+		CloseLibrary((struct Library*)IntuitionBase);
+		CloseLibrary((struct Library*)DOSBase);
+		return RETURN_FAIL;
+	}
+
+	if (_WBenchMsg) {
+		::apk::prefs::sDiskObject = GetDiskObject((char*)_WBenchMsg->sm_ArgList[0].wa_Name);
+	}
 
 	rv = apk_main();
 
@@ -111,6 +128,7 @@ int main(void) {
 	}
 #endif
 
+	CloseLibrary((struct Library*)IconBase);
 	CloseLibrary((struct Library*)AslBase);
 	CloseLibrary((struct Library*)GfxBase);
 	CloseLibrary((struct Library*)IntuitionBase);

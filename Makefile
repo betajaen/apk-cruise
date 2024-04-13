@@ -31,7 +31,7 @@ endif
 endif
 
 
-AMIGA_OBJ       := apk/amiga/entry.cpp apk/amiga/compat.cpp apk/amiga/main.cpp apk/amiga/memory.cpp apk/amiga/bank.cpp apk/amiga/debug.cpp apk/amiga/file.cpp apk/amiga/requester.cpp apk/amiga/window.cpp apk/amiga/screen.cpp
+AMIGA_OBJ       := apk/amiga/entry.cpp apk/amiga/compat.cpp apk/amiga/main.cpp apk/amiga/memory.cpp apk/amiga/bank.cpp apk/amiga/debug.cpp apk/amiga/file.cpp apk/amiga/requester.cpp apk/amiga/window.cpp apk/amiga/screen.cpp apk/amiga/prefs.cpp 
 AMIGA_CC		:= /opt/amiga/bin/m68k-amigaos-gcc
 AMIGA_DELETE	:= rm -f
 AMIGA_CXXFLAGS  := -std=c++17 -m68$(CPU) -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
