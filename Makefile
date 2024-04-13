@@ -21,9 +21,9 @@ ifeq ($(OS),Windows_NT)
 else
     UNAME    := $(shell uname -p | tr A-Z a-z)_$(shell uname -s | tr A-Z a-z)
 endif
-
+include apk/sdl.makefile
     PROGRAM  := $(PROGRAM_DIR)$(PROGRAM_NAME)_$(UNAME)_sdl
-	OBJ		 := apk/sdl2/main.cpp apk/sdl2/video.cpp apk/sdl2/memory.cpp apk/sdl2/bank.cpp apk/sdl2/file.cpp apk/sdl2/compat.cpp apk/sdl2/requester.cpp apk/sdl2/prefs.cpp apk/sdl2/ext/tinyfiledialogs.cpp
+	OBJ		 := $(APK_OBJ)
 	CC		 := gcc
 	DELETE	 := rm -f
 	CXXFLAGS += -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -fno-exceptions -fno-rtti -fno-threadsafe-statics
@@ -31,7 +31,6 @@ endif
 endif
 
 
-AMIGA_OBJ       := apk/amiga/entry.cpp apk/amiga/compat.cpp apk/amiga/main.cpp apk/amiga/memory.cpp apk/amiga/bank.cpp apk/amiga/debug.cpp apk/amiga/file.cpp apk/amiga/requester.cpp apk/amiga/window.cpp apk/amiga/screen.cpp apk/amiga/prefs.cpp 
 AMIGA_CC		:= /opt/amiga/bin/m68k-amigaos-gcc
 AMIGA_DELETE	:= rm -f
 AMIGA_CXXFLAGS  := -std=c++17 -m68$(CPU) -Wall -noixemul -fno-exceptions -fno-rtti -fno-threadsafe-statics
@@ -59,7 +58,8 @@ AMIGA_RUN 		:= 	fs-uae \
 					--scale=2
 
 ifeq ($(PLATFORM), rtg)
-	OBJ		  += $(AMIGA_OBJ)
+include apk/amiga.makefile
+	OBJ		  += $(APK_OBJ)
 	OBJ       += apk/amiga/video_rtg.cpp
 	CC		  := $(AMIGA_CC)
 	DELETE	  := $(AMIGA_DELETE)
@@ -68,7 +68,8 @@ ifeq ($(PLATFORM), rtg)
 endif
 
 ifeq ($(PLATFORM), aga)
-	OBJ		  += $(AMIGA_OBJ)
+include apk/amiga.makefile
+	OBJ		  += $(APK_OBJ)
 	OBJ       += apk/amiga/video_aga.cpp
 	CC		  := $(AMIGA_CC)
 	DELETE	  := $(AMIGA_DELETE)
