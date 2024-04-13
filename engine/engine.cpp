@@ -1,6 +1,7 @@
 #include "engine/engine.h"
 #include "cruise/cruise.h"
-#include "apk/gfx.h"
+#include <apk/gfx.h>
+#include <apk/file.h>
 
 namespace Cruise {
     OSystem OSystem::s_instance = {};
@@ -24,10 +25,47 @@ namespace apk {
     bool s_RulesPassedCopyright;
     bool s_RulesCanSaveLoad;
 
+    bool hasDataFiles() {
+
+        static const char* gameFiles[] = {
+            "d1",
+            "d2",
+            "d3",
+            "d4",
+            "d5",
+            "system.fnt",
+            "vol.1",
+            "vol.2",
+            "vol.3",
+            "vol.4",
+            "vol.5",
+            "vol.cnf",
+            "vol.end",
+            NULL
+        };
+
+        const char** gameFile = gameFiles;
+        while(*gameFile != NULL) {
+
+            if (path::test(*gameFile) != path::PathType::File) {
+                return false;
+            }
+
+            gameFile++;
+        }
+
+        return true;
+    }
+
     void gameMain() {
 
         s_RulesPassedCopyright = false;
         s_RulesCanSaveLoad = false;
+
+        if (hasDataFiles() == false) {
+            requester_okay("Cruise for a Corpse", "Game data files could not be found in the game path.\n\nPlease ensure that all game files are available.\nSee documentation for further information.\n");
+            return;
+        }
 
         if (apk::video::createScreen("Cruise for a Corpse", 320, 200, 8) == false) {
             return;
