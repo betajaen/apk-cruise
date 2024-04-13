@@ -109,8 +109,8 @@ OBJ += \
 all: $(PROGRAM)
 
 $(PROGRAM): $(OBJ)
-	$(DELETE) $(PROGRAM) || exit 1
-	if $(CC) $(CXXFLAGS) $(OBJ) -o $(PROGRAM) $(LDFLAGS); then \
+	@$(DELETE) $(PROGRAM) || exit 1
+	@if $(CC) $(CXXFLAGS) $(OBJ) -o $(PROGRAM) $(LDFLAGS); then \
 		echo "Compiled to $(PROGRAM)"; \
         cp -f apk/amiga/program.info $(ICON); \
 	else \
