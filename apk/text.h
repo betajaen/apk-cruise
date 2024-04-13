@@ -56,4 +56,5 @@ namespace apk {
 
     bool string_startswith(const char* str, const char* suffix);
     bool string_endswith(const char* str, const char* suffix);
+    uint32 string_to_uint32(const char* str);
 }

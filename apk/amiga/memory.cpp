@@ -185,4 +185,26 @@ namespace apk {
         return strncmp(str + (strLen - suffixLen), suffix, suffixLen) == 0;
     }
 
+    uint32 string_to_uint32(const char* str) {
+        if (str == NULL) {
+            return 0;
+        }
+
+        if ((str == NULL) || (str[0] == '\0') || (str[0] == '0' && str[1] == '\0')) {
+            return 0;
+        }
+
+        if (str[0] == '1' && str[1] == '\0') {
+            return 1;
+        }
+        
+        uint32 rv = 0;
+        while((*str != '\0') && (*str >= '0' && *str <= '9')) {
+            rv = rv * 10 + (*str - '0');
+            str++;
+        }
+
+        return rv;
+    }
+
 }
