@@ -38,10 +38,6 @@ namespace apk { namespace path {
         AddPart(fullPath, path, sizeof(fullPath));
         BPTR lock = Lock(fullPath, ACCESS_READ);
 
-        char temp[255];
-        apk::sprintf_s(temp, sizeof(temp), "%s\n%s\n%ul", path, fullPath, lock);
-        requester_okay("test", temp);
-
         if (lock != 0UL) {
             fib = (FileInfoBlock*) AllocDosObject(DOS_FIB, TAG_END);
             if (fib && Examine(lock, fib)) {
