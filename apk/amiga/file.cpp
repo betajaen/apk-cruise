@@ -23,19 +23,33 @@
 
 #include <proto/dos.h>
 
+namespace apk { namespace fs {
+    static char s_ProgDir[256] = "PROGDIR:";
+}}
+
 namespace apk { namespace path {
 
     PathType test(const char* path) {
+        char fullPath[255];
         FileInfoBlock* fib;
         PathType rv = PathType::None;
 
-        BPTR lock = Lock(path, ACCESS_READ);
+        apk::strcpy_s(fullPath, sizeof(fullPath), fs::s_ProgDir);
+        AddPart(fullPath, path, sizeof(fullPath));
+        BPTR lock = Lock(fullPath, ACCESS_READ);
+
+        char temp[255];
+        apk::sprintf_s(temp, sizeof(temp), "%s\n%s\n%ul", path, fullPath, lock);
+        requester_okay("test", temp);
+
         if (lock != 0UL) {
             fib = (FileInfoBlock*) AllocDosObject(DOS_FIB, TAG_END);
-            if (Examine(lock, fib)) {
-                rv = (fib->fib_EntryType < 0) ? PathType::DrawerVolume : PathType::File;
+            if (fib && Examine(lock, fib)) {
+                rv = (fib->fib_DirEntryType < 0) ? PathType::File : PathType::DrawerVolume;
+                FreeDosObject(DOS_FIB, fib);
             }
             UnLock(lock);
+
             return rv;
         }
         return rv;
@@ -44,8 +58,6 @@ namespace apk { namespace path {
 }}
 
 namespace apk { namespace fs {
-
-    static char s_ProgDir[256] = "PROGDIR:";
 
     void setProgramDir(const char* path) {
         apk::strcpy_s(s_ProgDir, sizeof(s_ProgDir), path);
