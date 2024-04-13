@@ -21,6 +21,44 @@
 #include "apk/file.h"
 #include "stdio.h"
 
+#include <sys/stat.h>
+
+namespace apk { namespace fs {
+    static char s_ProgDir[256] = "PROGDIR:";
+}}
+
+namespace apk { namespace path {
+
+    PathType test(const char* path) {
+        PathType rv = PathType::None;
+        struct stat st;
+
+        if (stat(path, &st) == 0) {
+            if (S_ISREG(st.st_mode)) {
+                rv = PathType::File;
+            }
+            else if (S_ISDIR(st.st_mode)) {
+                rv = PathType::DrawerVolume;
+            }
+        }
+
+        return rv;
+    }
+
+}}
+
+namespace apk { namespace fs {
+
+    void setProgramDir(const char* path) {
+        apk::strcpy_s(s_ProgDir, sizeof(s_ProgDir), path);
+    }
+
+    const char* getProgramDir() {
+        return s_ProgDir;
+    }
+
+}}
+
 namespace apk {
 
     class FileImpl {
