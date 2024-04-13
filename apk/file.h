@@ -22,7 +22,28 @@
 #include "pod.h"
 #include "consts.h"
 
+namespace apk { namespace fs {
+    
+    void setProgramDir(const char* path);
+    
+    const char* getProgramDir();
+
+}}
+
+namespace apk { namespace path {
+
+    enum class PathType {
+        None,
+        File,
+        DrawerVolume
+    };
+
+    PathType test(const char* path);
+
+}}
+
 namespace apk {
+
 
     class FileImpl;
 

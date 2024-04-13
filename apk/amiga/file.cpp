@@ -17,12 +17,48 @@
  *
  */
 
-#include "apk/apk.h"
-#include "apk/file.h"
+#include <apk/apk.h>
+#include <apk/file.h>
+#include <apk/text.h>
 
 #include <proto/dos.h>
 
+namespace apk { namespace path {
+
+    PathType test(const char* path) {
+        FileInfoBlock* fib;
+        PathType rv = PathType::None;
+
+        BPTR lock = Lock(path, ACCESS_READ);
+        if (lock != 0UL) {
+            fib = (FileInfoBlock*) AllocDosObject(DOS_FIB, TAG_END);
+            if (Examine(lock, fib)) {
+                rv = (fib->fib_EntryType < 0) ? PathType::DrawerVolume : PathType::File;
+            }
+            UnLock(lock);
+            return rv;
+        }
+        return rv;
+    }
+
+}}
+
+namespace apk { namespace fs {
+
+    static char s_ProgDir[256] = "PROGDIR:";
+
+    void setProgramDir(const char* path) {
+        apk::strcpy_s(s_ProgDir, sizeof(s_ProgDir), path);
+    }
+
+    const char* getProgramDir() {
+        return s_ProgDir;
+    }
+
+}}
+
 namespace apk {
+
 
     class FileImpl {
     public:
@@ -58,7 +94,7 @@ namespace apk {
         char diskPath[256] = { 0 };
 
         if (strchr(path, ':') == NULL) {
-            sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+            sprintf_s(diskPath, sizeof(diskPath), "%s%s", fs::s_ProgDir, path);
         }
         else {
             sprintf_s(diskPath, sizeof(diskPath), "%s", path);
@@ -90,7 +126,7 @@ namespace apk {
 
         char diskPath[256] = { 0 };
         if (strchr(path, ':') == NULL) {
-            sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+            sprintf_s(diskPath, sizeof(diskPath), "%s%s", fs::s_ProgDir, path);
         }
         else {
             sprintf_s(diskPath, sizeof(diskPath), "%s", path);
@@ -167,7 +203,7 @@ namespace apk {
 
         char diskPath[256] = { 0 };
         if (strchr(path, ':') == NULL) {
-            sprintf_s(diskPath, sizeof(diskPath), "PROGDIR:%s", path);
+            sprintf_s(diskPath, sizeof(diskPath), "%s%s", fs::s_ProgDir, path);
         }
         else {
             sprintf_s(diskPath, sizeof(diskPath), "%s", path);
