@@ -49,6 +49,7 @@ namespace apk {
     int32 s_SpriteOffsetY = 0;
     uint32 s_SpriteWidth = 0;
     uint32 s_SpriteHeight = 0;
+    static char sDebugStr[41];
 
     void gameBeginPause();
     void gameEndPause();
@@ -825,6 +826,10 @@ namespace apk {
     }
 
 
-}
-}
+}}
 
+namespace apk {
+    void debug_str(const char* str) {
+        apk::strcpy_s(sDebugStr, sizeof(sDebugStr), str);
+    }
+}
