@@ -8,7 +8,7 @@ PROGRAM_NAME = cruise
 PROGRAM = $(PROGRAM_DIR)$(PROGRAM_NAME)_$(PLATFORM)_$(CPU)
 ICON= $(PROGRAM).info
 
-CXXFLAGS := -I. -D__AMIGADATE__="\"$(DATESTR)\""
+CXXFLAGS := -w -I. -D__AMIGADATE__="\"$(DATESTR)\""
 LDFLAGS  :=
 
 SDL2_RUN     := (cd $(PROGRAM_DIR) && $(PROGRAM_NAME))
@@ -23,7 +23,7 @@ else
 endif
 
     PROGRAM  := $(PROGRAM_DIR)$(PROGRAM_NAME)_$(UNAME)_sdl
-	OBJ		 := apk/sdl2/main.cpp apk/sdl2/video.cpp apk/sdl2/memory.cpp apk/sdl2/bank.cpp apk/sdl2/file.cpp apk/sdl2/compat.cpp apk/sdl2/requester.cpp apk/sdl2/ext/tinyfiledialogs.cpp
+	OBJ		 := apk/sdl2/main.cpp apk/sdl2/video.cpp apk/sdl2/memory.cpp apk/sdl2/bank.cpp apk/sdl2/file.cpp apk/sdl2/compat.cpp apk/sdl2/requester.cpp apk/sdl2/prefs.cpp apk/sdl2/ext/tinyfiledialogs.cpp
 	CC		 := gcc
 	DELETE	 := rm -f
 	CXXFLAGS += -g -lSDL2 -I/opt/homebrew/include -L/opt/homebrew/lib -std=c++17 -fno-exceptions -fno-rtti -fno-threadsafe-statics
