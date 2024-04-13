@@ -157,7 +157,7 @@ namespace apk {
             /* Not needed on RTG */
         }
 
-        void debugNum(uint32 num) {
+        void setDebugNum(uint32 num) {
             if (num == 0) {
                 sDebugStr[0] = 0;
             }
@@ -166,7 +166,7 @@ namespace apk {
             }
         }
 
-        void debugStr(const char* str) {
+        void setDebugStr(const char* str) {
             if (str == NULL) {
                 sDebugStr[0] = 0;
             }
@@ -179,16 +179,12 @@ namespace apk {
             }
         }
 
+        void clearDebug() {
+            sDebugStr[0] = 0;
+        }
+
 
     }
 
-    void debug_num(uint32 num) {
-        apk::video::debugNum(num);
-    }
-
-    void debug_str(const char* str) {
-        apk::video::debugStr(str);
-
-    }
 
 }

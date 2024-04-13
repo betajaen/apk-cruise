@@ -31,5 +31,6 @@ namespace apk {
 
     void debug_num(uint32 num);
     void debug_str(const char* str);
+    void debug_clear();
 
 }

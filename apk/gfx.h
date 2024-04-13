@@ -54,7 +54,9 @@ namespace apk {
         void paste(uint32 l, uint32 t);
         void pasteIcon(uint8* img, uint32 x, uint32 y, uint32 w, uint32 h, uint8 transparent, uint8* pal);
         void forceUpdateScreen();
-        void debugNum(uint32 num);
+        void setDebugNum(uint32 num);
+        void setDebugStr(const char* str);
+        void clearDebug();
 
     }
 
