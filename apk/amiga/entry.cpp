@@ -23,6 +23,8 @@
 #include <proto/intuition.h>
 #include <proto/asl.h>
 #include <proto/icon.h>
+#include <apk/requester.h>
+#include <apk/text.h>
 
 #include <dos/dos.h>
 #include <workbench/workbench.h>
@@ -55,7 +57,7 @@ int main(void) {
 
 	struct Task*thisTask = FindTask(NULL);
 	ULONG currentStack=(ULONG) thisTask->tc_SPUpper-(ULONG)thisTask->tc_SPLower;
-
+	
 	if (currentStack < MIN_STACK_SIZE) {
 
 		if (_WBenchMsg) {
@@ -107,7 +109,9 @@ int main(void) {
 	}
 
 	if (_WBenchMsg) {
-		::apk::prefs::sDiskObject = GetDiskObject((char*)_WBenchMsg->sm_ArgList[0].wa_Name);
+		char executablePath[65];
+		::apk::sprintf_s(executablePath, sizeof(executablePath), "PROGDIR:%s", _WBenchMsg->sm_ArgList[0].wa_Name);
+		::apk::prefs::sDiskObject = GetDiskObject(executablePath);
 	}
 
 	rv = apk_main();

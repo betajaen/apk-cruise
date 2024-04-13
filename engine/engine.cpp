@@ -2,6 +2,7 @@
 #include "cruise/cruise.h"
 #include <apk/gfx.h>
 #include <apk/file.h>
+#include <apk/prefs.h>
 
 namespace Cruise {
     OSystem OSystem::s_instance = {};
@@ -62,7 +63,8 @@ namespace apk {
         s_RulesPassedCopyright = false;
         s_RulesCanSaveLoad = false;
 
-        fs::setProgramDir("Work:cruise/");
+        const char* dataDirectory = prefs::getPrefsString("DATA", "PROGDIR:");
+        fs::setProgramDir(dataDirectory);
 
         if (hasDataFiles() == false) {
             requester_okay("Cruise for a Corpse", "Game data files could not be found in the game path.\n\nPlease ensure that all game files are available.\nSee documentation for further information.\n");

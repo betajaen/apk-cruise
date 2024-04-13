@@ -56,7 +56,13 @@ namespace apk { namespace path {
 namespace apk { namespace fs {
 
     void setProgramDir(const char* path) {
-        apk::strcpy_s(s_ProgDir, sizeof(s_ProgDir), path);
+        if (apk::string_endswith(path, "/") || apk::string_endswith(path, ":")) {
+            apk::strcpy_s(s_ProgDir, sizeof(s_ProgDir), path);
+        }
+        else {
+            apk::sprintf_s(s_ProgDir, sizeof(s_ProgDir), "%s/", path);
+        }
+
     }
 
     const char* getProgramDir() {

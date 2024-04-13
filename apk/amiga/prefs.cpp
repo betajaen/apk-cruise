@@ -35,7 +35,6 @@ namespace apk { namespace prefs {
         }
 
         STRPTR tooltype = (STRPTR) FindToolType((CONST_STRPTR*) sDiskObject->do_ToolTypes, name);
-
         if (tooltype == NULL) {
             return defaultValue;
         }
