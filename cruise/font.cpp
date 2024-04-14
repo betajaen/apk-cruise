@@ -374,6 +374,8 @@ gfxEntryStruct *renderText(int inRightBorder_X, const char *string) {
 	// var_8 = 0;
 	heightOffset = 0;
 
+	const int16* fontCharTable = fontCharacterTable; // MOD: Cache
+
 	do {
 		int spacesCount = 0;	// si
 		unsigned char character = *string;
@@ -406,7 +408,7 @@ gfxEntryStruct *renderText(int inRightBorder_X, const char *string) {
 		do {
 			character = *(string++);
 
-			short int charData = fontCharacterTable[character];	// get character position
+			int16 charData = fontCharTable[character]; // MOD: short int charData = fontCharacterTable[character];	// get character position
 
 			if (character) {
 				if (character == ' ' || character == 0x7C) {
@@ -449,6 +451,52 @@ void freeGfx(gfxEntryStruct *pGfx) {
 	}
 
 	MemFree(pGfx);
+}
+
+void renderTextQuick(const char* string, uint8* buffer, uint32 x, uint32 y, uint32 stride) { // MOD:
+
+	if (string == NULL)
+		return;
+
+	const FontInfo* fontPtr = (const FontInfo *)_systemFNT;
+	const FontEntry* fontPtr_Desc = (const FontEntry *)((const uint8 *)fontPtr + sizeof(FontInfo));
+	const uint8* fontPtr_Data = (const uint8 *)fontPtr + fontPtr->offset;
+	const int16* charTable = fontCharacterTable;
+	
+	int32 lineHeight = getLineHeight(fontPtr->numChars, fontPtr_Desc);
+
+	uint8* dst = buffer + x + ((y * stride));
+
+	while(true) {
+		char character = *(string)++;
+		
+		if (character < 32 || character >= 127)
+			break;
+
+		if (character == ' ') {
+			dst += fontPtr_Desc->charWidth  + fontPtr->hSpacing;
+			continue;
+		}
+		
+		int16 charData = charTable[character];
+		const FontEntry &fe = fontPtr_Desc[charData];
+		
+		const uint8 *fontPtr_Data1 = (const uint8 *) fontPtr_Data + fe.offset;
+		const uint8 *fontPtr_Data2 = fontPtr_Data1 + lineHeight * 2;
+		
+		renderWord((const uint8 *)fontPtr_Data + fe.offset, 
+			dst, 
+			0, 
+			fe.height2 - fe.charHeight + lineHeight + 0, 
+			fe.charHeight,
+			fe.v1, 
+			0, 
+			stride, 
+			(int16) fe.charWidth);
+
+		dst += fe.charWidth + fontPtr->hSpacing;
+	}
+
 }
 
 

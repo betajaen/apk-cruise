@@ -66,7 +66,7 @@ gfxEntryStruct *renderText(int inRightBorder_X, const char *string);
 void drawString(int32 x, int32 y, const char *string, uint8 * buffer, uint8 fontColor,
 				int32 inRightBorder_X);
 void freeGfx(gfxEntryStruct *pGfx);
-
+void renderTextQuick(const char* string, uint8* buffer, uint32 x, uint32 y, uint32 stride); // MOD:
 } // End of namespace Cruise
 
 #endif
