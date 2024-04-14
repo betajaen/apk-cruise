@@ -60,6 +60,9 @@ The following files must be placed in the same drawer as the executable, which c
 ### Enhancements
   * [X] Controls
   * [ ] Reduced Memory usage
+  * [ ] Auto-save
+  * [ ] Resume screen auto-save when game starts
+  * [ ] Game Pause
 
 ### Installer
   * [ ] Amiga Installer
