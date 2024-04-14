@@ -2350,57 +2350,54 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 
 static int resumeCounter = 0;
 
-void ResumeTimerCb(void* ce) {
+static void BeginResumeScreen(); // MOD:
+static void EndResumeScreen(); // MOD:
 
+void ResumeTimerCb(void* ce) { // MOD:
     if (resumeCounter++ >= 100) {
-
-        loadBackground("I00.PI1", 0);
-         memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
-        gfxModuleData_setPal256(palScreen[0]);
-        gfxModuleData_updatePalette(true);
-        gfxModuleData_flipScreen();
-
-        apk::video::popWindowTimerCallback();
-        apk::video::popWindowEventCallback();
-
-
+		EndResumeScreen();
         resumeCounter = 0;
         return;
     }
+}
 
+static void BeginResumeScreen() {
+	apk::video::pushWindowEventCallback(ResumeEventCb, NULL);
+	apk::video::pushWindowTimerCallback(ResumeTimerCb, NULL);
+
+	loadBackground("S27E.PI1", 0);
+	memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
+	renderTextQuick("Resume from previous saved game?", gfxModuleData.pPage00, 30, 40, 320);
+
+	gfxModuleData_setPal256(palScreen[0]);
+	gfxModuleData_updatePalette(true);
+	gfxModuleData_flipScreen();
+	changeCursor(apk::CursorType::CURSOR_MAGNIFYING_GLASS);
+
+}
+
+static void EndResumeScreen() {
+	loadBackground("I00.PI1", 0);
+	memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
+	gfxModuleData_setPal256(palScreen[0]);
+	gfxModuleData_updatePalette(true);
+	gfxModuleData_flipScreen();
+	changeCursor(apk::CursorType::CURSOR_NORMAL);
+	apk::video::popWindowTimerCallback();
+	apk::video::popWindowEventCallback();
 }
 
 void TimerCb(void* ce) { // MOD:	
 
     if (s_RulesPassedCopyright) {
         s_RulesPassedCopyright = false;
-
-        apk::video::pushWindowEventCallback(ResumeEventCb, NULL);
-        apk::video::pushWindowTimerCallback(ResumeTimerCb, NULL);
-
-        loadBackground("S27E.PI1", 0);
-        memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
-        gfxModuleData_setPal256(palScreen[0]);
-        gfxModuleData_updatePalette(true);
-        gfxModuleData_flipScreen();
-
-
-
+		BeginResumeScreen();
         return;
-        //int32 i = apk::requester_yesno("Cruise for a Corpse", "Resume Game?");
-        //if (i == 1) {
-        //    playerMenu_LoadGame("quick.save");
-        //    return;
-        //}
     }
-
-    //if (s_RulesPassedCopyright)
-    //    return;
 
 	CruiseEngine* c = (CruiseEngine*) ce;
 	c->mainLoop_Frame();
 	flipScreen();
-	// ((CruiseEngine*)ce)->mainLoop_Frame();
 }
 
 void CruiseEngine::mainLoop() { // MOD:
