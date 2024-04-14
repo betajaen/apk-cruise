@@ -52,12 +52,13 @@ static const byte cursorPalette[] = {
 	0xff, 0xff, 0xff
 };
 
-static int32 s_MouseBank = -1;
+static bool s_InitializedMouseBank = false;
 
 void initMouse() {
-	if (s_MouseBank == -1) {
+	if (s_InitializedMouseBank == false) {
 		byte mouseCursor[16 * 16];
-		s_MouseBank = apk::bank::createSpriteBank(16, 16, CURSOR_MAX);
+		s_InitializedMouseBank = true;
+		
 		for(uint i=0;i < CURSOR_MAX;i++) {
 
 			const MouseCursor *mc = &mouseCursors[i];
@@ -76,11 +77,12 @@ void initMouse() {
 				}
 				++src;
 			}
-			
-			apk::bank::setSpriteBankChunky(s_MouseBank, i, (uint8*) mouseCursor, 16*16, 2);
-			apk::bank::setSpriteOffset(s_MouseBank, i, -mc->hotspotX, -mc->hotspotY);
+
+			apk::video::createSpriteBitMapFromChunky(i, 16, 16, mouseCursor);
 		}
 	}
+
+	apk::video::setSpriteVisible(0, true);
 }
 
 void changeCursor(CursorType eType) {
@@ -96,11 +98,13 @@ void changeCursor(CursorType eType) {
 
 	currentCursor = eType;
 
-	if (s_MouseBank == -1) {
+	if (s_InitializedMouseBank == false) {
 		initMouse();
 	}
 	else {
-		apk::video::setCursorFromBank(s_MouseBank, (uint16) currentCursor);
+		const MouseCursor *mc = &mouseCursors[currentCursor];
+		apk::video::setSpriteBanked(0, currentCursor);
+		apk::video::setSpriteOffset(0, -mc->hotspotX, -mc->hotspotY);
 	}
 
 	/*
