@@ -2025,7 +2025,7 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 			removeFinishedScripts(&procHead);
 
             if (bgChanged) {   // MOD:
-                debug_str(backgroundTable[0].name);
+                //debug_str(backgroundTable[0].name);
                 // I00.PI1
 
                 if (strcmp(backgroundTable[0].name, "I00.PI1") == 0) {
@@ -2240,6 +2240,14 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 		}
 }
 
+const uint8 kResumeQuestion  = 1;
+const uint8 kResumeActionOff = 4;
+const uint8 kResumeActionOn  = 10;
+
+static uint8 s_ResumeUiAction = 0;
+static uint8 s_ResumeUiState  = 0;
+
+
 void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 		bool abortFlag = true;
 
@@ -2253,6 +2261,12 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 			currentMouseButton &= ~CRS_MB_LEFT;
 			currentMouseX = event.mouse.x;
 			currentMouseY = event.mouse.y;
+            if (s_ResumeUiState == 1) {
+                s_ResumeUiAction = 2;
+            }
+            else if (s_ResumeUiState == 2) {
+                s_ResumeUiAction = 1;
+            }
 			break;
 		case Common::EVENT_RBUTTONDOWN:
 			currentMouseButton |= CRS_MB_RIGHT;
@@ -2265,84 +2279,49 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 			currentMouseY = event.mouse.y;
 			break;
 		case Common::EVENT_MOUSEMOVE:
+        {
 			currentMouseX = event.mouse.x;
 			currentMouseY = event.mouse.y;
 			abortFlag = false;
-			break;
-		case Common::EVENT_QUIT:
-		case Common::EVENT_RETURN_TO_LAUNCHER:
-			_playerDontAskQuit = true;
-			break;
-        case Common::EVENT_FAST_MODE:  // MOD:
-        {
-            bFastMode = !bFastMode;
-            debug("Fast Mode %d", bFastMode);
+            bool updateScreen = false;
+            if (currentMouseY >= 60 && currentMouseY <= 70) {
+                if (s_ResumeUiState != 1) {
+                    s_ResumeUiState = 1;
+                    renderTextQuick("Yes", gfxModuleData.pPage00, 50, 60, 320, kResumeActionOn,  0);
+                    updateScreen = true;
+                    changeCursor(apk::CursorType::CURSOR_MAGNIFYING_GLASS);
+                }
+            }
+            else if (currentMouseY >= 80 && currentMouseY <= 90) {
+                if (s_ResumeUiState != 2) {
+                    s_ResumeUiState = 2;
+                    renderTextQuick("No", gfxModuleData.pPage00, 50, 80, 320, kResumeActionOn,  0);
+                    updateScreen = true;
+                    changeCursor(apk::CursorType::CURSOR_MAGNIFYING_GLASS);
+                }
+            }
+            else {
+                if (s_ResumeUiState == 1) {
+                    s_ResumeUiState = 0;
+                    updateScreen = true;
+                    renderTextQuick("Yes", gfxModuleData.pPage00, 50, 60, 320, kResumeActionOff,  0);
+                    changeCursor(apk::CursorType::CURSOR_WALK);
+                }
+                else if (s_ResumeUiState == 2) {
+                    s_ResumeUiState = 0;
+                    updateScreen = true;
+                    renderTextQuick("No", gfxModuleData.pPage00, 50, 80, 320, kResumeActionOff,  0);
+                    changeCursor(apk::CursorType::CURSOR_WALK);
+                }
+
+            }
+
+            if (updateScreen) {
+                gfxModuleData_flipScreen();
+            }
+
         }
-        break;
-        case Common::EVENT_SKIP_PROTECTION: // MOD:
-        {
-            bSkipProtection = !bSkipProtection;
-            debug("Skip Protection %d", bSkipProtection);
-        }
-        break;
-		case Common::EVENT_PAUSE: // MOD:
-		{
-#if 0
-			keyboardCode = Common::KEYCODE_INVALID;
-			_vm->pauseEngine(true);
-			mouseOff();
-
-			bool pausedButtonDown = false;
-			bool endPause = false;
-			while (!_vm->shouldQuit() && endPause == false) {
-				eventMan->fetchEvents();
-				while(eventMan->pollEvent(event)) {
-					if (event.type == EVENT_PAUSE) {
-						endPause = true;
-						break;
-					}
-					else if (event.type == EVENT_QUIT) {
-						_playerDontAskQuit = true;
-						endPause = true;
-						break;
-					}
-				}
-				delayMs(10);
-			}
-			_vm->pauseEngine(false);
-			mouseOn();
-#endif
-		}
-		break;
-		case Common::EVENT_KEYUP:
-			switch (event.kbd.keycode) {
-			case Common::KEYCODE_ESCAPE:
-				currentMouseButton &= ~CRS_MB_MIDDLE;
-				break;
-			default:
-				break;
-			}
 			break;
-
-		case Common::EVENT_KEYINSTANT:
-				keyboardCode = event.kbd.keycode;
-                keyboardShift = event.kbd.shift;
-			break;
-		case Common::EVENT_KEYDOWN:
-			switch (event.kbd.keycode) {
-			case Common::KEYCODE_ESCAPE:
-				currentMouseButton |= CRS_MB_MIDDLE;
-				break;
-			default:
-				keyboardCode = event.kbd.keycode;
-				break;
-			}
-
-			if (event.kbd.hasFlags(Common::KBD_CTRL) && event.kbd.keycode == Common::KEYCODE_f) {
-				bFastMode = !bFastMode;
-				keyboardCode = Common::KEYCODE_INVALID;
-			}
-
 		default:
 			break;
 		}
@@ -2351,37 +2330,67 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 static int resumeCounter = 0;
 
 static void BeginResumeScreen(); // MOD:
-static void EndResumeScreen(); // MOD:
+static void EndResumeScreen(uint32 action); // MOD:
 
 void ResumeTimerCb(void* ce) { // MOD:
-    if (resumeCounter++ >= 100) {
-		EndResumeScreen();
-        resumeCounter = 0;
+
+    if (s_ResumeUiAction == 1) {
+		EndResumeScreen(2);
         return;
     }
+    else if (s_ResumeUiAction == 2) {
+        EndResumeScreen(1);
+        playerMenu_LoadGame("quick.save");
+        return;
+    }
+
+
 }
 
 static void BeginResumeScreen() {
+
 	apk::video::pushWindowEventCallback(ResumeEventCb, NULL);
 	apk::video::pushWindowTimerCallback(ResumeTimerCb, NULL);
 
+    s_ResumeUiAction = 0;
+    s_ResumeUiState  = 0;
 	loadBackground("S27E.PI1", 0);
 	memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
-	renderTextQuick("Resume from previous saved game?", gfxModuleData.pPage00, 30, 40, 320);
+	renderTextQuick("Resume from previous saved game?", gfxModuleData.pPage00, 30, 40, 320, kResumeQuestion,0);
+
+    renderTextQuick("Yes", gfxModuleData.pPage00, 50, 60, 320, kResumeActionOff,0);
+    renderTextQuick("No", gfxModuleData.pPage00, 50, 80, 320, kResumeActionOff,0);
+    /*
+    for(uint32 j=0;j < 4;j++) {
+        uint32 jj = j * 320;
+        uint32 x=0;
+        for(uint32 i=0;i < 64;i++) {
+          for(uint32 k=0;k < 4;k++) {
+            gfxModuleData.pPage00[x + jj] = i;
+            x++;
+          }
+        }
+    }
+    */
 
 	gfxModuleData_setPal256(palScreen[0]);
 	gfxModuleData_updatePalette(true);
 	gfxModuleData_flipScreen();
-	changeCursor(apk::CursorType::CURSOR_MAGNIFYING_GLASS);
+	changeCursor(apk::CursorType::CURSOR_WALK);
 
 }
 
-static void EndResumeScreen() {
-	loadBackground("I00.PI1", 0);
-	memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
-	gfxModuleData_setPal256(palScreen[0]);
-	gfxModuleData_updatePalette(true);
-	gfxModuleData_flipScreen();
+static void EndResumeScreen(uint32 action) {
+	if (action == 2) {
+        loadBackground("I00.PI1", 0);
+	    memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
+	    gfxModuleData_setPal256(palScreen[0]);
+	    gfxModuleData_updatePalette(true);
+	    gfxModuleData_flipScreen();
+    }
+    else if (action == 1) {
+        apk::video::clearPalette();
+    }
 	changeCursor(apk::CursorType::CURSOR_NORMAL);
 	apk::video::popWindowTimerCallback();
 	apk::video::popWindowEventCallback();
