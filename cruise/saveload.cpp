@@ -818,7 +818,7 @@ Common::Error saveSavegameData(const char* path) { // MOD: Common::Error saveSav
 	DoSync(f);
 	f.finalize();
 
-    requester_okay("Cruise for a Corpse", "Saved?");
+    //requester_okay("Cruise for a Corpse", "Saved?");
 
 	return Common::kNoError;
 
