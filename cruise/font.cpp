@@ -453,7 +453,32 @@ void freeGfx(gfxEntryStruct *pGfx) {
 	MemFree(pGfx);
 }
 
-void renderTextQuick(const char* string, uint8* buffer, uint32 x, uint32 y, uint32 stride) { // MOD:
+void renderWordQuick(const uint8 *fontPtr_Data, uint8 *outBufferPtr, int xOffset, int yOffset,
+				int32 height, int32 param4, int32 stringRenderBufferSize, int32 width, int32 charWidth, uint8 colour1, uint8 colour2) {
+	const uint8 *fontPtr_Data2 = fontPtr_Data + height * 2;
+	outBufferPtr += yOffset * width + xOffset;
+
+	for (int i = 0; i < height; i++) {	// y++
+		uint16 bitSet1 = READ_BE_UINT16(fontPtr_Data);
+		uint16 bitSet2 = READ_BE_UINT16(fontPtr_Data2);
+
+		fontPtr_Data += sizeof(uint16);
+		fontPtr_Data2 += sizeof(uint16);
+
+		for (int j = 0; j < charWidth; j++) {
+			if (((bitSet1 >> 15) & 1)) {
+				*outBufferPtr = ((bitSet2 >> 15) & 1) ? colour1 : colour2;
+			}
+			outBufferPtr++;
+
+			bitSet1 <<= 1;
+			bitSet2 <<= 1;
+		}
+		outBufferPtr += width - charWidth;
+	}
+}
+
+void renderTextQuick(const char* string, uint8* buffer, uint32 x, uint32 y, uint32 stride, uint8 colour1, uint8 colour2) { // MOD:
 
 	if (string == NULL)
 		return;
@@ -479,12 +504,11 @@ void renderTextQuick(const char* string, uint8* buffer, uint32 x, uint32 y, uint
 		}
 		
 		int16 charData = charTable[character];
-		const FontEntry &fe = fontPtr_Desc[charData];
-		
+		const FontEntry &fe = fontPtr_Desc[charData];		 
 		const uint8 *fontPtr_Data1 = (const uint8 *) fontPtr_Data + fe.offset;
 		const uint8 *fontPtr_Data2 = fontPtr_Data1 + lineHeight * 2;
 		
-		renderWord((const uint8 *)fontPtr_Data + fe.offset, 
+		renderWordQuick((const uint8 *)fontPtr_Data + fe.offset,
 			dst, 
 			0, 
 			fe.height2 - fe.charHeight + lineHeight + 0, 
@@ -492,7 +516,8 @@ void renderTextQuick(const char* string, uint8* buffer, uint32 x, uint32 y, uint
 			fe.v1, 
 			0, 
 			stride, 
-			(int16) fe.charWidth);
+			(int16) fe.charWidth,
+            colour1, colour2);
 
 		dst += fe.charWidth + fontPtr->hSpacing;
 	}
