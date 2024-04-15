@@ -101,11 +101,11 @@ void changeCursor(CursorType eType) {
 	if (s_InitializedMouseBank == false) {
 		initMouse();
 	}
-	else {
-		const MouseCursor *mc = &mouseCursors[currentCursor];
-		apk::video::setSpriteBanked(0, currentCursor);
-		apk::video::setSpriteOffset(0, -mc->hotspotX, -mc->hotspotY);
-	}
+	//else {
+	const MouseCursor *mc = &mouseCursors[currentCursor];
+	apk::video::setSpriteBanked(0, currentCursor);
+	apk::video::setSpriteOffset(0, -mc->hotspotX, -mc->hotspotY);
+	//}
 
 	/*
 	byte mouseCursor[16 * 16];
