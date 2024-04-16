@@ -33,6 +33,101 @@
 namespace apk { // MOD:
     extern bool s_RulesPassedCopyright;
     extern bool s_RulesCanSaveLoad;
+
+    struct MenuLine { // MOD:
+       const char* text;
+       uint16      id, state;
+    };
+
+    struct MenuPrompt {
+       const char* text;
+       uint8       textCol, on, off;
+       uint16      state;
+       uint16      num;
+       MenuLine*   lines;
+    };
+
+    MenuLine sResumePromptItems[] = {
+      { "Yes", 1, 0 },
+      { "No",  2, 0 }
+    };
+
+    MenuPrompt sResumePrompt = {
+       "Do you wish to resume from a previous saved game?",
+       1, 16, 10,
+       0,
+       2,
+       (MenuLine*) &sResumePromptItems
+    };
+
+
+    int32 DoMenuPrompt(MenuPrompt* prompt, uint32 x, uint32 y, uint32 lmb) {
+
+        int32 cursorChange = -1;
+        bool redraw = false;
+        int32 rv = -1;
+
+        if (prompt->state == 0) {
+           redraw = true;
+           for(uint16 i=0; i < prompt->num;i++) {
+             MenuLine* line = &prompt->lines[i];
+             line->state = 0;
+           }
+	       renderTextQuick(prompt->text, gfxModuleData.pPage00, 10, 10, 320, prompt->textCol, 0);
+        }
+
+        cursorChange = 1;
+        for(uint16 i=0;i < prompt->num;i++) {
+            MenuLine* line = &prompt->lines[i];
+            bool isOver = false;
+            bool draw = false;
+            int liney = 30 + (i * 15);
+            if (prompt->state == 0) {
+                draw = true;
+            }
+
+            if (y >= liney && y <= liney + 10) {
+                isOver = true;
+                draw = true;
+                prompt->state = 1;
+                cursorChange = 2;
+
+                if (lmb) {
+                    rv = line->id;
+                }
+            }
+
+            if (isOver == false && prompt->state == 1) {
+                prompt->state = 0;
+                draw = true;
+            }
+
+            if (draw) {
+                renderTextQuick(line->text, gfxModuleData.pPage00, 20, liney, 320, isOver ? prompt->on : prompt->off, 0);
+                redraw = true;
+
+            }
+
+        }
+
+        if (prompt->state == 0) {
+            prompt->state = 1;
+        }
+
+        if (cursorChange == 1) {
+            changeCursor(apk::CursorType::CURSOR_WALK);
+        }
+        else if (cursorChange == 2) {
+            changeCursor(apk::CursorType::CURSOR_MAGNIFYING_GLASS);
+        }
+
+        if (redraw) {
+            gfxModuleData_flipScreen();
+        }
+
+        return rv;
+    }
+
 }
 
 namespace Cruise {
@@ -2239,13 +2334,8 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 			break;
 		}
 }
-
-const uint8 kResumeQuestion  = 1;
-const uint8 kResumeActionOff = 4;
-const uint8 kResumeActionOn  = 10;
-
+                                   
 static uint8 s_ResumeUiAction = 0;
-static uint8 s_ResumeUiState  = 0;
 
 
 void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
@@ -2258,14 +2348,19 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 			currentMouseY = event.mouse.y;
 			break;
 		case Common::EVENT_LBUTTONUP:
-			currentMouseButton &= ~CRS_MB_LEFT;
-			currentMouseX = event.mouse.x;
-			currentMouseY = event.mouse.y;
-            if (s_ResumeUiState == 1) {
-                s_ResumeUiAction = 2;
-            }
-            else if (s_ResumeUiState == 2) {
-                s_ResumeUiAction = 1;
+			{
+               currentMouseButton &= ~CRS_MB_LEFT;
+   			   currentMouseX = event.mouse.x;
+   			   currentMouseY = event.mouse.y;
+
+               int32 rv = DoMenuPrompt(&sResumePrompt, currentMouseX, currentMouseY, 1);
+
+               if (rv == 1) {
+                   s_ResumeUiAction = 2;
+               }
+               else if (rv == 2) {
+                   s_ResumeUiAction = 1;
+               }        
             }
 			break;
 		case Common::EVENT_RBUTTONDOWN:
@@ -2283,43 +2378,8 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 			currentMouseX = event.mouse.x;
 			currentMouseY = event.mouse.y;
 			abortFlag = false;
-            bool updateScreen = false;
-            if (currentMouseY >= 60 && currentMouseY <= 70) {
-                if (s_ResumeUiState != 1) {
-                    s_ResumeUiState = 1;
-                    renderTextQuick("Yes", gfxModuleData.pPage00, 50, 60, 320, kResumeActionOn,  0);
-                    updateScreen = true;
-                    changeCursor(apk::CursorType::CURSOR_MAGNIFYING_GLASS);
-                }
-            }
-            else if (currentMouseY >= 80 && currentMouseY <= 90) {
-                if (s_ResumeUiState != 2) {
-                    s_ResumeUiState = 2;
-                    renderTextQuick("No", gfxModuleData.pPage00, 50, 80, 320, kResumeActionOn,  0);
-                    updateScreen = true;
-                    changeCursor(apk::CursorType::CURSOR_MAGNIFYING_GLASS);
-                }
-            }
-            else {
-                if (s_ResumeUiState == 1) {
-                    s_ResumeUiState = 0;
-                    updateScreen = true;
-                    renderTextQuick("Yes", gfxModuleData.pPage00, 50, 60, 320, kResumeActionOff,  0);
-                    changeCursor(apk::CursorType::CURSOR_WALK);
-                }
-                else if (s_ResumeUiState == 2) {
-                    s_ResumeUiState = 0;
-                    updateScreen = true;
-                    renderTextQuick("No", gfxModuleData.pPage00, 50, 80, 320, kResumeActionOff,  0);
-                    changeCursor(apk::CursorType::CURSOR_WALK);
-                }
 
-            }
-
-            if (updateScreen) {
-                gfxModuleData_flipScreen();
-            }
-
+            DoMenuPrompt(&sResumePrompt, currentMouseX, currentMouseY, 0);
         }
 			break;
 		default:
@@ -2351,27 +2411,13 @@ static void BeginResumeScreen() {
 
 	apk::video::pushWindowEventCallback(ResumeEventCb, NULL);
 	apk::video::pushWindowTimerCallback(ResumeTimerCb, NULL);
-
-    s_ResumeUiAction = 0;
-    s_ResumeUiState  = 0;
+                           
 	loadBackground("S27E.PI1", 0);
 	memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
-	renderTextQuick("Resume from previous saved game?", gfxModuleData.pPage00, 30, 40, 320, kResumeQuestion,0);
 
-    renderTextQuick("Yes", gfxModuleData.pPage00, 50, 60, 320, kResumeActionOff,0);
-    renderTextQuick("No", gfxModuleData.pPage00, 50, 80, 320, kResumeActionOff,0);
-    /*
-    for(uint32 j=0;j < 4;j++) {
-        uint32 jj = j * 320;
-        uint32 x=0;
-        for(uint32 i=0;i < 64;i++) {
-          for(uint32 k=0;k < 4;k++) {
-            gfxModuleData.pPage00[x + jj] = i;
-            x++;
-          }
-        }
-    }
-    */
+    s_ResumeUiAction = 0;
+    sResumePrompt.state = 0;
+    DoMenuPrompt(&sResumePrompt, 0, 0, 0);
 
 	gfxModuleData_setPal256(palScreen[0]);
 	gfxModuleData_updatePalette(true);
