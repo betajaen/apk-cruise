@@ -41,6 +41,7 @@ namespace apk { // MOD:
 
     struct MenuPrompt {
        const char* text;
+       const char* background;
        uint8       textCol, on, off;
        uint16      state;
        uint16      num;
@@ -48,20 +49,43 @@ namespace apk { // MOD:
     };
 
     MenuLine sResumePromptItems[] = {
-      { "Yes", 1, 0 },
-      { "No",  2, 0 }
+      { "Yes", 2, 0 },
+      { "No",  1, 0 }
     };
 
     MenuPrompt sResumePrompt = {
        "Do you wish to resume from a previous saved game?",
+       "S27E.PI1",
        1, 16, 10,
        0,
        2,
        (MenuLine*) &sResumePromptItems
     };
 
+    MenuLine sQuitPromptItems[] = {
+      { "Yes", 3, 0 },
+      { "No" , 1, 0 }
+    };
 
-    int32 DoMenuPrompt(MenuPrompt* prompt, uint32 x, uint32 y, uint32 lmb) {
+    MenuPrompt sQuitPrompt = {
+      "Do you wish to quit?",
+      "I02.PI1",
+      1, 16, 10,
+      0,
+      2,
+      (MenuLine*) &sQuitPromptItems
+    };
+
+
+
+    MenuPrompt* sMenuPrompt = NULL;
+
+    int32 DoMenuPrompt(uint32 x, uint32 y, uint32 lmb) {
+
+        if (sMenuPrompt == NULL)
+            return -1;
+
+        MenuPrompt* prompt = sMenuPrompt;
 
         int32 cursorChange = -1;
         bool redraw = false;
@@ -2120,7 +2144,7 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 			removeFinishedScripts(&procHead);
 
             if (bgChanged) {   // MOD:
-                //debug_str(backgroundTable[0].name);
+                debug_str(backgroundTable[0].name);
                 // I00.PI1
 
                 if (strcmp(backgroundTable[0].name, "I00.PI1") == 0) {
@@ -2334,11 +2358,14 @@ void EventCb(void* ce, apk::Event& event) { // MOD:
 			break;
 		}
 }
+
+// MOD:
+// Generic Menu Event/Timer callbacks using prompts
                                    
-static uint8 s_ResumeUiAction = 0;
+static uint8 s_MenuUiAction = 0;
 
 
-void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
+void MenuEventCb(void* ce, apk::Event& event) { // MOD:
 		bool abortFlag = true;
 
 		switch (event.type) {
@@ -2353,14 +2380,12 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
    			   currentMouseX = event.mouse.x;
    			   currentMouseY = event.mouse.y;
 
-               int32 rv = DoMenuPrompt(&sResumePrompt, currentMouseX, currentMouseY, 1);
+               int32 rv = DoMenuPrompt(currentMouseX, currentMouseY, 1);
 
-               if (rv == 1) {
-                   s_ResumeUiAction = 2;
+               if (rv > 0) {
+                  s_MenuUiAction = rv;
                }
-               else if (rv == 2) {
-                   s_ResumeUiAction = 1;
-               }        
+
             }
 			break;
 		case Common::EVENT_RBUTTONDOWN:
@@ -2379,7 +2404,7 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 			currentMouseY = event.mouse.y;
 			abortFlag = false;
 
-            DoMenuPrompt(&sResumePrompt, currentMouseX, currentMouseY, 0);
+            DoMenuPrompt(currentMouseX, currentMouseY, 0);
         }
 			break;
 		default:
@@ -2387,37 +2412,51 @@ void ResumeEventCb(void* ce, apk::Event& event) { // MOD:
 		}
 }
 
-static int resumeCounter = 0;
+static void BeginMenuScreen(); // MOD:
+static void EndMenuScreen(uint32 action); // MOD:
 
-static void BeginResumeScreen(); // MOD:
-static void EndResumeScreen(uint32 action); // MOD:
+void MenuTimerCb(void* ce) { // MOD:
 
-void ResumeTimerCb(void* ce) { // MOD:
-
-    if (s_ResumeUiAction == 1) {
-		EndResumeScreen(2);
+    if (s_MenuUiAction == 1) {
+		EndMenuScreen(1);
         return;
     }
-    else if (s_ResumeUiAction == 2) {
-        EndResumeScreen(1);
+    else if (s_MenuUiAction == 2) {
+        EndMenuScreen(2);
         playerMenu_LoadGame("quick.save");
         return;
     }
-
+    else if (s_MenuUiAction == 3) {
+        EndMenuScreen(3);
+        performQuit();
+        return;
+    }
 
 }
 
-static void BeginResumeScreen() {
+static void BeginMenuScreen(uint16 type) {
 
-	apk::video::pushWindowEventCallback(ResumeEventCb, NULL);
-	apk::video::pushWindowTimerCallback(ResumeTimerCb, NULL);
+    switch(type) {
+        default:
+            return;
+        case 1:
+            sMenuPrompt = &sResumePrompt;
+            break;
+        case 2:
+            sMenuPrompt = &sQuitPrompt;
+            break;
+    }
+
+	apk::video::pushWindowEventCallback(MenuEventCb, NULL);
+	apk::video::pushWindowTimerCallback(MenuTimerCb, NULL);
                            
-	loadBackground("S27E.PI1", 0);
+	loadBackground(sMenuPrompt->background, 0);
 	memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
 
-    s_ResumeUiAction = 0;
-    sResumePrompt.state = 0;
-    DoMenuPrompt(&sResumePrompt, 0, 0, 0);
+
+    s_MenuUiAction = 0;
+    sMenuPrompt->state = 0;
+    DoMenuPrompt(0, 0, 0);
 
 	gfxModuleData_setPal256(palScreen[0]);
 	gfxModuleData_updatePalette(true);
@@ -2426,15 +2465,15 @@ static void BeginResumeScreen() {
 
 }
 
-static void EndResumeScreen(uint32 action) {
-	if (action == 2) {
+static void EndMenuScreen(uint32 action) {
+	if (action == 1) {
         loadBackground("I00.PI1", 0);
 	    memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
 	    gfxModuleData_setPal256(palScreen[0]);
 	    gfxModuleData_updatePalette(true);
 	    gfxModuleData_flipScreen();
     }
-    else if (action == 1) {
+    else if (action == 2 || action == 3) {
         apk::video::clearPalette();
     }
 	changeCursor(apk::CursorType::CURSOR_NORMAL);
@@ -2446,7 +2485,7 @@ void TimerCb(void* ce) { // MOD:
 
     if (s_RulesPassedCopyright) {
         s_RulesPassedCopyright = false;
-		BeginResumeScreen();
+		BeginMenuScreen(1);
         return;
     }
 
@@ -2492,7 +2531,15 @@ void gameBeginPause() {
 }
 
 void gameEndPause() {
-	apk::video::forceUpdateScreen();
+    apk::video::forceUpdateScreen();
 }
+
+// MOD:
+// Quit Screen
+
+void gameQuitRequest() {
+    BeginMenuScreen(2);
+}
+
 
 } // End of namespace Cruise

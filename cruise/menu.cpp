@@ -292,7 +292,7 @@ void playerMenu_ResetGame() {
 }
 
 void playerMenu_ExitGame() {
-    apk::video::windowStopLoop();
+    apk::performQuit();
 }
 
 void playerMenu_PauseGame() {
