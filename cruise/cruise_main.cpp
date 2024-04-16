@@ -34,6 +34,8 @@ namespace apk { // MOD:
     extern bool s_RulesPassedCopyright;
     extern bool s_RulesCanSaveLoad;
 
+    static char sLastBackgroundName[33] = { 0 };
+
     struct MenuLine { // MOD:
        const char* text;
        uint16      id, state;
@@ -2144,8 +2146,9 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 			removeFinishedScripts(&procHead);
 
             if (bgChanged) {   // MOD:
-                debug_str(backgroundTable[0].name);
+                //debug_str(backgroundTable[0].name);
                 // I00.PI1
+                apk::strncpy(sLastBackgroundName, backgroundTable[0].name, sizeof(sLastBackgroundName));
 
                 if (strcmp(backgroundTable[0].name, "I00.PI1") == 0) {
                     if (apk::s_RulesCanSaveLoad == false) {
@@ -2434,6 +2437,8 @@ void MenuTimerCb(void* ce) { // MOD:
 
 }
 
+static uint8 tempScreen[320*200];
+
 static void BeginMenuScreen(uint16 type) {
 
     switch(type) {
@@ -2450,6 +2455,10 @@ static void BeginMenuScreen(uint16 type) {
 	apk::video::pushWindowEventCallback(MenuEventCb, NULL);
 	apk::video::pushWindowTimerCallback(MenuTimerCb, NULL);
                            
+    memcpy(tempScreen, gfxModuleData.pPage00, 320*200);
+
+    apk::strncpy(sLastBackgroundName, backgroundTable[0].name, sizeof(sLastBackgroundName));
+
 	loadBackground(sMenuPrompt->background, 0);
 	memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
 
@@ -2467,11 +2476,13 @@ static void BeginMenuScreen(uint16 type) {
 
 static void EndMenuScreen(uint32 action) {
 	if (action == 1) {
-        loadBackground("I00.PI1", 0);
-	    memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
-	    gfxModuleData_setPal256(palScreen[0]);
-	    gfxModuleData_updatePalette(true);
-	    gfxModuleData_flipScreen();
+        loadBackground(sLastBackgroundName, 0);
+        //memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
+        memcpy(gfxModuleData.pPage00, tempScreen, 320*200);
+        gfxModuleData_setPal256(palScreen[0]);
+        gfxModuleData_updatePalette(true);
+        gfxModuleData_flipScreen();
+        debug_str(sLastBackgroundName);
     }
     else if (action == 2 || action == 3) {
         apk::video::clearPalette();
