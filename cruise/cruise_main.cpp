@@ -65,8 +65,8 @@ namespace apk { // MOD:
     };
 
     MenuLine sQuitPromptItems[] = {
-      { "Save Quit", 3, 0 },
-      { "Quit", 4, 0 },
+      { "Save and Quit", 4, 0 },
+      { "Quit", 3, 0 },
       { "Cancel" , 1, 0 }
     };
 
@@ -2507,8 +2507,10 @@ void TimerCb(void* ce) { // MOD:
 
     if (s_RulesPassedCopyright) {
         s_RulesPassedCopyright = false;
-		BeginMenuScreen(1);
-        return;
+        if (apk::path::test("quick.save") == apk::path::PathType::File) {
+		   BeginMenuScreen(1);
+           return;
+        }
     }
 
 	CruiseEngine* c = (CruiseEngine*) ce;
