@@ -65,8 +65,9 @@ namespace apk { // MOD:
     };
 
     MenuLine sQuitPromptItems[] = {
-      { "Yes", 3, 0 },
-      { "No" , 1, 0 }
+      { "Save Quit", 3, 0 },
+      { "Quit", 4, 0 },
+      { "Cancel" , 1, 0 }
     };
 
     MenuPrompt sQuitPrompt = {
@@ -74,7 +75,7 @@ namespace apk { // MOD:
       "I02.PI1",
       1, 16, 10,
       0,
-      2,
+      3,
       (MenuLine*) &sQuitPromptItems
     };
 
@@ -2434,10 +2435,19 @@ void MenuTimerCb(void* ce) { // MOD:
         performQuit();
         return;
     }
+    else if (s_MenuUiAction == 4) {
+        EndMenuScreen(3);
+        playerMenu_SaveGame("quick.save");
+        performQuit();
+    }
 
 }
 
-static uint8 tempScreen[320*200];
+static uint8 tempScreen00[320*200];
+static uint8 tempScreen10[320*200];
+
+static uint8 *tempPage00, *tempPage10;
+
 
 static void BeginMenuScreen(uint16 type) {
 
@@ -2454,35 +2464,36 @@ static void BeginMenuScreen(uint16 type) {
 
 	apk::video::pushWindowEventCallback(MenuEventCb, NULL);
 	apk::video::pushWindowTimerCallback(MenuTimerCb, NULL);
-                           
-    memcpy(tempScreen, gfxModuleData.pPage00, 320*200);
 
-    apk::strncpy(sLastBackgroundName, backgroundTable[0].name, sizeof(sLastBackgroundName));
+    apk::video::clearPalette();
+    tempPage00 = gfxModuleData.pPage00;
+    tempPage10 = gfxModuleData.pPage10;
 
-	loadBackground(sMenuPrompt->background, 0);
-	memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
+    gfxModuleData.pPage00 = tempScreen00;
+    gfxModuleData.pPage10 = tempScreen10;
 
-
+	loadBackground(sMenuPrompt->background, 7);
+	memcpy(gfxModuleData.pPage00, backgroundScreens[7], 320*200);
     s_MenuUiAction = 0;
     sMenuPrompt->state = 0;
-    DoMenuPrompt(0, 0, 0);
+    DoMenuPrompt(0, 0, 0);                
 
-	gfxModuleData_setPal256(palScreen[0]);
+	gfxModuleData_flipScreen();	   
+    gfxModuleData_setPal256(palScreen[7]);
 	gfxModuleData_updatePalette(true);
-	gfxModuleData_flipScreen();
+
 	changeCursor(apk::CursorType::CURSOR_WALK);
 
 }
 
 static void EndMenuScreen(uint32 action) {
 	if (action == 1) {
-        loadBackground(sLastBackgroundName, 0);
-        //memcpy(gfxModuleData.pPage00, backgroundScreens[0], 320*200);
-        memcpy(gfxModuleData.pPage00, tempScreen, 320*200);
+        apk::video::clearPalette();
+        gfxModuleData.pPage00 = tempPage00;
+        gfxModuleData.pPage10 = tempPage10;   
+        gfxModuleData_flipScreen();
         gfxModuleData_setPal256(palScreen[0]);
         gfxModuleData_updatePalette(true);
-        gfxModuleData_flipScreen();
-        debug_str(sLastBackgroundName);
     }
     else if (action == 2 || action == 3) {
         apk::video::clearPalette();
