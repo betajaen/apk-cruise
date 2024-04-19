@@ -25,6 +25,9 @@ namespace apk {
 
     bool s_RulesPassedCopyright;
     bool s_RulesCanSaveLoad;
+    bool s_RulesAutoSaveNextBackground;
+    bool s_RulesInClock;
+    int16 s_LastSoundNum;
 
     bool hasDataFiles() {
 
@@ -62,6 +65,10 @@ namespace apk {
 
         s_RulesPassedCopyright = false;
         s_RulesCanSaveLoad = false;
+        s_RulesInClock = false;
+        s_RulesAutoSaveNextBackground = false;
+        s_LastSoundNum = 0;
+
 
         const char* dataDirectory = prefs::getPrefsString("DATA", "PROGDIR:");
         fs::setProgramDir(dataDirectory);

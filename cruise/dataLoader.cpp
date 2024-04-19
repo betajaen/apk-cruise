@@ -242,6 +242,7 @@ int loadFile(const char* name, int idx, int destIdx) {
 
 	fileType = getFileType(name);
 
+
 	loadFileSub1(&ptr, name, nullptr);
 
 	switch (fileType) {

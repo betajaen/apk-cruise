@@ -31,6 +31,10 @@
 // MOD: #include "common/textconsole.h"
 // MOD: #include "common/util.h"
 
+namespace apk {
+    extern int16 s_LastSoundNum;
+}
+
 namespace Cruise {
 
 uint32 Period(uint32 hz) {
@@ -198,7 +202,7 @@ int16 Op_Random() {
 
 int16 Op_PlayFX() {
 
-    return 0; // MOD:
+//    return 0; // MOD:
 
 	int volume = popVar();
 
@@ -212,14 +216,16 @@ int16 Op_PlayFX() {
 
 	int sampleNum = popVar();
 
+    apk::s_LastSoundNum = sampleNum; // MOD:
+
 	if ((sampleNum >= 0) && (sampleNum < NUM_FILE_ENTRIES) && (filesDatabase[sampleNum].subData.ptr)) {
 #if 0
 		if (speed == -1)
 			speed = filesDatabase[sampleNum].subData.transparency;
 #endif
 
-		_vm->sound().playSound(filesDatabase[sampleNum].subData.ptr,
-			filesDatabase[sampleNum].width, volume);
+//		  _vm->sound().playSound(filesDatabase[sampleNum].subData.ptr,
+//			  filesDatabase[sampleNum].width, volume);
 	}
 
 	return (0);
@@ -393,7 +399,8 @@ int16 Op_comment() {
 
 	var = (char *)popPtr();
 
-	debug(1, "COMMENT: \"%s\"", var);
+	//Debug(1, "COMMENT: \"%s\"", var);
+    //debug_str(var);
 
 	return (0);
 }

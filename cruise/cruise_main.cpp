@@ -31,8 +31,11 @@
 #include "cruise/staticres.h"
 
 namespace apk { // MOD:
-    extern bool s_RulesPassedCopyright;
-    extern bool s_RulesCanSaveLoad;
+    extern bool  s_RulesPassedCopyright;
+    extern bool  s_RulesCanSaveLoad;
+    extern bool  s_RulesAutoSaveNextBackground;
+    extern int16 s_LastSoundNum;
+    extern bool  s_RulesInClock;
 
     static char sLastBackgroundName[33] = { 0 };
 
@@ -2146,9 +2149,26 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 			removeFinishedScripts(&relHead);
 			removeFinishedScripts(&procHead);
 
+
             if (bgChanged) {   // MOD:
-                //debug_str(backgroundTable[0].name);
-                // I00.PI1
+
+                if (strcmp(backgroundTable[0].name, "HORLOFND.PI1") == 0) {
+                    s_RulesInClock = true;
+                    debug_str("clock");
+                }
+                else {
+                    s_RulesInClock = false;
+
+                    if (s_RulesAutoSaveNextBackground) {
+                        s_RulesAutoSaveNextBackground = false;
+                        playerMenu_SaveGame("quick.save");
+                        debug_str("Saved...");
+                    }
+                    else {
+                        debug_str("no clock");
+                    }
+                }
+
                 apk::strncpy(sLastBackgroundName, backgroundTable[0].name, sizeof(sLastBackgroundName));
 
                 if (strcmp(backgroundTable[0].name, "I00.PI1") == 0) {
@@ -2164,6 +2184,16 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
 				bgChanged = true;
 				numIterations += 2;
 			}
+
+            if (s_RulesInClock) {
+               if (apk::s_LastSoundNum == 254)
+               {
+                  debug_str("CLOCK SOUND!!!");
+                  s_RulesAutoSaveNextBackground = true;
+               }
+            }
+
+
 		}
 
 		processAnimation();
