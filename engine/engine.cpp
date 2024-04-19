@@ -28,6 +28,8 @@ namespace apk {
     bool s_RulesAutoSaveNextBackground;
     bool s_RulesInClock;
     int16 s_LastSoundNum;
+    char s_OverlayText[32];
+    uint16 s_OverlayTime;
 
     bool hasDataFiles() {
 
@@ -68,6 +70,8 @@ namespace apk {
         s_RulesInClock = false;
         s_RulesAutoSaveNextBackground = false;
         s_LastSoundNum = 0;
+        s_OverlayText[0] = 0;
+        s_OverlayTime = 0;
 
 
         const char* dataDirectory = prefs::getPrefsString("DATA", "PROGDIR:");

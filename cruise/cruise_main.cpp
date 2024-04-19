@@ -36,6 +36,8 @@ namespace apk { // MOD:
     extern bool  s_RulesAutoSaveNextBackground;
     extern int16 s_LastSoundNum;
     extern bool  s_RulesInClock;
+    extern char  s_OverlayText[33];
+    extern uint16 s_OverlayTime;
 
     static char sLastBackgroundName[33] = { 0 };
 
@@ -2161,7 +2163,6 @@ void CruiseEngine::mainLoop_Frame() { // MOD:
                     if (s_RulesAutoSaveNextBackground) {
                         s_RulesAutoSaveNextBackground = false;
                         playerMenu_SaveGame("quick.save");
-                        debug_str("Saved...");
                     }
                 }
 
@@ -2555,32 +2556,18 @@ void CruiseEngine::mainLoop() { // MOD:
     mainLoop_Stop();
 }
 
-static uint8_t kPausedImg[] = {
-	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  
-	0,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  
-	0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  
-	0,  1,  0,  0,  1,  0,  1,  1,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  1,  1,  0,  0,  1,  1,  0,  0,  0,  1,  1,  1,  0,  
-	0,  1,  0,  0,  1,  0,  0,  0,  0,  1,  0,  1,  0,  0,  1,  0,  1,  0,  0,  0,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  
-	0,  1,  0,  0,  1,  0,  0,  1,  1,  1,  0,  1,  0,  0,  1,  0,  0,  1,  1,  0,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  
-	0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  0,  0,  0,  1,  0,  1,  1,  1,  1,  0,  1,  0,  0,  1,  0,  
-	0,  1,  1,  1,  0,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  0,  0,  0,  1,  0,  1,  0,  0,  0,  0,  1,  0,  0,  1,  0,  
-	0,  1,  0,  0,  0,  0,  1,  0,  0,  1,  0,  1,  0,  0,  1,  0,  0,  0,  0,  1,  0,  1,  0,  0,  0,  0,  1,  0,  0,  1,  0,  
-	0,  1,  0,  0,  0,  0,  0,  1,  1,  1,  0,  0,  1,  1,  0,  0,  1,  1,  1,  0,  0,  0,  1,  1,  1,  0,  0,  1,  1,  1,  0,  
-	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
-};
+uint8 pausedData[320 * 23];
 
 void gameBeginPause() {
-	uint8 pal1[2] = { 0, 1 };
-	uint8 pal2[2] = { 0, 0 };
-	
-	apk::video::pasteIcon(kPausedImg, 11, 11, 31, 11, 0, pal2);
-	apk::video::pasteIcon(kPausedImg, 10, 10, 31, 11, 0, pal1);
-
-	apk::video::forceUpdateScreen();
+    memcpy(pausedData, gfxModuleData.pPage00, 320*23);
+    renderTextQuick("Paused", gfxModuleData.pPage00, 10, 10, 320, 1, 0);
+	gfxModuleData_flipScreen();
+    apk::s_OverlayTime = 0;
 }
 
-void gameEndPause() {
-    apk::video::forceUpdateScreen();
+void gameEndPause() {               
+    memcpy(gfxModuleData.pPage00, pausedData, 320*23);
+    gfxModuleData_flipScreen();
 }
 
 // MOD:

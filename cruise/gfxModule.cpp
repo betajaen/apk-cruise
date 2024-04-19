@@ -31,6 +31,11 @@
 #include "cruise/cruise_main.h"
 #include "cruise/gfxModule.h" // MOD:
 
+namespace apk { // MOD:
+    extern char s_OverlayText[33];
+    extern uint16 s_OverlayTime;
+}
+
 namespace Cruise {
 
 static APK_ALIGNED uint8* page00 = NULL; // MOD: uint8 page00[320 * 200];
@@ -385,6 +390,11 @@ static uint32 sFrameNum = 0;
 
 void gfxModuleData_flipScreen() {
 	// MOD: memcpy(globalScreen, gfxModuleData.pPage00, 320 * 200);
+
+    if (apk::s_OverlayTime > 0) {
+        renderTextQuick(apk::s_OverlayText, gfxModuleData.pPage00, 10, 10, 320, 1, 0);
+        apk::s_OverlayTime--;
+    }
 
 	uint32 newCount = 0;
 

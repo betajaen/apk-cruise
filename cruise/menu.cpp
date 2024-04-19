@@ -29,6 +29,8 @@
 
 namespace apk { // MOD:
     extern bool s_RulesCanSaveLoad;
+    extern char s_OverlayText[33];
+    extern uint16 s_OverlayTime;
 }
 
 namespace Cruise {
@@ -267,6 +269,7 @@ void playerMenu_LoadGame(const char* path) {
     //apk::requester_okay("Load Game?", "Load Game!??");
 	Common::Error rv = loadSavegameData(path);
 	debug("load rv = %ld", rv);
+    apk::s_OverlayTime = 0;
 }
 
 void playerMenu_SaveGame(const char* path) {
@@ -276,6 +279,9 @@ void playerMenu_SaveGame(const char* path) {
     //apk::requester_okay("Save Game?", "Save Game!??");
     Common::Error rv = saveSavegameData(path);
     debug("save rv = %ld", rv);
+
+    apk::strncpy(apk::s_OverlayText, "Saved...", sizeof(apk::s_OverlayText));
+    apk::s_OverlayTime = 120;
 }
 
 void playerMenu_ResetGame() {
