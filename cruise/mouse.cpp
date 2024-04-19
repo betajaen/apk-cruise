@@ -105,6 +105,7 @@ void changeCursor(CursorType eType) {
 	const MouseCursor *mc = &mouseCursors[currentCursor];
 	apk::video::setSpriteBanked(0, currentCursor);
 	apk::video::setSpriteOffset(0, -mc->hotspotX, -mc->hotspotY);
+    apk::video::setSpriteVisible(0, true);
 	//}
 
 	/*
