@@ -31,11 +31,17 @@
 #include "cruise/staticres.h"
 
 namespace apk { // MOD:
+
+    static char s_FileLoadSaveNames[6][25];
+    static char s_FileLoadSavePaths[6][25];
+
+
     extern bool  s_RulesPassedCopyright;
     extern bool  s_RulesCanSaveLoad;
     extern bool  s_RulesAutoSaveNextBackground;
     extern int16 s_LastSoundNum;
     extern bool  s_RulesInClock;
+    extern bool  s_RulesSaveRequested;
     extern char  s_OverlayText[33];
     extern uint16 s_OverlayTime;
 
@@ -84,6 +90,25 @@ namespace apk { // MOD:
       (MenuLine*) &sQuitPromptItems
     };
 
+
+    MenuLine sSavePromptItems[] = {
+        { "Cancel", 1, 0 },
+        { NULL, 5+0, 0 },
+        { NULL, 5+1, 0 },
+        { NULL, 5+2, 0 },
+        { NULL, 5+3, 0 },
+        { NULL, 5+4, 0 },
+        { NULL, 5+5, 0 },
+    };
+
+    MenuPrompt sSavePrompt = {
+       "Do you wish to save?",
+       "S27E.PI1",
+       1, 16, 10,
+       0,
+       7,
+       (MenuLine*) &sSavePromptItems
+    };
 
 
     MenuPrompt* sMenuPrompt = NULL;
@@ -159,6 +184,9 @@ namespace apk { // MOD:
 
         return rv;
     }
+
+
+    void gameSaveRequest();
 
 }
 
@@ -1598,16 +1626,18 @@ int CruiseEngine::processInput() {
 	if (keyboardCode == Common::KEYCODE_F8 && keyboardShift == true) { // MOD:
 		keyboardCode = Common::KEYCODE_INVALID;
         keyboardShift = false;
+        // TODO: Reset rule flags
 		playerMenu_ResetGame();
 	}
 
 	if (keyboardCode == Common::KEYCODE_F5) { // MOD:
         if (keyboardShift) {
-		    const char* path = requester_save("Save Game", "PROGDIR:", ".save");
-		    printf("Save Path is %s\n", path);
-            if (path != NULL) {
-                playerMenu_SaveGame(path);
-            }
+		    //const char* path = requester_save("Save Game", "PROGDIR:", ".save");
+		    //printf("Save Path is %s\n", path);
+            //if (path != NULL) {
+            //    playerMenu_SaveGame(path);
+            //}
+            apk::s_RulesSaveRequested = true;
         }
         else {
             playerMenu_SaveGame("quick.save");
@@ -2465,6 +2495,12 @@ void MenuTimerCb(void* ce) { // MOD:
         EndMenuScreen(3);
         playerMenu_SaveGame("quick.save");
         performQuit();
+        return;
+    }
+    else if (s_MenuUiAction >= (5 + 0) && s_MenuUiAction <= (5 + 6)) {
+        EndMenuScreen(1);
+        playerMenu_SaveGame(&s_FileLoadSavePaths[s_MenuUiAction - 5][0]);
+        return;
     }
 
 }
@@ -2485,6 +2521,9 @@ static void BeginMenuScreen(uint16 type) {
             break;
         case 2:
             sMenuPrompt = &sQuitPrompt;
+            break;
+        case 3:
+            sMenuPrompt = &sSavePrompt;
             break;
     }
 
@@ -2538,10 +2577,16 @@ void TimerCb(void* ce) { // MOD:
            return;
         }
     }
-
+        
 	CruiseEngine* c = (CruiseEngine*) ce;
 	c->mainLoop_Frame();
 	flipScreen();
+
+    if (s_RulesSaveRequested) {
+        s_RulesSaveRequested = false;
+        gameSaveRequest();
+    }
+
 }
 
 void CruiseEngine::mainLoop() { // MOD:
@@ -2575,6 +2620,53 @@ void gameEndPause() {
 
 void gameQuitRequest() {
     BeginMenuScreen(2);
+}
+
+// MOD:
+// Save Screen
+                                        
+bool gameSaveRequestCb(char* path, void* context) {
+
+  uint32* counter = (uint32*) context;
+
+  if (*counter >= 6)
+    return true;
+
+  int dotpos = apk::text::string_last_of_index(path, '.');
+
+  if (dotpos <= 0 || dotpos >= 25) {
+    return true;
+  }
+
+  apk::strncpy(s_FileLoadSaveNames[*counter], path, dotpos);
+  apk::strncpy(s_FileLoadSavePaths[*counter], path, 30);
+
+  sSavePromptItems[1 + *counter].text = &s_FileLoadSaveNames[*counter][0];
+
+  *counter = *counter + 1;
+
+  return false;
+}
+
+void gameSaveRequest() {
+
+    uint32 counter = 0;
+
+    for (uint32 i=0;i < 6;i++) {
+       sSavePromptItems[1 + i].text = "New...";
+       s_FileLoadSavePaths[i][0] = 0;
+    }
+
+    apk::fs::Dir(apk::fs::getProgramDir(), "#?.save", &gameSaveRequestCb, &counter);
+
+    if (counter < 6) {
+        counter++; // New...
+    }
+
+    sSavePrompt.num = 1 + counter;
+
+
+    BeginMenuScreen(3);
 }
 
 

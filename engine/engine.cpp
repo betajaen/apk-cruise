@@ -27,6 +27,7 @@ namespace apk {
     bool s_RulesCanSaveLoad;
     bool s_RulesAutoSaveNextBackground;
     bool s_RulesInClock;
+    bool s_RulesSaveRequested;
     int16 s_LastSoundNum;
     char s_OverlayText[32];
     uint16 s_OverlayTime;
@@ -69,6 +70,7 @@ namespace apk {
         s_RulesCanSaveLoad = false;
         s_RulesInClock = false;
         s_RulesAutoSaveNextBackground = false;
+        s_RulesSaveRequested = false;
         s_LastSoundNum = 0;
         s_OverlayText[0] = 0;
         s_OverlayTime = 0;
